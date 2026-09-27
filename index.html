@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cat Tricycle Ride</title>
+<style>
+  :root {
+    --bg: #f4efe6;
+    --panel: #fffaf2;
+    --ink: #2b2622;
+    --muted: #7a6f64;
+    --accent: #d9692a;
+    --accent-ink: #ffffff;
+    --line: #e2d6c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1b1916;
+      --panel: #26231f;
+      --ink: #f1e9dd;
+      --muted: #a89c8d;
+      --accent: #f0934b;
+      --accent-ink: #1b1916;
+      --line: #3b352e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1b1916;
+    --panel: #26231f;
+    --ink: #f1e9dd;
+    --muted: #a89c8d;
+    --accent: #f0934b;
+    --accent-ink: #1b1916;
+    --line: #3b352e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .sub { margin: 0 0 16px; color: var(--muted); font-size: 0.95rem; }
+  .stage {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    background: #a9d8f0;
+  }
+  .stage svg { display: block; width: 100%; height: auto; }
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center;
+    margin-top: 16px; padding: 14px 16px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  }
+  .group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .label { font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .seg button, .solo {
+    font: inherit; font-size: .92rem; color: var(--ink); background: transparent;
+    border: 0; padding: 8px 14px; cursor: pointer; min-height: 38px;
+  }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  .seg button:focus-visible, .solo:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .solo { border: 1px solid var(--line); border-radius: 10px; }
+  .readout { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; }
+  .hint { color: var(--muted); font-size: .82rem; margin: 10px 2px 0; }
+  kbd { font-family: ui-monospace, monospace; font-size: .78rem; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; }
+  @media (max-width: 560px) { .readout { margin-left: 0; width: 100%; } .seg button { padding: 8px 10px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Cat on a Tricycle</h1>
+  <p class="sub">A tabby pedals along a dirt path at the foot of the mountains. Switch the camera and set the pace.</p>
+
+  <div class="stage">
+    <svg id="scene" viewBox="0 0 800 450" role="img" aria-label="Animated cat riding a tricycle along a mountain path">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5fb0e5"/>
+          <stop offset=".62" stop-color="#a9d8f0"/>
+          <stop offset="1" stop-color="#fbe3c0"/>
+        </linearGradient>
+        <radialGradient id="sunGlow">
+          <stop offset="0" stop-color="#fff6d0" stop-opacity=".9"/>
+          <stop offset="1" stop-color="#fff6d0" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="gFar" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#9aaecb"/>
+          <stop offset=".6" stop-color="#b3c3da"/>
+          <stop offset="1" stop-color="#c9d5e4"/>
+        </linearGradient>
+        <linearGradient id="gMid" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#6d8fa9"/>
+          <stop offset="1" stop-color="#8fb0b8"/>
+        </linearGradient>
+        <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f6e6cc" stop-opacity="0"/>
+          <stop offset=".5" stop-color="#f6e6cc" stop-opacity=".65"/>
+          <stop offset="1" stop-color="#f6e6cc" stop-opacity="0"/>
+        </linearGradient>
+
+        <!-- Scenery templates, drawn about 100 units tall, standing on (0,0) -->
+        <g id="tPine">
+          <rect x="-5" y="-14" width="10" height="14" fill="#6b4a2b"/>
+          <polygon points="-30,-12 30,-12 0,-55" fill="#2f6e3b"/>
+          <polygon points="-24,-38 24,-38 0,-78" fill="#357a42"/>
+          <polygon points="-17,-62 17,-62 0,-100" fill="#3c8649"/>
+          <polygon points="0,-100 17,-62 0,-62 24,-38 0,-38 30,-12 0,-12" fill="#000" opacity=".13"/>
+        </g>
+        <g id="tTree">
+          <rect x="-5" y="-40" width="10" height="40" fill="#7a5433"/>
+          <circle cx="0" cy="-66" r="30" fill="#4e9a3f"/>
+          <circle cx="-20" cy="-52" r="20" fill="#458f38"/>
+          <circle cx="20" cy="-54" r="22" fill="#4a9540"/>
+          <circle cx="-8" cy="-78" r="13" fill="#6cb356" opacity=".75"/>
+        </g>
+        <g id="tRock">
+          <path d="M-50,0 Q-48,-60 -5,-80 Q40,-78 55,-20 L55,0Z" fill="#a39d92"/>
+          <path d="M-5,-80 Q40,-78 55,-20 L55,0 L18,0 Q24,-45 -5,-80Z" fill="#000" opacity=".16"/>
+        </g>
+        <g id="tFlowers">
+          <path d="M-30,0 L-22,-50 L-12,0 L-2,-60 L8,0 L18,-45 L28,0Z" fill="#5d9b3b"/>
+          <circle cx="-22" cy="-50" r="9" fill="#f7d54a"/>
+          <circle cx="-2" cy="-62" r="9" fill="#f27ea9"/>
+          <circle cx="18" cy="-47" r="9" fill="#ffffff"/>
+        </g>
+        <g id="tTuft">
+          <path d="M-34,0 L-26,-45 L-16,0 L-6,-62 L4,0 L14,-50 L24,0 L32,-34 L38,0Z" fill="#5a9638"/>
+        </g>
+        <g id="tCloud" fill="#ffffff" opacity=".92">
+          <ellipse cx="0" cy="0" rx="48" ry="15"/>
+          <circle cx="-18" cy="-9" r="17"/>
+          <circle cx="10" cy="-14" r="22"/>
+          <circle cx="30" cy="-5" r="13"/>
+        </g>
+
+        <!-- Tricycle wheel spokes (reused) -->
+        <g id="rearSpokes">
+          <circle r="17.5" fill="none" stroke="#3a3a3a" stroke-width="3" stroke-dasharray="3 5"/>
+          <path d="M-15,0H15M0,-15V15M-10.6,-10.6L10.6,10.6M-10.6,10.6L10.6,-10.6" stroke="#8a8a8a" stroke-width="1.5"/>
+        </g>
+
+        <!-- First-person: left arm and paw (mirrored for the right) -->
+        <g id="fArmL">
+          <path d="M20,480 Q70,450 118,432" fill="none" stroke="#e8913a" stroke-width="48" stroke-linecap="round"/>
+          <path d="M52,478 l16,-24 M78,468 l14,-22 M100,456 l10,-18" stroke="#b8641f" stroke-width="6" stroke-linecap="round"/>
+          <g transform="translate(124,430) rotate(-32)">
+            <ellipse rx="32" ry="23" fill="#f3a95b"/>
+            <path d="M-12,-20 Q-10,-8 -12,2 M2,-23 Q4,-10 2,0 M16,-19 Q17,-8 15,2" stroke="#c9772c" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+        </g>
+      </defs>
+
+      <!-- ============ SIDE VIEW ============ -->
+      <g id="sideScene">
+        <rect width="800" height="450" fill="url(#sky)"/>
+        <circle cx="620" cy="95" r="80" fill="url(#sunGlow)"/>
+        <circle cx="620" cy="95" r="30" fill="#fff4c9"/>
+        <g id="sClouds"></g>
+        <g id="sFar"></g>
+        <g id="sMid"></g>
+        <g id="sHill"></g>
+        <rect y="352" width="800" height="98" fill="#86b94f"/>
+        <g id="sFence"></g>
+        <rect y="360" width="800" height="40" fill="#d6b27a"/>
+        <rect y="359" width="800" height="3" fill="#b8925e"/>
+        <rect y="398" width="800" height="3" fill="#b8925e"/>
+        <g id="sPath"></g>
+        <ellipse cx="392" cy="381" rx="92" ry="6" fill="#000" opacity=".18"/>
+
+        <g id="sTrike">
+          <!-- far rear wheel -->
+          <g transform="translate(329,356)" opacity=".8">
+            <circle r="20" fill="#1f1f1f"/><circle r="15" fill="#cfcfcf"/>
+            <g class="rearSpin"><use href="#rearSpokes"/></g>
+            <circle r="4" fill="#b83232"/>
+          </g>
+          <!-- far arm -->
+          <path d="M414,270 Q423,275 428,266" fill="none" stroke="#c9772c" stroke-width="8" stroke-linecap="round"/>
+          <g id="sFarLeg"></g>
+          <!-- frame -->
+          <path d="M335,360 L395,350 L443,293" fill="none" stroke="#d23c3c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M395,350 L391,321" stroke="#d23c3c" stroke-width="6" stroke-linecap="round"/>
+          <!-- front wheel -->
+          <g transform="translate(452,346)">
+            <circle r="34" fill="#1f1f1f"/><circle r="28" fill="#eeeeee"/>
+            <g id="sFrontSpin">
+              <circle r="31" fill="none" stroke="#3a3a3a" stroke-width="3" stroke-dasharray="4 6"/>
+              <path d="M-28,0H28M0,-28V28M-14,-24.2L14,24.2M-14,24.2L14,-24.2M-24.2,-14L24.2,14M-24.2,14L24.2,-14" stroke="#9a9a9a" stroke-width="1.6"/>
+            </g>
+            <circle r="5" fill="#b83232"/>
+          </g>
+          <!-- fork, stem, handlebar -->
+          <path d="M452,346 L442,292" stroke="#d23c3c" stroke-width="6" stroke-linecap="round"/>
+          <path d="M442,292 L446,267" stroke="#b83232" stroke-width="8" stroke-linecap="round"/>
+          <path d="M446,267 L446,263 L436,262" stroke="#9aa0a6" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M437,262 L428,263" stroke="#222" stroke-width="6" stroke-linecap="round"/>
+          <!-- rear deck + near rear wheel -->
+          <path d="M314,351 H358" stroke="#8e8e8e" stroke-width="5" stroke-linecap="round"/>
+          <g transform="translate(335,360)">
+            <circle r="20" fill="#1f1f1f"/><circle r="15" fill="#e9e9e9"/>
+            <g class="rearSpin"><use href="#rearSpokes"/></g>
+            <circle r="4" fill="#d23c3c"/>
+          </g>
+          <!-- safety flag -->
+          <path d="M320,352 L314,190" stroke="#6a6a6a" stroke-width="2"/>
+          <path id="sFlag" fill="#ffb300"/>
+          <!-- seat -->
+          <ellipse cx="390" cy="319" rx="17" ry="5" fill="#222"/>
+
+          <g id="sRider">
+            <path id="sTail" fill="none" stroke="#e8913a" stroke-width="11" stroke-linecap="round"/>
+            <path id="sTailTip" fill="none" stroke="#b8641f" stroke-width="11" stroke-linecap="round" pathLength="100" stroke-dasharray="0 78 22"/>
+            <!-- body -->
+            <g transform="translate(403,290) rotate(-38)">
+              <ellipse rx="30" ry="20" fill="#e8913a"/>
+              <ellipse cx="4" cy="9" rx="20" ry="9" fill="#f7cf98"/>
+              <path d="M-14,-19 q4,9 0,17 M-3,-20 q4,9 0,17 M8,-19 q4,8 0,15" stroke="#b8641f" stroke-width="4" fill="none" stroke-linecap="round"/>
+            </g>
+            <path id="sScarf" fill="#d6322f"/>
+            <ellipse cx="423" cy="261" rx="7" ry="12" transform="rotate(-40 423 261)" fill="#d6322f"/>
+            <!-- head -->
+            <polygon points="418,229 421,205 433,222" fill="#d9822f"/>
+            <polygon points="433,221 443,199 452,227" fill="#e8913a"/>
+            <polygon points="437,221 443,207 448,224" fill="#f4a7a0"/>
+            <circle cx="434" cy="240" r="21" fill="#e8913a"/>
+            <path d="M428,221 l2,7 M434,219 l1,8 M440,220 l0,7" stroke="#b8641f" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="449" cy="247" rx="10" ry="7" fill="#f7cf98"/>
+            <circle cx="441" cy="248" r="4" fill="#f4a7a0" opacity=".6"/>
+            <ellipse cx="445" cy="235" rx="3" ry="4.2" fill="#2b2622"/>
+            <circle cx="446" cy="233.5" r="1.2" fill="#fff"/>
+            <path d="M453,240 L458,241 L455,245Z" fill="#e8757a"/>
+            <path d="M455,245 q-2,4 -6,3" stroke="#6b3b2a" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+            <path d="M452,247 L474,242 M452,249 L475,250 M451,251 L471,257" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+            <!-- near arm -->
+            <path d="M416,272 Q427,278 432,266" fill="none" stroke="#e8913a" stroke-width="9" stroke-linecap="round"/>
+            <ellipse cx="433" cy="263" rx="5.5" ry="4.5" fill="#f3a95b"/>
+          </g>
+          <g id="sNearLeg"></g>
+        </g>
+        <g id="sFore"></g>
+      </g>
+
+      <!-- ============ PERSPECTIVE VIEWS (first-person + behind) ============ -->
+      <g id="perspScene" style="display:none">
+        <g id="pWorld">
+          <rect x="-200" y="-200" width="1200" height="440" fill="url(#sky)" id="pSky"/>
+          <circle cx="600" cy="70" r="80" fill="url(#sunGlow)"/>
+          <circle cx="600" cy="70" r="28" fill="#fff4c9"/>
+          <g id="pClouds"></g>
+          <g id="pFar"></g>
+          <g id="pMid"></g>
+          <g id="pHill"></g>
+          <rect id="pGrass" x="-200" width="1200" height="600" fill="#86b94f"/>
+          <g id="pGround"></g>
+          <rect id="pHaze" x="-200" width="1200" height="50" fill="url(#haze)"/>
+          <g id="pObjects"></g>
+        </g>
+
+        <!-- camera behind the cat -->
+        <g id="behindRig">
+          <ellipse cx="400" cy="437" rx="135" ry="12" fill="#000" opacity=".22"/>
+          <g id="bRoll">
+            <rect x="391" y="322" width="18" height="62" rx="9" fill="#2b2b2b"/>
+            <g id="bLegs"></g>
+            <path d="M400,398 L400,335" stroke="#d23c3c" stroke-width="12" stroke-linecap="round"/>
+            <rect x="330" y="378" width="140" height="10" rx="3" fill="#8e8e8e"/>
+            <rect x="282" y="392" width="236" height="11" rx="5" fill="#b83232"/>
+            <rect x="271" y="360" width="28" height="78" rx="13" fill="#262626"/>
+            <path id="bTreadL" d="M285,366 L285,432" stroke="#454545" stroke-width="14" stroke-dasharray="5 7"/>
+            <rect x="501" y="360" width="28" height="78" rx="13" fill="#262626"/>
+            <path id="bTreadR" d="M515,366 L515,432" stroke="#454545" stroke-width="14" stroke-dasharray="5 7"/>
+            <circle cx="285" cy="397" r="5" fill="#d8d8d8"/>
+            <circle cx="515" cy="397" r="5" fill="#d8d8d8"/>
+            <path d="M476,392 L488,148" stroke="#6a6a6a" stroke-width="3"/>
+            <path id="bFlag" fill="#ffb300"/>
+            <ellipse cx="400" cy="338" rx="40" ry="9" fill="#222"/>
+            <!-- body from behind -->
+            <path d="M343,342 C333,300 350,256 400,249 C450,256 467,300 457,342 Z" fill="#e8913a"/>
+            <path d="M366,279 Q400,269 434,279 M359,301 Q400,289 441,301 M357,322 Q400,310 443,322" stroke="#b8641f" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path id="bTail" fill="none" stroke="#e8913a" stroke-width="15" stroke-linecap="round"/>
+            <path id="bTailTip" fill="none" stroke="#b8641f" stroke-width="15" stroke-linecap="round" pathLength="100" stroke-dasharray="0 78 22"/>
+            <!-- arms to handlebar grips -->
+            <rect x="302" y="272" width="22" height="10" rx="4" fill="#222"/>
+            <rect x="476" y="272" width="22" height="10" rx="4" fill="#222"/>
+            <path d="M362,262 Q336,262 322,276" fill="none" stroke="#e8913a" stroke-width="16" stroke-linecap="round"/>
+            <path d="M438,262 Q464,262 478,276" fill="none" stroke="#e8913a" stroke-width="16" stroke-linecap="round"/>
+            <ellipse cx="320" cy="277" rx="11" ry="9" fill="#f3a95b"/>
+            <ellipse cx="480" cy="277" rx="11" ry="9" fill="#f3a95b"/>
+            <!-- scarf -->
+            <path id="bScarf" fill="#d6322f"/>
+            <path d="M366,252 Q400,265 434,252 L434,238 Q400,251 366,238Z" fill="#d6322f"/>
+            <!-- head from behind -->
+            <polygon points="360,214 365,158 396,194" fill="#e8913a"/>
+            <polygon points="440,214 435,158 404,194" fill="#e8913a"/>
+            <polygon points="366,196 368,168 385,190" fill="#c9772c"/>
+            <polygon points="434,196 432,168 415,190" fill="#c9772c"/>
+            <circle cx="400" cy="210" r="44" fill="#e8913a"/>
+            <path d="M385,172 Q389,184 386,197 M400,168 L400,196 M415,172 Q411,184 414,197" stroke="#b8641f" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M358,226 L326,220 M358,232 L324,236 M442,226 L474,220 M442,232 L476,236" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+          </g>
+        </g>
+
+        <!-- cat's own eyes -->
+        <g id="fpvRig">
+          <g id="fBar"><g transform="translate(0,-24)">
+            <rect x="382" y="394" width="36" height="110" rx="16" fill="#262626"/>
+            <path id="fTread" d="M400,398 L400,500" stroke="#3f3f3f" stroke-width="22" stroke-dasharray="6 9"/>
+            <rect x="374" y="386" width="52" height="13" rx="6" fill="#c93535"/>
+            <rect x="392" y="366" width="16" height="24" fill="#aab0b6"/>
+            <path d="M128,434 C210,374 320,374 400,374 C480,374 590,374 672,434" fill="none" stroke="#7d848b" stroke-width="17" stroke-linecap="round"/>
+            <path d="M140,423 C215,370 320,369 400,369 C480,369 585,370 660,423" fill="none" stroke="#e3e7eb" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+            <path d="M138,427 L104,452" stroke="#1f1f1f" stroke-width="28" stroke-linecap="round"/>
+            <path d="M662,427 L696,452" stroke="#1f1f1f" stroke-width="28" stroke-linecap="round"/>
+            <circle cx="470" cy="362" r="14" fill="#cfd4d9"/>
+            <circle cx="466" cy="358" r="5" fill="#fff" opacity=".8"/>
+            <path d="M482,358 l10,-6" stroke="#8a9096" stroke-width="4" stroke-linecap="round"/>
+            <use href="#fArmL"/>
+            <use href="#fArmL" transform="translate(800,0) scale(-1,1)"/>
+            <g id="fStreamL"></g>
+            <g id="fStreamR"></g>
+          </g></g>
+          <g id="fWhiskers" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".75">
+            <path d="M-5,318 Q55,306 112,312"/>
+            <path d="M-5,336 Q60,330 118,338"/>
+            <path d="M-5,354 Q52,354 104,366"/>
+            <path d="M805,318 Q745,306 688,312"/>
+            <path d="M805,336 Q740,330 682,338"/>
+            <path d="M805,354 Q748,354 696,366"/>
+          </g>
+        </g>
+      </g>
+
+      <rect id="fade" width="800" height="450" fill="#000" opacity="0" pointer-events="none"/>
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div class="group">
+      <span class="label">View</span>
+      <div class="seg" id="viewSeg">
+        <button data-view="fpv">First-person</button>
+        <button data-view="behind">Behind</button>
+        <button data-view="side">Side</button>
+      </div>
+    </div>
+    <div class="group">
+      <span class="label">Speed</span>
+      <div class="seg" id="speedSeg">
+        <button data-speed="slow">Slow</button>
+        <button data-speed="medium">Medium</button>
+        <button data-speed="fast">Fast</button>
+      </div>
+    </div>
+    <button class="solo" id="pauseBtn">Pause</button>
+    <span class="readout" id="readout"></span>
+  </div>
+  <p class="hint">Keys: <kbd>1</kbd> first-person · <kbd>2</kbd> behind · <kbd>3</kbd> side · <kbd>↑</kbd>/<kbd>↓</kbd> speed · <kbd>Space</kbd> pause</p>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const mod = (a, n) => ((a % n) + n) % n;
+  const f1 = v => v.toFixed(1);
+  const deg = r => r * 180 / Math.PI;
+
+  function rng(seed) {
+    return () => {
+      seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function hash(n) {
+    const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+    return x - Math.floor(x);
+  }
+
+  // ---------- Terrain generation (periodic over 800px so layers tile) ----------
+  const W = 800, SPAN = 2400;
+  const FAR = [{ n: 2, a: 95, p: 0.3 }, { n: 5, a: 40, p: 1.1 }, { n: 13, a: 12, p: 0.5 }];
+  const MID = [{ n: 3, a: 55, p: 1.7 }, { n: 7, a: 22, p: 0.2 }, { n: 17, a: 7, p: 2.0 }];
+  const HILL = [{ n: 3, a: 20, p: 0.4, s: 1 }, { n: 8, a: 9, p: 1.3, s: 1 }];
+  const scaled = (comps, k) => comps.map(c => ({ ...c, a: c.a * k }));
+
+  function hAt(x, comps) {
+    let h = 0;
+    for (const c of comps) {
+      const u = Math.PI * c.n * x / W + c.p;
+      h += c.s ? c.a * (1 + Math.sin(2 * u)) / 2 : c.a * Math.pow(1 - Math.abs(Math.sin(u)), 1.4);
+    }
+    return h;
+  }
+  function ridgeD(base, comps) {
+    let s = `M0,${base + 400}`;
+    for (let x = 0; x <= SPAN; x += 5) s += `L${x},${f1(base - hAt(x, comps))}`;
+    return s + `L${SPAN},${base + 400}Z`;
+  }
+  function snowD(y) {
+    let s = `M0,-600L${SPAN},-600`;
+    for (let x = SPAN; x >= 0; x -= 8) {
+      s += `L${x},${f1(y + 6 * Math.sin(2 * Math.PI * 9 * x / W) + 4 * Math.sin(2 * Math.PI * 23 * x / W + 1))}`;
+    }
+    return s + 'Z';
+  }
+  function mountainLayer(id, base, comps, fill, snowY) {
+    const d = ridgeD(base, comps);
+    let s = `<path d="${d}" fill="${fill}"/>`;
+    if (snowY != null) {
+      s += `<clipPath id="${id}"><path d="${d}"/></clipPath>` +
+           `<path d="${snowD(snowY)}" fill="#f3f6fb" clip-path="url(#${id})"/>`;
+    }
+    return s;
+  }
+  const use = (tpl, x, y, sc, extra = '') =>
+    `<use href="#${tpl}" transform="translate(${f1(x)},${f1(y)}) scale(${sc.toFixed(3)})"${extra}/>`;
+  const tiled = (fn) => { let s = ''; for (let k = 0; k < 3; k++) s += fn(k * W); return s; };
+
+  function cloudsMarkup() {
+    const spots = [[80, 70, 1], [330, 48, .7], [560, 118, .85], [820, 62, 1.1]];
+    let s = '';
+    for (let k = 0; k < 2; k++) for (const [x, y, sc] of spots) s += use('tCloud', x + k * 1000, y, sc);
+    return s;
+  }
+
+  // ---------- Build side view layers ----------
+  $('sClouds').innerHTML = cloudsMarkup();
+  $('sFar').innerHTML = mountainLayer('clipSF', 335, FAR, 'url(#gFar)', 228);
+  $('sMid').innerHTML = mountainLayer('clipSM', 350, MID, 'url(#gMid)', null);
+  {
+    const r = rng(11);
+    const trees = [];
+    for (let i = 0; i < 16; i++) {
+      const x = (i + r() * 0.7) * W / 16;
+      trees.push([x, 362 - hAt(x, HILL), 0.2 + r() * 0.16, r() < 0.6 ? 'tPine' : 'tTree']);
+    }
+    $('sHill').innerHTML = mountainLayer('', 362, HILL, '#74a84c', null) +
+      tiled(o => trees.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
+  }
+  {
+    let s = `<path d="M0,338H${SPAN}M0,347H${SPAN}" stroke="#9b7a52" stroke-width="3"/>`;
+    s += tiled(o => { let p = ''; for (let x = 0; x < W; x += 50) p += `<rect x="${x + o}" y="330" width="6" height="26" rx="1.5" fill="#8a6a45"/>`; return p; });
+    $('sFence').innerHTML = s;
+  }
+  {
+    const r = rng(7);
+    const pebbles = [];
+    for (let i = 0; i < 70; i++) pebbles.push([r() * W, 364 + r() * 33, 1.5 + r() * 3, i % 2 ? '#b8966a' : '#ead7ae']);
+    const tufts = [];
+    for (let i = 0; i < 26; i++) {
+      tufts.push([r() * W, r() < .5 ? 362 : 402, 0.1 + r() * 0.1, r() < .3 ? 'tFlowers' : 'tTuft']);
+    }
+    $('sPath').innerHTML = tiled(o =>
+      pebbles.map(([x, y, rx, c]) => `<ellipse cx="${f1(x + o)}" cy="${f1(y)}" rx="${f1(rx)}" ry="${f1(rx * .6)}" fill="${c}"/>`).join('') +
+tufts.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
+  }
+  {
+    const r = rng(3);
+    const items = [];
+    for (let i = 0; i < 18; i++) {
+      const pick = r();
+      items.push([r() * W, 440 + r() * 16, pick < .15 ? 0.25 + r() * .15 : 0.3 + r() * 0.3, pick < .15 ? 'tRock' : pick < .5 ? 'tFlowers' : 'tTuft']);
+    }
+    $('sFore').innerHTML = tiled(o => items.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
+  }
+
+  // ---------- Build perspective backdrop ----------
+  $('pClouds').innerHTML = cloudsMarkup();
+  $('pFar').innerHTML = mountainLayer('clipPF', 0, scaled(FAR, .72), 'url(#gFar)', -64);
+  $('pMid').innerHTML = mountainLayer('clipPM', 0, scaled(MID, .5), 'url(#gMid)', null);
+  $('pHill').innerHTML = mountainLayer('', 0, scaled(HILL, .6), '#78ab4f', null);
+
+  // ---------- State ----------
+  const SPEEDS = { slow: 60, medium: 140, fast: 260 };
+  const ORDER = ['slow', 'medium', 'fast'];
+  let view = 'side', speedKey = 'medium', paused = false;
+  let v = SPEEDS.medium, dist = 0, t = 0, last = performance.now(), fadeT = 0;
+
+  // ---------- Helpers ----------
+  function ribbon(pts, w0, w1) {
+    const L = [], R = [], n = pts.length;
+    for (let i = 0; i < n; i++) {
+      const a = pts[Math.max(0, i - 1)], b = pts[Math.min(n - 1, i + 1)];
+      const dx = b[0] - a[0], dy = b[1] - a[1], m = Math.hypot(dx, dy) || 1;
+      const w = (w0 + (w1 - w0) * i / (n - 1)) / 2;
+      L.push([pts[i][0] - dy / m * w, pts[i][1] + dx / m * w]);
+      R.push([pts[i][0] + dy / m * w, pts[i][1] - dx / m * w]);
+    }
+    const j = p => f1(p[0]) + ',' + f1(p[1]);
+    return 'M' + L.map(j).join('L') + 'L' + R.reverse().map(j).join('L') + 'Z';
+  }
+  function ik(hx, hy, fx, fy, L1, L2) {
+    const dx = fx - hx, dy = fy - hy;
+    const D = Math.min(Math.hypot(dx, dy), L1 + L2 - 0.5);
+    const a = Math.atan2(dy, dx);
+    const b = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + D * D - L2 * L2) / (2 * L1 * D))));
+    return [hx + L1 * Math.cos(a - b), hy + L1 * Math.sin(a - b)];
+  }
+  const tx = (el, x, y = 0) => el.setAttribute('transform', `translate(${f1(x)},${f1(y)})`);
+
+  // ---------- Side view ----------
+  const sEls = {
+    clouds: $('sClouds'), far: $('sFar'), mid: $('sMid'), hill: $('sHill'), fence: $('sFence'),
+    path: $('sPath'), fore: $('sFore'), front: $('sFrontSpin'), rear: document.querySelectorAll('.rearSpin'),
+    far_leg: $('sFarLeg'), near_leg: $('sNearLeg'), rider: $('sRider'), tail: $('sTail'), tailTip: $('sTailTip'),
+    scarf: $('sScarf'), flag: $('sFlag')
+  };
+  function legMarkup(hip, theta, near) {
+    const hub = [452, 346], cr = 11;
+    const p = [hub[0] + cr * Math.cos(theta), hub[1] + cr * Math.sin(theta)];
+    const k = ik(hip[0], hip[1], p[0], p[1] - 4, 45, 42);
+    const fur = near ? '#e8913a' : '#c9772c', paw = near ? '#f3a95b' : '#d98c45';
+    return `<path d="M${f1(hub[0])},${hub[1]}L${f1(p[0])},${f1(p[1])}" stroke="#7a7a7a" stroke-width="3.5" stroke-linecap="round"/>` +
+      `<path d="M${f1(p[0] - 7)},${f1(p[1])}H${f1(p[0] + 7)}" stroke="#333" stroke-width="4.5" stroke-linecap="round"/>` +
+      `<path d="M${f1(hip[0])},${f1(hip[1])}L${f1(k[0])},${f1(k[1])}L${f1(p[0])},${f1(p[1] - 4)}" fill="none" stroke="${fur}" stroke-width="${near ? 12 : 11}" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<ellipse cx="${f1(p[0] + 2)}" cy="${f1(p[1] - 4)}" rx="8" ry="5" fill="${paw}"/>`;
+  }
+  function renderSide() {
+    const theta = dist / 34, ph = t * (6 + v / 25);
+    tx(sEls.clouds, -mod(t * 8 + dist * 0.03, 1000));
+    tx(sEls.far, -mod(dist * 0.06, W));
+    tx(sEls.mid, -mod(dist * 0.15, W));
+    tx(sEls.hill, -mod(dist * 0.4, W));
+    tx(sEls.fence, -mod(dist * 0.75, W));
+    tx(sEls.path, -mod(dist, W));
+    tx(sEls.fore, -mod(dist * 1.35, W));
+    sEls.front.setAttribute('transform', `rotate(${f1(deg(theta) % 360)})`);
+    const rr = `rotate(${f1(deg(dist / 20) % 360)})`;
+    sEls.rear.forEach(e => e.setAttribute('transform', rr));
+
+    const bob = -1.4 * Math.abs(Math.sin(theta));
+    sEls.rider.setAttribute('transform', `translate(0,${f1(bob)})`);
+    const hip = [390, 306 + bob];
+    sEls.far_leg.innerHTML = legMarkup(hip, theta + Math.PI, false);
+    sEls.near_leg.innerHTML = legMarkup(hip, theta, true);
+
+    const sw = 6 * Math.sin(t * 2.4);
+    const tail = `M376,301 C352,305 ${f1(338 + sw)},288 ${f1(344 + sw)},266 S${f1(348 + sw * 1.6)},240 ${f1(338 + sw * 2)},232`;
+    sEls.tail.setAttribute('d', tail);
+    sEls.tailTip.setAttribute('d', tail);
+
+    const scarf = [];
+    for (let i = 0; i <= 6; i++) scarf.push([420 - i * 8, 262 + i * 1.2 + 3.5 * Math.sin(ph - i * 0.9) * i / 6]);
+    sEls.scarf.setAttribute('d', ribbon(scarf, 8, 5));
+    const flag = [];
+    for (let i = 0; i <= 6; i++) flag.push([314 - i * 7, 200 + 3 * Math.sin(ph - i * 0.9) * i / 6]);
+    sEls.flag.setAttribute('d', ribbon(flag, 20, 1));
+  }
+
+  // ---------- Perspective views ----------
+  const pEls = {
+    world: $('pWorld'), ground: $('pGround'), objects: $('pObjects'), grass: $('pGrass'), haze: $('pHaze'),
+    far: $('pFar'), mid: $('pMid'), hill: $('pHill'), clouds: $('pClouds'),
+    behind: $('behindRig'), fpv: $('fpvRig'), bRoll: $('bRoll'), bLegs: $('bLegs'), bTail: $('bTail'), bTailTip: $('bTailTip'),
+    bScarf: $('bScarf'), bFlag: $('bFlag'), bTreadL: $('bTreadL'), bTreadR: $('bTreadR'),
+    fBar: $('fBar'), fTread: $('fTread'), fStreamL: $('fStreamL'), fStreamR: $('fStreamR'), fWhiskers: $('fWhiskers')
+  };
+  const CAM = {
+    fpv: { H: 15, f: 380, hz: 212 },
+    behind: { H: 34, f: 420, hz: 180 }
+  };
+  const RW = 28, SEG = 22, ZFAR = 1400;
+
+  function renderPersp() {
+    const P = CAM[view];
+    const theta = dist / 34, ph = t * (6 + v / 25);
+    const k = 0.00022 * Math.sin(dist / 900);           // road curvature ahead
+    const hs = 150 * Math.cos(dist / 900);               // heading drift for the backdrop
+    const camX = view === 'fpv' ? 1.8 * Math.sin(theta) : 0;
+    const zNear = P.f * P.H / (480 - P.hz);
+    const px = (X, z) => 400 + P.f * (X - camX + k * z * z) / z;
+    const py = z => P.hz + P.f * P.H / z;
+
+    // camera shake
+    if (view === 'fpv') {
+      const bob = 2.2 * Math.abs(Math.sin(theta)) - 1.1;
+      pEls.world.setAttribute('transform', `translate(0,${f1(bob)}) rotate(${(1.1 * Math.sin(theta)).toFixed(2)},400,${P.hz})`);
+    } else {
+      pEls.world.removeAttribute('transform');
+    }
+
+    const layer = (el, shift) => tx(el, -mod(-shift, W) - 400, P.hz);
+    layer(pEls.far, hs * 0.7);
+    layer(pEls.mid, hs);
+    layer(pEls.hill, hs * 1.4);
+    tx(pEls.clouds, -mod(t * 8 - hs * 0.5, 1000));
+    pEls.grass.setAttribute('y', P.hz);
+    pEls.haze.setAttribute('y', P.hz - 25);
+
+    // ground: alternating bands give the sense of speed
+    let g = '';
+    const kFar = Math.floor((dist + ZFAR) / SEG), kNear = Math.floor((dist + zNear) / SEG);
+    for (let kk = kFar; kk >= kNear; kk--) {
+      const zB = Math.min(ZFAR, (kk + 1) * SEG - dist), zA = Math.max(zNear, kk * SEG - dist);
+      if (zB <= zA) continue;
+      const yA = py(zA), yB = py(zB);
+      const alt = (kk & 1) && zB < 700;
+      g += `<rect x="-200" y="${f1(yB)}" width="1200" height="${f1(yA - yB + 0.8)}" fill="${alt ? '#7cad48' : '#86b94f'}"/>`;
+      const quad = (X0, X1, c) =>
+        `<polygon points="${f1(px(X0, zA))},${f1(yA)} ${f1(px(X1, zA))},${f1(yA)} ${f1(px(X1, zB))},${f1(yB)} ${f1(px(X0, zB))},${f1(yB)}" fill="${c}"/>`;
+      g += quad(-RW - 3, RW + 3, alt ? '#a8875a' : '#eadcbc');
+      g += quad(-RW, RW, alt ? '#cfa971' : '#d6b27a');
+      if (zB < 600) {
+        g += quad(-10, -7, '#c09a62') + quad(7, 10, '#c09a62');
+      }
+    }
+    pEls.ground.innerHTML = g;
+
+    // roadside scenery
+    let o = '';
+    const S = 34;
+    const n0 = Math.ceil((dist + zNear) / S), n1 = Math.floor((dist + ZFAR) / S);
+    for (let n = n1; n >= n0; n--) {
+      const z = n * S - dist, y = py(z), fade = Math.min(1, (ZFAR - z) / 300);
+      for (let s = 0; s < 2; s++) {
+        const r1 = hash(n * 2 + s), r2 = hash(n * 2 + s + 0.37), r3 = hash(n * 2 + s + 0.71);
+        if (r3 < 0.2) continue;
+        const side = s ? 1 : -1;
+        const X = side * (RW + 10 + r2 * r2 * 150);
+        let tpl, size;
+        if (r1 < 0.38) { tpl = 'tPine'; size = 38 + r3 * 30; }
+        else if (r1 < 0.62) { tpl = 'tTree'; size = 34 + r3 * 18; }
+        else if (r1 < 0.75) { tpl = 'tRock'; size = 5 + r3 * 6; }
+        else { tpl = 'tFlowers'; size = 3 + r3 * 2; }
+        const x = px(X, z);
+        const sc = P.f * size / z / 100;
+        if (x < -150 * sc - 100 || x > 900 + 150 * sc) continue;
+        o += use(tpl, x, y, sc, fade < 1 ? ` opacity="${fade.toFixed(2)}"` : '');
+      }
+      // small tufts hugging the path edge
+      if (z < 500) {
+        const r = hash(n + 0.5), side = r < 0.5 ? -1 : 1;
+        o += use(r < 0.25 || r > 0.8 ? 'tFlowers' : 'tTuft', px(side * (RW + 4 + r * 6), z), y, P.f * 2.5 / z / 100);
+      }
+    }
+    pEls.objects.innerHTML = o;
+
+    if (view === 'behind') renderBehindRider(theta, ph);
+    else renderFpvRider(theta, ph);
+  }
+
+  function renderBehindRider(theta, ph) {
+    const bob = -1.6 * Math.abs(Math.sin(theta));
+    pEls.bRoll.setAttribute('transform', `translate(0,${f1(bob)}) rotate(${(1.6 * Math.sin(theta)).toFixed(2)},400,436)`);
+    const off = f1(-mod(dist * 0.9, 12));
+    pEls.bTreadL.setAttribute('stroke-dashoffset', off);
+    pEls.bTreadR.setAttribute('stroke-dashoffset', off);
+
+    const fL = 362 + 9 * Math.sin(theta), fR = 362 - 9 * Math.sin(theta);
+    const leg = (hx, fx, fy) =>
+      `<path d="M${hx},330 L${fx},${f1(fy)}" stroke="#e8913a" stroke-width="16" stroke-linecap="round"/>` +
+      `<rect x="${fx - 11}" y="${f1(fy + 4)}" width="22" height="5" rx="2" fill="#555"/>` +
+      `<ellipse cx="${fx}" cy="${f1(fy)}" rx="10" ry="7" fill="#f3a95b"/>`;
+    pEls.bLegs.innerHTML = leg(370, 377, fL) + leg(430, 423, fR);
+
+    const sw = 10 * Math.sin(t * 2.2);
+    const tail = `M400,336 C446,344 ${f1(470 + sw * .3)},318 ${f1(462 + sw * .6)},286 S${f1(470 + sw)},252 ${f1(488 + sw * 1.4)},240`;
+    pEls.bTail.setAttribute('d', tail);
+    pEls.bTailTip.setAttribute('d', tail);
+
+    const scarf = [];
+    for (let i = 0; i <= 6; i++) scarf.push([424 + i * 6 + 7 * Math.sin(ph - i * 0.9) * i / 6, 252 + i * 10]);
+    pEls.bScarf.setAttribute('d', ribbon(scarf, 13, 8));
+    const flag = [];
+    for (let i = 0; i <= 6; i++) flag.push([487 + i * 7, 160 + 4 * Math.sin(ph - i * 0.9) * i / 6]);
+    pEls.bFlag.setAttribute('d', ribbon(flag, 22, 1));
+  }
+
+  function renderFpvRider(theta, ph) {
+    const bob = 2.2 * Math.abs(Math.sin(theta)) - 1.1;
+    pEls.fBar.setAttribute('transform', `translate(${f1(2.5 * Math.sin(theta))},${f1(bob * 0.7)}) rotate(${(1.8 * Math.sin(theta + 0.6)).toFixed(2)},400,470)`);
+    pEls.fTread.setAttribute('stroke-dashoffset', f1(mod(dist * 1.2, 15)));
+    pEls.fWhiskers.setAttribute('transform', `translate(0,${f1(bob * 0.5)})`);
+    const colors = ['#e94b4b', '#ffcc33', '#3fa7e0'];
+    const streams = (x0, dir) => colors.map((c, j) => {
+      const pts = [];
+      for (let i = 0; i <= 7; i++) {
+        pts.push([x0 + dir * i * (9 + j), 446 + i * (2 + j * 1.6) + 5 * Math.sin(ph * 1.3 - i * 0.8 + j) * i / 7]);
+      }
+      return `<path d="${ribbon(pts, 6, 3)}" fill="${c}"/>`;
+    }).join('');
+    pEls.fStreamL.innerHTML = streams(98, -1);
+    pEls.fStreamR.innerHTML = streams(702, 1);
+  }
+
+  // ---------- Loop ----------
+  function render() {
+    if (view === 'side') renderSide(); else renderPersp();
+    $('readout').textContent = `${speedKey[0].toUpperCase() + speedKey.slice(1)} · ${(v / 10).toFixed(1)} km/h · ${(dist / 1000).toFixed(2)} km`;
+    $('fade').setAttribute('opacity', Math.max(0, fadeT).toFixed(2));
+  }
+  function frame(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (!paused) {
+      t += dt;
+      v += (SPEEDS[speedKey] - v) * Math.min(1, dt * 2.5);
+      dist += v * dt;
+    }
+    fadeT -= dt * 3.5;
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- Controls ----------
+  function setView(nv) {
+    if (nv !== view) fadeT = 0.8;
+    view = nv;
+    $('sideScene').style.display = view === 'side' ? '' : 'none';
+    $('perspScene').style.display = view === 'side' ? 'none' : '';
+    pEls.behind.style.display = view === 'behind' ? '' : 'none';
+    pEls.fpv.style.display = view === 'fpv' ? '' : 'none';
+    document.querySelectorAll('#viewSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === view));
+  }
+  function setSpeed(ns) {
+    speedKey = ns;
+    document.querySelectorAll('#speedSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.speed === speedKey));
+  }
+  function togglePause() {
+    paused = !paused;
+    $('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+  }
+  document.querySelectorAll('#viewSeg button').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
+  document.querySelectorAll('#speedSeg button').forEach(b => b.addEventListener('click', () => setSpeed(b.dataset.speed)));
+  $('pauseBtn').addEventListener('click', togglePause);
+  document.addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('input,textarea')) return;
+    if (e.key === '1') setView('fpv');
+    else if (e.key === '2') setView('behind');
+    else if (e.key === '3') setView('side');
+    else if (e.key === 'ArrowUp') { setSpeed(ORDER[Math.min(2, ORDER.indexOf(speedKey) + 1)]); e.preventDefault(); }
+    else if (e.key === 'ArrowDown') { setSpeed(ORDER[Math.max(0, ORDER.indexOf(speedKey) - 1)]); e.preventDefault(); }
+    else if (e.key === ' ' && e.target.tagName !== 'BUTTON') { togglePause(); e.preventDefault(); }
+  });
+
+  // expose for testing / embedding
+  window.catRide = { setView, setSpeed, get state() { return { view, speedKey, v, dist }; } };
+
+  setView('side');
+  setSpeed('medium');
+  fadeT = 0;
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
