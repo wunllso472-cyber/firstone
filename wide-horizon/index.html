@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- page -->
+<title>Land of the Wide Horizon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=IBM+Plex+Mono:wght@500&family=Libre+Franklin:wght@400;600;800&display=swap">
+<style>
+  /* One deliberate look: a darkened theatre, so the video is the brightest thing on the page. */
+  :root {
+    color-scheme: dark;
+    --ink: #070d1f;
+    --panel: #0e1834;
+    --line: #22305a;
+    --text: #eef1f8;
+    --muted: #9aa6c4;
+    --red: #d8283f;
+    --red-hi: #ef4058;
+    --gold: #f0bf4c;
+    --display: "Alfa Slab One", "Rockwell", Georgia, serif;
+    --body: "Libre Franklin", "Franklin Gothic Medium", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  html, body { background: var(--ink); color: var(--text); }
+  body {
+    margin: 0;
+    font: 16px/1.55 var(--body);
+    padding-inline: 16px;
+    padding-block: 28px 56px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; display: grid; gap: 26px; }
+
+  .head { display: grid; gap: 8px; }
+  .eyebrow {
+    margin: 0; font: 500 12px/1.4 var(--mono); letter-spacing: .12em;
+    text-transform: uppercase; color: var(--gold);
+  }
+  h1 {
+    margin: 0; font: 400 clamp(34px, 6.4vw, 64px)/1.02 var(--display);
+    letter-spacing: .01em; text-wrap: balance;
+  }
+  h1 .stars { color: var(--red); font-size: .5em; vertical-align: .35em; letter-spacing: .1em; }
+  .lede { margin: 0; max-width: 62ch; color: var(--muted); }
+
+  .player { display: grid; gap: 12px; }
+  .screen {
+    position: relative; aspect-ratio: 16 / 9; max-width: 100%;
+    background: #000; border-radius: 6px; overflow: hidden;
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .9), 0 0 0 1px var(--line);
+  }
+  .screen canvas { display: block; width: 100%; height: 100%; }
+  .lyric-box {
+    position: absolute; left: 0; right: 0; bottom: 5.5%;
+    padding-inline: 6%; text-align: center; pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .9)) drop-shadow(0 0 14px rgba(0, 0, 0, .6));
+  }
+  .lyric {
+    --p: 0%;
+    font: 800 clamp(13px, 2.5vw, 27px)/1.25 var(--body);
+    background: linear-gradient(90deg, var(--gold) var(--p), #ffffff var(--p));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    transition: opacity .3s;
+  }
+  .lyric:empty { opacity: 0; }
+
+  .big-play {
+    position: absolute; inset: 0; border: 0; margin: 0; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    gap: 10px; padding-bottom: 7%;
+    background: linear-gradient(180deg, transparent 45%, rgba(4, 8, 20, .7));
+    color: #fff; font: 600 14px/1 var(--body); letter-spacing: .06em; text-transform: uppercase;
+  }
+  .big-play .disc {
+    width: clamp(52px, 9vw, 84px); aspect-ratio: 1; border-radius: 50%;
+    background: var(--red); display: grid; place-items: center;
+    box-shadow: 0 0 0 6px rgba(216, 40, 63, .25);
+    transition: transform .15s, background .15s;
+  }
+  .big-play .disc svg { width: 42%; margin-left: 8%; fill: #fff; }
+  .big-play:hover .disc { transform: scale(1.06); background: var(--red-hi); }
+  .big-play:focus-visible { outline: none; }
+  .big-play:focus-visible .disc { outline: 3px solid var(--gold); outline-offset: 4px; }
+
+  .controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .pp {
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--panel); color: var(--text); cursor: pointer;
+    display: grid; place-items: center; flex: none;
+  }
+  .pp svg { width: 18px; height: 18px; fill: currentColor; }
+  .pp:hover { border-color: var(--gold); }
+  .time { font: 500 13px/1 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; flex: none; }
+  .track {
+    position: relative; flex: 1 1 200px; height: 10px; border-radius: 5px;
+    background: var(--panel); box-shadow: inset 0 0 0 1px var(--line); cursor: pointer;
+  }
+  .track:focus-visible, .pp:focus-visible, .chap:focus-visible, .line:focus-visible {
+    outline: 2px solid var(--gold); outline-offset: 3px;
+  }
+  .fill {
+    position: absolute; inset: 0 auto 0 0; width: 0; border-radius: 5px;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+  }
+  .tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: .9; }
+
+  .chapters { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+  .chap {
+    display: grid; gap: 2px; text-align: left; cursor: pointer;
+    background: transparent; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 4px; padding: 8px 10px; font: 600 13px/1.25 var(--body);
+  }
+  .chap small { font: 500 11px/1 var(--mono); color: var(--muted); opacity: .8; font-variant-numeric: tabular-nums; }
+  .chap:hover { color: var(--text); border-color: #3a4b80; }
+  .chap.on { color: var(--text); border-color: var(--red); background: rgba(216, 40, 63, .12); }
+
+  .sheet h2 {
+    margin: 0 0 14px; font: 400 26px/1.1 var(--display);
+  }
+  .cols { columns: 2 280px; column-gap: 40px; }
+  .stanza { break-inside: avoid; margin: 0 0 22px; }
+  .stanza h3 {
+    margin: 0 0 6px; font: 500 11px/1.4 var(--mono); letter-spacing: .12em;
+    text-transform: uppercase; color: var(--red-hi);
+  }
+  .stanza h3 span { color: var(--muted); margin-left: 8px; font-variant-numeric: tabular-nums; }
+  .line {
+    display: block; width: 100%; text-align: left; background: none; border: 0; padding: 2px 0;
+    color: var(--text); font: 400 16px/1.5 var(--body); cursor: pointer;
+  }
+  .line:hover { color: #fff; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
+  .line.on { color: var(--gold); font-weight: 600; }
+  .note { margin: 0; font-size: 13px; color: var(--muted); max-width: 70ch; border-top: 1px solid var(--line); padding-top: 16px; }
+
+  @media (max-width: 520px) {
+    .big-play { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="head">
+    <p class="eyebrow">Original song &amp; music video · F major · 96 BPM · 2:20</p>
+    <h1>Land of the Wide Horizon <span class="stars">★★★</span></h1>
+    <p class="lede">An anthem for the United States that travels from the Atlantic dawn to the Pacific sunset. Your browser plays the music live, in time with the pictures.</p>
+  </header>
+
+  <section class="player" aria-label="Music video player">
+    <div class="screen">
+      <canvas id="screen" width="1280" height="720" role="img" aria-label="Animated music video: New York Harbor, the flag, the Great Plains, the Rockies, Washington, city lights, a rocket launch and the Golden Gate"></canvas>
+      <div class="lyric-box"><span class="lyric" id="lyric"></span></div>
+      <button class="big-play" id="bigPlay" type="button">
+        <span class="disc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span>
+        <span id="bigLabel">Play with sound on</span>
+      </button>
+    </div>
+    <div class="controls">
+      <button class="pp" id="pp" type="button" aria-label="Play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path id="ppIcon" d="M6 4l14 8-14 8z"/></svg>
+      </button>
+      <span class="time" id="time">0:00 / 2:20</span>
+      <div class="track" id="track" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="140" aria-valuenow="0">
+        <div class="fill" id="fill"></div>
+      </div>
+    </div>
+    <nav class="chapters" id="chapters" aria-label="Song sections"></nav>
+  </section>
+
+  <section class="sheet" aria-label="Lyrics">
+    <h2>Lyrics</h2>
+    <div class="cols" id="sheet"></div>
+  </section>
+
+  <p class="note">Words and music are original. Every note is synthesized in real time with the Web Audio API (brass, strings, bells, bass, snare and timpani) and every frame is drawn on a canvas, so nothing here is prerecorded. Click a lyric or a section to jump to it. Keyboard: <b>Space</b> plays and pauses, <b>←</b> / <b>→</b> skip five seconds.</p>
+</main>
+
+<script>
+(() => {
+  // ───────────────────────── Song structure ─────────────────────────
+  const BPM = 96, BEAT = 60 / BPM, BAR = BEAT * 4;
+  const KEY = 53; // F3
+  const SCALE = [0, 2, 4, 5, 7, 9, 11];
+  const semi = d => SCALE[((d % 7) + 7) % 7] + 12 * Math.floor(d / 7);
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  const CH = { I: [0, 2, 4], IV: [3, 5, 7], V: [4, 6, 8], vi: [5, 7, 9] };
+
+  // Melodies: one entry per two-bar line, as [scale degree, beats].
+  const MEL = {
+    verse: [
+      [[4,1],[4,1],[5,1],[4,1],[5,1],[7,1],[5,2]],
+      [[4,1],[2,1],[0,1],[2,1],[4,1],[6,1],[4,2]],
+      [[5,1],[5,1],[7,1],[5,1],[3,1],[5,1],[7,2]],
+      [[7,1],[6,1],[4,1],[2,1],[4,2],[1,2]],
+    ],
+    chorus: [
+      [[4,1],[7,2],[7,1],[6,1],[4,1],[6,2]],
+      [[5,1],[7,1],[9,2],[7,1],[5,1],[3,2]],
+      [[4,1],[7,1],[9,1],[7,1],[10,2],[9,1],[7,1]],
+      [[8,1],[8,1],[6,1],[4,1],[7,4]],
+    ],
+    bridge: [
+      [[5,2],[7,1],[5,1],[3,2],[5,2]],
+      [[4,2],[2,1],[4,1],[6,2],[8,2]],
+      [[9,2],[7,1],[5,1],[7,2],[10,2]],
+      [[8,2],[6,1],[8,1],[11,4]],
+    ],
+    outro: [
+      [[5,4],[6,4]],
+      [[7,8]],
+    ],
+  };
+
+  const SECTIONS = [
+    { name: 'Intro',        bars: 4, ch: ['I','IV','I','V'],                     mel: null,     style: 'intro'  },
+    { name: 'Verse 1',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   mel: 'verse',  style: 'verse'  },
+    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   mel: 'chorus', style: 'chorus' },
+    { name: 'Verse 2',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   mel: 'verse',  style: 'verse'  },
+    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   mel: 'chorus', style: 'chorus' },
+    { name: 'Bridge',       bars: 8, ch: ['vi','IV','I','V','vi','IV','V','V'],  mel: 'bridge', style: 'bridge' },
+    { name: 'Final Chorus', bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   mel: 'chorus', style: 'final'  },
+    { name: 'Outro',        bars: 4, ch: ['IV','V','I','I'],                     mel: 'outro',  style: 'outro'  },
+  ];
+  const BARMAP = [];
+  SECTIONS.forEach(sec => {
+    sec.start = BARMAP.length * BAR;
+    for (let b = 0; b < sec.bars; b++) BARMAP.push({ sec, b });
+  });
+  const TOTAL_BARS = BARMAP.length, TOTAL = TOTAL_BARS * BAR; // 56 bars = 140 s
+
+  const CHORUS = [
+    'Oh, America, land of the wide horizon,',
+    'Fifty stars that burn as one,',
+    'From the Eastern shore to the Western skyline,',
+    'Home of the brave beneath the sun.',
+  ];
+  const STANZAS = [
+    { name: 'Verse 1', t: 10, lines: [
+      'When the harbor lights meet the morning tide,',
+      'And the Lady lifts her torch with pride,',
+      'Every tired heart from a distant shore',
+      'Finds a welcome here at the open door.',
+    ]},
+    { name: 'Chorus', t: 30, lines: CHORUS },
+    { name: 'Verse 2', t: 50, lines: [
+      'Golden wheat rolls across the plains,',
+      'Barn doors open to the summer rains,',
+      'Eagles circle where the Rockies climb,',
+      'Rivers carry every dream in time.',
+    ]},
+    { name: 'Chorus', t: 70, lines: CHORUS },
+    { name: 'Bridge', t: 90, lines: [
+      'Neon towers light the city night,',
+      'Engines thunder and the rockets take flight,',
+      'Many voices, and one song we share,',
+      'Freedom ringing through the open air.',
+    ]},
+    { name: 'Final Chorus', t: 110, lines: [
+      'Oh, America, land of the wide horizon,',
+      'Fifty stars that burn as one,',
+      'From the Golden Gate to the Liberty skyline,',
+      'Home of the brave beneath the sun.',
+    ]},
+    { name: 'Outro', t: 130, lines: ['Land of the free, home of the brave.'], dur: 10 },
+  ];
+  const LINES = [];
+  STANZAS.forEach(s => s.lines.forEach((text, i) => {
+    const dur = s.dur || 5;
+    LINES.push({ text, t: s.t + i * dur, dur });
+  }));
+
+  // ───────────────────────── Audio engine ─────────────────────────
+  let ac = null, bus = null, noiseBuf = null, irBuf = null;
+
+  function ensureAudio() {
+    if (ac) return;
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    const sr = ac.sampleRate;
+    noiseBuf = ac.createBuffer(1, sr * 3, sr);
+    const nd = noiseBuf.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    const len = Math.floor(sr * 2.6);
+    irBuf = ac.createBuffer(2, len, sr);
+    for (let c = 0; c < 2; c++) {
+      const d = irBuf.getChannelData(c);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8);
+    }
+  }
+  function makeBus() {
+    const out = ac.createGain();
+    out.gain.value = 0.85;
+    const comp = ac.createDynamicsCompressor();
+    comp.threshold.value = -16; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.2;
+    out.connect(comp); comp.connect(ac.destination);
+    const conv = ac.createConvolver(); conv.buffer = irBuf;
+    const wet = ac.createGain(); wet.gain.value = 0.32;
+    conv.connect(wet); wet.connect(out);
+    return { out, send: conv };
+  }
+  function route(node, send) {
+    node.connect(bus.out);
+    if (send > 0) { const s = ac.createGain(); s.gain.value = send; node.connect(s); s.connect(bus.send); }
+  }
+  function adsr(g, t, dur, vol, a, r) {
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + a);
+    g.gain.setValueAtTime(vol, Math.max(t + a, t + dur - r));
+    g.gain.linearRampToValueAtTime(0.0001, t + dur);
+  }
+  function osc(type, f, t, end, det = 0) {
+    const o = ac.createOscillator();
+    o.type = type; o.frequency.value = f; o.detune.value = det;
+    o.start(t); o.stop(end + 0.05);
+    return o;
+  }
+  function lowpass(f, q = 0.7) {
+    const b = ac.createBiquadFilter(); b.type = 'lowpass'; b.frequency.value = f; b.Q.value = q; return b;
+  }
+  function filt(type, f) { const b = ac.createBiquadFilter(); b.type = type; b.frequency.value = f; return b; }
+  function noise(t, dur) {
+    const s = ac.createBufferSource(); s.buffer = noiseBuf;
+    s.start(t, Math.random() * 0.5); s.stop(t + dur);
+    return s;
+  }
+
+  function pad(m, t, dur, vol, cut) {
+    const g = ac.createGain(); adsr(g, t, dur, vol, 0.35, 0.6);
+    const lp = lowpass(cut); lp.connect(g);
+    for (const d of [-8, 8]) osc('sawtooth', mtof(m), t, t + dur, d).connect(lp);
+    route(g, 0.5);
+  }
+  function brass(m, t, dur, vol) {
+    const g = ac.createGain(); adsr(g, t, dur, vol, 0.03, 0.12);
+    const lp = lowpass(600, 2);
+    lp.frequency.setValueAtTime(600, t);
+    lp.frequency.linearRampToValueAtTime(2800, t + 0.07);
+    lp.frequency.setTargetAtTime(1500, t + 0.08, 0.2);
+    lp.connect(g);
+    const lfo = osc('sine', 5.2, t, t + dur), lg = ac.createGain(); lg.gain.value = 9; lfo.connect(lg);
+    for (const d of [-6, 6]) { const o = osc('sawtooth', mtof(m), t, t + dur, d); lg.connect(o.detune); o.connect(lp); }
+    route(g, 0.35);
+  }
+  function flute(m, t, dur, vol) {
+    const g = ac.createGain(); adsr(g, t, dur, vol, 0.05, 0.15);
+    osc('triangle', mtof(m), t, t + dur).connect(g);
+    const g2 = ac.createGain(); g2.gain.value = 0.25; osc('sine', mtof(m + 12), t, t + dur).connect(g2); g2.connect(g);
+    route(g, 0.45);
+  }
+  function bell(m, t, vol) {
+    const dur = 1.6, g = ac.createGain();
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc('sine', mtof(m), t, t + dur).connect(g);
+    const g2 = ac.createGain(); g2.gain.value = 0.3; osc('sine', mtof(m) * 2.76, t, t + dur).connect(g2); g2.connect(g);
+    route(g, 0.5);
+  }
+  function bass(m, t, dur, vol) {
+    const g = ac.createGain(); adsr(g, t, dur, vol, 0.01, 0.08);
+    const lp = lowpass(600);
+    osc('triangle', mtof(m), t, t + dur).connect(lp);
+    osc('sine', mtof(m), t, t + dur).connect(lp);
+    lp.connect(g); route(g, 0.08);
+  }
+  function kick(t, v) {
+    const o = ac.createOscillator();
+    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14);
+    const g = ac.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    o.connect(g); o.start(t); o.stop(t + 0.45); route(g, 0.05);
+  }
+  function snare(t, v) {
+    const n = noise(t, 0.2), hp = filt('highpass', 1400), g = ac.createGain();
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.17);
+    n.connect(hp); hp.connect(g); route(g, 0.25);
+    const o = osc('triangle', 190, t, t + 0.1), g2 = ac.createGain();
+    g2.gain.setValueAtTime(v * 0.6, t); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    o.connect(g2); route(g2, 0.1);
+  }
+  function hat(t, v) {
+    const n = noise(t, 0.07), hp = filt('highpass', 7500), g = ac.createGain();
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    n.connect(hp); hp.connect(g); route(g, 0.05);
+  }
+  function crash(t, v) {
+    const n = noise(t, 2.3), hp = filt('highpass', 4500), g = ac.createGain();
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 2.2);
+    n.connect(hp); hp.connect(g); route(g, 0.4);
+  }
+  function timp(t, v, m) {
+    const f = mtof(m), o = ac.createOscillator();
+    o.frequency.setValueAtTime(f * 1.05, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.08);
+    const g = ac.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+    o.connect(g); o.start(t); o.stop(t + 1.5); route(g, 0.4);
+    const n = noise(t, 0.15), lp = lowpass(300), g2 = ac.createGain();
+    g2.gain.setValueAtTime(v * 0.8, t); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    n.connect(lp); lp.connect(g2); route(g2, 0.2);
+  }
+
+  // Transport state
+  let playing = false, offset = 0, playOffset = 0, startCtx = 0, nextBar = 0, timer = null;
+  const songToCtx = s => startCtx + (s - playOffset);
+  const songPos = () => playing ? Math.max(offset, offset + (ac.currentTime - startCtx)) : offset;
+
+  function scheduleBar(bar) {
+    const { sec, b } = BARMAP[bar];
+    const style = sec.style, t0 = bar * BAR;
+    const chord = CH[sec.ch[b]];
+    // Sustained notes that began before a seek point start at the seek point instead.
+    const sus = (s, dur, fn) => {
+      let a = t0 + s, d = dur;
+      if (a + d <= playOffset + 0.05) return;
+      if (a < playOffset) { d -= playOffset - a; a = playOffset; }
+      fn(songToCtx(a), d);
+    };
+    const hit = (s, fn) => { if (t0 + s >= playOffset - 0.01) fn(songToCtx(t0 + s)); };
+    const loud = { intro: 0.6, verse: 0.7, chorus: 1, bridge: 0.85, final: 1.1, outro: 1 }[style];
+
+    // Strings / pad
+    const cut = (style === 'verse' || style === 'intro') ? 900 : 1500;
+    if (!(style === 'outro' && b === 3)) {
+      const pdur = (style === 'outro' && b === 2) ? BAR * 2 : BAR + 0.15;
+      for (const d of chord) sus(0, pdur, (t, du) => pad(KEY + semi(d), t, du, 0.028 * loud, cut));
+      if (style === 'chorus' || style === 'final' || style === 'outro')
+        sus(0, pdur, (t, du) => pad(KEY + 12 + semi(chord[0]), t, du, 0.018, cut));
+    }
+
+    // Bass
+    const root = KEY - 12 + semi(chord[0]), fifth = KEY - 12 + semi(chord[2]);
+    if (style === 'intro' || (style === 'outro' && b < 2)) sus(0, BAR, (t, d) => bass(root, t, d, 0.16));
+    else if (style === 'outro' && b === 2) sus(0, BAR * 2, (t, d) => bass(root, t, d, 0.2));
+    else if (style === 'verse' || (style === 'bridge' && b < 4)) {
+      sus(0, BEAT * 2, (t, d) => bass(root, t, d * 0.95, 0.2));
+      sus(BEAT * 2, BEAT * 2, (t, d) => bass(fifth, t, d * 0.95, 0.18));
+    } else if (style === 'bridge') {
+      for (let i = 0; i < 8; i++) sus(i * BEAT / 2, BEAT / 2, (t, d) => bass(root, t, d * 0.8, 0.18));
+    } else if (style === 'chorus' || style === 'final') {
+      [root, fifth, root + 12, fifth].forEach((m, i) => sus(i * BEAT, BEAT, (t, d) => bass(m, t, d * 0.85, 0.2)));
+    }
+
+    // Melody
+    if (sec.mel) {
+      const line = MEL[sec.mel][Math.floor(b / 2)];
+      const lo = (b % 2) * 4;
+      let beat = 0;
+      for (const [d, len] of line) {
+        if (beat >= lo && beat < lo + 4) {
+          const s = (beat - lo) * BEAT, dur = len * BEAT * 0.94, m = KEY + 12 + semi(d);
+          sus(s, dur, (t, du) => {
+            if (style === 'verse') flute(m, t, du, 0.13);
+            else if (style === 'bridge') { flute(m, t, du, 0.11); brass(m - 12, t, du, 0.05); }
+            else {
+              brass(m, t, du, style === 'final' ? 0.1 : 0.095);
+              if (style === 'final' || style === 'outro') brass(KEY + 12 + semi(d - 2), t, du, 0.055);
+            }
+          });
+          if (style === 'chorus' || style === 'final') hit(s, t => bell(m + 12, t, 0.04));
+        }
+        beat += len;
+      }
+    }
+
+    // Bell arpeggios
+    if (style === 'intro') {
+      const pat = [chord[0], chord[1], chord[2], chord[0] + 7, chord[1] + 7, chord[2], chord[1], chord[0] + 7];
+      pat.forEach((d, i) => hit(i * BEAT / 2, t => bell(KEY + 24 + semi(d), t, 0.05)));
+    } else if (style === 'verse') {
+      [chord[0], chord[1], chord[2], chord[1]].forEach((d, i) => hit(i * BEAT, t => bell(KEY + 24 + semi(d), t, 0.022)));
+    }
+
+    // Drums
+    if (style === 'intro') {
+      hit(0, t => timp(t, 0.35 + b * 0.08, KEY - 12));
+      if (b === 3) for (let i = 8; i < 16; i++) hit(i * BEAT / 4, t => timp(t, 0.08 + (i - 8) * 0.04, KEY - 5));
+    } else if (style === 'verse') {
+      hit(0, t => kick(t, 0.45)); hit(BEAT * 2, t => kick(t, 0.4));
+      for (let i = 0; i < 8; i++) hit(i * BEAT / 2, t => hat(t, 0.035));
+      if (b === 7) [3, 3.5, 3.75].forEach(x => hit(x * BEAT, t => snare(t, 0.3)));
+    } else if (style === 'chorus' || style === 'final') {
+      if (b === 0) hit(0, t => crash(t, 0.35));
+      const kicks = style === 'final' ? [0, 1, 2, 3] : [0, 2];
+      kicks.forEach(x => hit(x * BEAT, t => kick(t, 0.8)));
+      [1, 3].forEach(x => hit(x * BEAT, t => snare(t, 0.4)));
+      [1.75, 3.75].forEach(x => hit(x * BEAT, t => snare(t, 0.09)));
+      for (let i = 0; i < 8; i++) hit(i * BEAT / 2, t => hat(t, 0.055));
+      if (b === 7) for (let i = 8; i < 16; i++) hit(i * BEAT / 4, t => snare(t, 0.12 + (i - 8) * 0.035));
+    } else if (style === 'bridge') {
+      if (b < 4) {
+        [0, 2.5].forEach(x => hit(x * BEAT, t => kick(t, 0.5)));
+        for (let i = 0; i < 8; i++) hit(i * BEAT / 2, t => hat(t, 0.04));
+      } else {
+        for (let x = 0; x < 4; x++) hit(x * BEAT, t => kick(t, 0.6));
+        [1, 3].forEach(x => hit(x * BEAT, t => snare(t, 0.3)));
+        if (b === 7) for (let i = 0; i < 16; i++) hit(i * BEAT / 4, t => snare(t, 0.08 + i * 0.027));
+      }
+    } else if (style === 'outro') {
+      if (b === 0 || b === 2) { hit(0, t => crash(t, 0.38)); hit(0, t => kick(t, 0.85)); }
+      if (b < 3) hit(0, t => timp(t, b === 2 ? 0.7 : 0.45, KEY - 12 + semi(chord[0])));
+    }
+  }
+
+  function tick() {
+    const pos = songPos();
+    while (nextBar < TOTAL_BARS && nextBar * BAR < pos + 0.6) scheduleBar(nextBar++);
+  }
+  function play() {
+    ensureAudio();
+    if (ac.state === 'suspended') ac.resume();
+    if (offset >= TOTAL - 0.05) { offset = 0; clearParticles(); }
+    bus = makeBus();
+    playOffset = offset;
+    startCtx = ac.currentTime + 0.06;
+    nextBar = Math.floor(offset / BAR);
+    playing = true;
+    tick();
+    timer = setInterval(tick, 80);
+    syncButtons();
+  }
+  function pause() {
+    if (!playing) return;
+    offset = Math.min(songPos(), TOTAL);
+    playing = false;
+    clearInterval(timer);
+    const b = bus; bus = null;
+    b.out.gain.setTargetAtTime(0, ac.currentTime, 0.03);
+    setTimeout(() => b.out.disconnect(), 300);
+    syncButtons();
+  }
+  function toggle() { playing ? pause() : play(); }
+  function seek(s, autoplay) {
+    const was = playing || autoplay;
+    if (playing) pause();
+    offset = Math.max(0, Math.min(TOTAL - 0.01, s));
+    clearParticles();
+    lastT = offset;
+    if (was) play(); else syncButtons();
+  }
+
+  // ───────────────────────── Visuals ─────────────────────────
+  const W = 1280, H = 720;
+  const main = document.getElementById('screen').getContext('2d');
+  const buf = document.createElement('canvas'); buf.width = W; buf.height = H;
+  const bufCtx = buf.getContext('2d');
+  let g = main;
+
+  function rng(seed) {
+    return () => {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  const R = rng(1776);
+  const TAU = Math.PI * 2;
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const hex = c => { const n = parseInt(c.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; };
+  const mix = (a, b, p) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * p)).join(',')})`; };
+
+  const STARS = Array.from({ length: 220 }, () => ({ x: R() * W, y: R() * H * 0.7, r: R() * 1.4 + 0.3, p: R() * TAU }));
+  const MANHATTAN = []; for (let x = 0; x < 420;) { const w = 14 + R() * 26; MANHATTAN.push({ x, w, h: 14 + R() * 50 }); x += w + 2; }
+  const WHEAT = Array.from({ length: 560 }, () => { const y = H * 0.62 + Math.pow(R(), 0.8) * H * 0.4; return { x: R() * (W + 40) - 20, y, h: 16 + (y - H * 0.62) * 0.28, p: R() * TAU }; }).sort((a, b) => a.y - b.y);
+  const CLOUDS = Array.from({ length: 6 }, (_, i) => ({ x: R() * W, y: 60 + R() * 170, s: 0.6 + R() * 0.8, v: 6 + R() * 10 }));
+  const FAR = Array.from({ length: 9 }, (_, i) => ({ x: i * 190 - 40 + R() * 60, h: 230 + R() * 120, w: 150 + R() * 70 }));
+  const MID = Array.from({ length: 8 }, (_, i) => ({ x: i * 210 + 60 + R() * 60, h: 170 + R() * 90, w: 170 + R() * 60 }));
+  const PINES = Array.from({ length: 34 }, () => ({ x: R() * (W + 200) - 100, s: 0.6 + R() * 0.9 })).sort((a, b) => a.s - b.s);
+  const TOWERS = []; for (let x = -20; x < W + 40;) { const w = 46 + R() * 60; TOWERS.push({ x, w, h: 130 + R() * 250, seed: Math.floor(R() * 1e6) }); x += w + 4 + R() * 8; }
+  const BACK = []; for (let x = -20; x < W + 40;) { const w = 40 + R() * 50; BACK.push({ x, w, h: 200 + R() * 220 }); x += w; }
+  const CARS = Array.from({ length: 16 }, (_, i) => ({ o: R() * (W + 200), v: 140 + R() * 160, dir: i % 2 ? 1 : -1 }));
+
+  function sky(stops, y1 = H) {
+    const gr = g.createLinearGradient(0, 0, 0, y1);
+    stops.forEach(([o, c]) => gr.addColorStop(o, c));
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  }
+  function stars(t, a) {
+    if (a <= 0) return;
+    g.fillStyle = '#fff';
+    for (const s of STARS) {
+      g.globalAlpha = a * (0.55 + 0.45 * Math.sin(t * 2 + s.p));
+      g.beginPath(); g.arc(s.x, s.y, s.r, 0, TAU); g.fill();
+    }
+    g.globalAlpha = 1;
+  }
+  function glow(x, y, r, rgb, a) {
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, `rgba(${rgb},${a})`); gr.addColorStop(1, `rgba(${rgb},0)`);
+    g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2);
+  }
+  function circle(x, y, r) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
+  function poly(pts) { g.beginPath(); g.moveTo(pts[0], pts[1]); for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]); g.closePath(); g.fill(); }
+  function starPath(x, y, r) {
+    g.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.4 : r;
+      g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+    }
+    g.closePath(); g.fill();
+  }
+  function text(str, x, y, font, color, spacing = 0, align = 'center') {
+    g.font = font; g.fillStyle = color; g.textAlign = align; g.textBaseline = 'alphabetic';
+    if ('letterSpacing' in g) g.letterSpacing = spacing + 'px';
+    g.fillText(str, x, y);
+    if ('letterSpacing' in g) g.letterSpacing = '0px';
+  }
+
+  // Particles: fireworks and rocket smoke
+  let shells = [], sparks = [], smoke = [], fwTimer = 0;
+  const FW_COLORS = ['#ff4d5e', '#ffffff', '#6fa8ff', '#ffd36a', '#ff4d5e', '#9cc4ff'];
+  function clearParticles() { shells = []; sparks = []; smoke = []; fwTimer = 0; }
+  function fireworkRate(t) {
+    if (t >= 30 && t < 50) return 0.75;
+    if (t >= 70 && t < 90) return 0.6;
+    if (t >= 116 && t < 130) return 0.32;
+    if (t >= 130 && t < 139) return 0.28;
+    return 0;
+  }
+  function burst(x, y, color) {
+    const n = 60 + Math.floor(Math.random() * 30);
+    for (let i = 0; i < n; i++) {
+      const a = i / n * TAU + Math.random() * 0.1, sp = 90 + Math.random() * 120, life = 1.2 + Math.random() * 0.8;
+      sparks.push({ x, y, px: x, py: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life, max: life, color });
+    }
+  }
+  function rocketBottom(lt) { const l = Math.max(0, lt - 2.5); return GROUND - 20 - 35 * l * l; }
+  const GROUND = H - 110;
+
+  function updateParticles(t, dt) {
+    if (dt <= 0) return;
+    const rate = fireworkRate(t);
+    if (rate) {
+      fwTimer -= dt;
+      if (fwTimer <= 0) {
+        fwTimer = rate * (0.6 + Math.random() * 0.8);
+        shells.push({ x: 90 + Math.random() * (W - 180), y: H, vy: -520 - Math.random() * 120, ty: 70 + Math.random() * H * 0.33, color: FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)] });
+      }
+    }
+    shells = shells.filter(s => { s.y += s.vy * dt; if (s.y <= s.ty) { burst(s.x, s.y, s.color); return false; } return true; });
+    for (const p of sparks) {
+      p.px = p.x; p.py = p.y;
+      p.vx *= 1 - 1.2 * dt; p.vy = p.vy * (1 - 1.2 * dt) + 70 * dt;
+      p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt;
+    }
+    sparks = sparks.filter(p => p.life > 0);
+
+    if (t >= 100 && t < 110) {
+      const lt = t - 100;
+      if (lt < 2.5) {
+        for (let i = 0; i < 2; i++) smoke.push({ x: 660 + (Math.random() - 0.5) * 30, y: GROUND - 10, vx: (Math.random() < 0.5 ? -1 : 1) * (40 + Math.random() * 90) * (lt / 2.5), vy: -10 - Math.random() * 20, r: 10, life: 3, max: 3 });
+      } else {
+        const by = rocketBottom(lt);
+        if (by > -200) for (let i = 0; i < 4; i++) smoke.push({ x: 660 + (Math.random() - 0.5) * 14, y: by + 30, vx: (Math.random() - 0.5) * 60 + (by > GROUND - 120 ? (Math.random() < 0.5 ? -1 : 1) * 160 : 0), vy: 30 + Math.random() * 40, r: 8, life: 3.5, max: 3.5 });
+      }
+    }
+    for (const s of smoke) { s.x += s.vx * dt; s.y += s.vy * dt; s.vx *= 1 - 0.8 * dt; s.vy *= 1 - 0.8 * dt; s.r += 22 * dt; s.life -= dt; }
+    smoke = smoke.filter(s => s.life > 0);
+    if (smoke.length > 700) smoke.splice(0, smoke.length - 700);
+    if (t < 99 || t > 112) smoke = [];
+  }
+  function drawFireworks() {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    for (const s of shells) { g.fillStyle = 'rgba(255,220,160,.9)'; circle(s.x, s.y, 2.2); g.fillStyle = 'rgba(255,200,120,.25)'; g.fillRect(s.x - 1, s.y, 2, 26); }
+    g.lineWidth = 2; g.lineCap = 'round';
+    for (const p of sparks) {
+      const a = clamp01(p.life / p.max);
+      g.globalAlpha = a; g.strokeStyle = p.color;
+      g.beginPath(); g.moveTo(p.px - (p.x - p.px) * 3, p.py - (p.y - p.py) * 3); g.lineTo(p.x, p.y); g.stroke();
+    }
+    g.restore();
+  }
+
+  // Scene: before dawn, title card
+  function sIntro(lt) {
+    const p = clamp01(lt / 10);
+    sky([[0, '#02040f'], [0.7, '#0a1433'], [1, mix('#16204a', '#7a4263', p)]]);
+    stars(lt, 1 - p * 0.3);
+    glow(W / 2, H + 60, 700, '255,150,90', 0.4 * p);
+    g.fillStyle = '#03060f';
+    g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W; x += 20) g.lineTo(x, H - 70 - 26 * Math.sin(x * 0.005 + 1) - 12 * Math.sin(x * 0.013));
+    g.lineTo(W, H); g.fill();
+    const a = lt < 7.5 ? 1 : clamp01(1 - (lt - 7.5) / 2);
+    if (a > 0) {
+      g.globalAlpha = a;
+      text('AN ORIGINAL ANTHEM', W / 2, 238, '500 20px "IBM Plex Mono", monospace', '#f0bf4c', 6);
+      text('LAND OF THE', W / 2, 318, '400 56px "Alfa Slab One", Georgia, serif', '#ffffff', 4);
+      text('WIDE HORIZON', W / 2, 428, '400 112px "Alfa Slab One", Georgia, serif', '#ffffff', 2);
+      text('★   ★   ★   ★   ★', W / 2, 482, '28px Georgia, serif', '#d8283f', 0);
+      g.globalAlpha = 1;
+    }
+  }
+
+  // Scene: New York Harbor at sunrise
+  function statue(bx, by) {
+    g.fillStyle = '#17143a'; g.strokeStyle = '#17143a';
+    poly([bx - 110, by, bx + 110, by, bx + 95, by - 22, bx - 95, by - 22]);
+    poly([bx - 42, by - 22, bx + 42, by - 22, bx + 32, by - 132, bx - 32, by - 132]);
+    g.fillRect(bx - 38, by - 142, 76, 12);
+    poly([bx - 28, by - 142, bx + 28, by - 142, bx + 20, by - 240, bx + 14, by - 262, bx - 14, by - 262, bx - 22, by - 240]);
+    circle(bx, by - 276, 12);
+    g.lineWidth = 3; g.lineCap = 'round';
+    for (let i = -3; i <= 3; i++) {
+      const a = -Math.PI / 2 + i * 0.33;
+      g.beginPath(); g.moveTo(bx + Math.cos(a) * 11, by - 280 + Math.sin(a) * 11); g.lineTo(bx + Math.cos(a) * 28, by - 280 + Math.sin(a) * 28); g.stroke();
+    }
+    g.lineWidth = 10;
+    g.beginPath(); g.moveTo(bx + 12, by - 252); g.lineTo(bx + 30, by - 330); g.stroke();
+    poly([bx + 22, by - 330, bx + 38, by - 330, bx + 42, by - 344, bx + 18, by - 344]);
+    g.save(); g.translate(bx - 26, by - 222); g.rotate(-0.25); g.fillRect(-8, -18, 16, 34); g.restore();
+  }
+  function sHarbor(lt) {
+    const p = clamp01(lt / 20), hy = H * 0.66;
+    sky([[0, '#1c1d4f'], [0.45, '#7a3f7e'], [0.8, '#f07a5e'], [1, '#ffc27a']], hy);
+    stars(lt, 0.5 - p);
+    const sx = W * 0.36, sy = hy + 30 - p * 170;
+    glow(sx, sy, 300, '255,200,120', 0.55);
+    g.fillStyle = '#ffe6b0'; circle(sx, sy, 48);
+    // Manhattan on the far shore
+    g.fillStyle = '#3b2c5e';
+    for (const b of MANHATTAN) g.fillRect(b.x + 10, hy - b.h, b.w, b.h);
+    const wg = g.createLinearGradient(0, hy, 0, H);
+    wg.addColorStop(0, '#473a78'); wg.addColorStop(1, '#0b1030');
+    g.fillStyle = wg; g.fillRect(0, hy, W, H - hy);
+    for (let i = 0; i < 30; i++) {
+      const y = hy + 4 + i * 8, w = (140 - i * 3.2) * (0.7 + 0.3 * Math.sin(lt * 3 + i));
+      if (w <= 0) break;
+      g.fillStyle = `rgba(255,205,140,${0.55 - i * 0.017})`;
+      g.fillRect(sx - w / 2 + Math.sin(lt * 2 + i * 1.7) * 10, y, w, 2.5);
+    }
+    const bx = W * 0.74, by = hy + 16;
+    g.fillStyle = '#17143a'; g.beginPath(); g.ellipse(bx, by + 4, 190, 16, 0, 0, TAU); g.fill();
+    statue(bx, by);
+    const fl = 0.8 + 0.2 * Math.sin(lt * 17) * Math.sin(lt * 7);
+    glow(bx + 30, by - 356, 70 * fl, '255,190,80', 0.8);
+    g.fillStyle = '#ffd36a';
+    g.beginPath(); g.moveTo(bx + 20, by - 344); g.quadraticCurveTo(bx + 30, by - 380 * 1 - 6 * fl, bx + 40, by - 344); g.fill();
+    // Gulls
+    g.strokeStyle = '#2a1f45'; g.lineWidth = 2.5;
+    for (let i = 0; i < 4; i++) {
+      const x = ((lt * (40 + i * 9) + i * 260) % (W + 100)) - 50, y = 150 + i * 42 + Math.sin(lt + i) * 12, f = Math.sin(lt * 7 + i * 2) * 7;
+      g.beginPath(); g.moveTo(x - 14, y - f); g.quadraticCurveTo(x - 6, y - 8, x, y); g.quadraticCurveTo(x + 6, y - 8, x + 14, y - f); g.stroke();
+    }
+  }
+
+  // Scene: the flag (chorus)
+  function drawFlag(fx, fy, fw, fh, lt) {
+    const sh = fh / 13, cw = fw * 0.4, ch = sh * 7, step = 4;
+    const phase = x => x / fw * 7.5 - lt * 3.2;
+    const off = x => Math.sin(phase(x)) * 20 * (0.12 + x / fw);
+    for (let x = 0; x < fw; x += step) {
+      const dy = off(x);
+      for (let i = 0; i < 13; i++) {
+        g.fillStyle = i % 2 ? '#f4f3ee' : '#c8102e';
+        g.fillRect(fx + x, fy + dy + i * sh, step + 0.6, sh + 0.6);
+      }
+      if (x < cw) { g.fillStyle = '#1b2f6b'; g.fillRect(fx + x, fy + dy, step + 0.6, ch + 0.4); }
+      const a = Math.cos(phase(x)) * 0.2 * (0.3 + x / fw);
+      g.fillStyle = a > 0 ? `rgba(255,255,255,${a * 0.5})` : `rgba(0,0,25,${-a * 1.3})`;
+      g.fillRect(fx + x, fy + dy, step + 0.6, fh);
+    }
+    g.fillStyle = '#ffffff';
+    for (let r = 0; r < 9; r++) {
+      const n = r % 2 ? 5 : 6;
+      for (let j = 0; j < n; j++) {
+        const sx = cw / 12 * (r % 2 ? 2 * j + 2 : 2 * j + 1), sy = ch / 10 * (r + 1);
+        starPath(fx + sx, fy + sy + off(sx), sh * 0.34);
+      }
+    }
+  }
+  function capitol() {
+    g.fillStyle = '#0a1330';
+    const gy = H - 62, cx = 1040;
+    g.fillRect(cx - 160, gy - 50, 320, 50);
+    g.fillRect(cx - 60, gy - 78, 120, 28);
+    g.fillRect(cx - 44, gy - 110, 88, 32);
+    g.beginPath(); g.ellipse(cx, gy - 110, 46, 56, 0, Math.PI, TAU); g.fill();
+    g.fillRect(cx - 8, gy - 186, 16, 24); circle(cx, gy - 190, 6);
+    poly([1222, gy, 1250, gy, 1242, gy - 300, 1230, gy - 300]);
+    poly([1230, gy - 300, 1242, gy - 300, 1236, gy - 318]);
+    g.fillStyle = 'rgba(255,255,255,.35)';
+    for (let i = 0; i < 12; i++) g.fillRect(cx - 150 + i * 27, gy - 44, 3, 36);
+  }
+  function sFlag(lt, variant) {
+    sky([[0, '#040a1f'], [1, variant === 3 ? '#2a2350' : '#1a2a5c']]);
+    stars(lt, 0.6);
+    drawFireworks();
+    if (variant === 2) capitol();
+    g.fillStyle = '#050b1c';
+    g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W; x += 20) g.lineTo(x, H - 50 - 16 * Math.sin(x * 0.006));
+    g.lineTo(W, H); g.fill();
+    const px = 246;
+    const pg = g.createLinearGradient(px - 5, 0, px + 5, 0);
+    pg.addColorStop(0, '#8a6a24'); pg.addColorStop(0.5, '#f5d27a'); pg.addColorStop(1, '#8a6a24');
+    g.fillStyle = pg; g.fillRect(px - 5, 118, 10, H);
+    g.fillStyle = '#f0bf4c'; circle(px, 110, 11);
+    drawFlag(px + 5, 132, 610, 322, lt);
+    if (variant === 3 && lt > 1) {
+      g.globalAlpha = clamp01((lt - 1) / 1.5) * (lt > 8.6 ? clamp01((10 - lt) / 1.4) : 1);
+      text('LAND OF THE WIDE HORIZON', W - 60, 70, '400 30px "Alfa Slab One", Georgia, serif', '#f0bf4c', 2, 'right');
+      text('WORDS & MUSIC · AN ORIGINAL SONG', W - 60, 100, '500 14px "IBM Plex Mono", monospace', '#c9d2ea', 3, 'right');
+      g.globalAlpha = 1;
+    }
+  }
+
+  // Scene: Kansas wheat
+  function cloud(x, y, s) {
+    g.fillStyle = 'rgba(255,255,255,.92)';
+    [[0, 0, 40], [38, -14, 48], [80, 0, 38], [40, 12, 36]].forEach(([dx, dy, r]) => circle(x + dx * s, y + dy * s, r * s));
+  }
+  function sPrairie(lt) {
+    const hz = H * 0.6;
+    sky([[0, '#3f7fcf'], [1, '#d2e9f7']], hz);
+    glow(1080, 110, 200, '255,245,200', 0.7); g.fillStyle = '#fff7da'; circle(1080, 110, 40);
+    for (const c of CLOUDS) cloud(((c.x + lt * c.v) % (W + 300)) - 150, c.y, c.s);
+    g.fillStyle = '#8fa95c';
+    g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W; x += 16) g.lineTo(x, hz - 34 - 22 * Math.sin(x * 0.004 + 1) - 10 * Math.sin(x * 0.012));
+    g.lineTo(W, H); g.fill();
+    // Barn
+    const bx = 820, by = hz + 6;
+    g.fillStyle = '#a3262a'; g.fillRect(bx, by - 80, 120, 80);
+    poly([bx - 8, by - 80, bx + 128, by - 80, bx + 112, by - 112, bx + 60, by - 134, bx + 8, by - 112]);
+    g.strokeStyle = '#f4efe4'; g.lineWidth = 3;
+    g.strokeRect(bx + 40, by - 50, 40, 50);
+    g.beginPath(); g.moveTo(bx + 40, by - 50); g.lineTo(bx + 80, by); g.moveTo(bx + 80, by - 50); g.lineTo(bx + 40, by); g.stroke();
+    g.fillStyle = '#f4efe4'; g.fillRect(bx + 52, by - 104, 16, 16);
+    // Windmill
+    const wx = 1070, wy = hz + 4;
+    g.strokeStyle = '#4a3b2f'; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(wx - 22, wy); g.lineTo(wx - 4, wy - 160); g.moveTo(wx + 22, wy); g.lineTo(wx + 4, wy - 160);
+    for (let i = 1; i < 6; i++) { const y = wy - i * 28, k = 22 - i * 3.3; g.moveTo(wx - k, y); g.lineTo(wx + k, y - 28); }
+    g.stroke();
+    g.save(); g.translate(wx, wy - 166); g.rotate(lt * 2.2);
+    g.fillStyle = '#e8e2d4';
+    for (let i = 0; i < 12; i++) { g.rotate(TAU / 12); g.fillRect(8, -3, 44, 7); }
+    g.restore();
+    g.fillStyle = '#4a3b2f'; circle(wx, wy - 166, 6);
+    // Field
+    const fg = g.createLinearGradient(0, hz, 0, H);
+    fg.addColorStop(0, '#e2b64f'); fg.addColorStop(1, '#a87522');
+    g.fillStyle = fg; g.fillRect(0, hz, W, H - hz);
+    g.lineCap = 'round';
+    for (const s of WHEAT) {
+      const depth = (s.y - hz) / (H - hz);
+      const sway = Math.sin(lt * 1.8 + s.x * 0.012 + s.p * 0.3) * (3 + depth * 10);
+      g.strokeStyle = depth > 0.5 ? '#8a5a1e' : '#b0823a'; g.lineWidth = 1 + depth * 1.6;
+      g.beginPath(); g.moveTo(s.x, s.y); g.quadraticCurveTo(s.x + sway * 0.3, s.y - s.h * 0.6, s.x + sway, s.y - s.h); g.stroke();
+      g.fillStyle = '#f6d67a';
+      g.beginPath(); g.ellipse(s.x + sway, s.y - s.h - 4 - depth * 4, 2 + depth * 2.5, 6 + depth * 7, sway * 0.03, 0, TAU); g.fill();
+    }
+  }
+
+  // Scene: the Rockies with an eagle
+  function peaks(list, pan, base, color, snow) {
+    for (const p of list) {
+      const x = ((p.x - pan) % (W + 400) + W + 400) % (W + 400) - 200;
+      g.fillStyle = color; poly([x - p.w, base, x, base - p.h, x + p.w, base]);
+      if (snow) {
+        const k = 0.3;
+        g.fillStyle = '#f4f7fb';
+        poly([x - p.w * k, base - p.h * (1 - k), x, base - p.h, x + p.w * k, base - p.h * (1 - k), x + p.w * k * 0.4, base - p.h * (1 - k) + 14, x, base - p.h * (1 - k) + 2, x - p.w * k * 0.5, base - p.h * (1 - k) + 16]);
+      }
+    }
+  }
+  function pine(x, y, s) {
+    g.fillStyle = '#16301f';
+    for (let i = 0; i < 3; i++) poly([x - 34 * s + i * 7 * s, y - i * 34 * s, x + 34 * s - i * 7 * s, y - i * 34 * s, x, y - (i * 34 + 62) * s]);
+    g.fillStyle = '#2b1d12'; g.fillRect(x - 4 * s, y, 8 * s, 14 * s);
+  }
+  function eagle(x, y, f, bank) {
+    g.save(); g.translate(x, y); g.rotate(bank);
+    g.fillStyle = '#3a2412';
+    for (const s of [-1, 1]) {
+      g.beginPath(); g.moveTo(s * 8, -8);
+      g.quadraticCurveTo(s * 60, -30 - 34 * f, s * 122, -10 - 44 * f);
+      for (let k = 0; k < 4; k++) g.lineTo(s * (126 - k * 9), -2 - 40 * f + k * 5 + (k % 2 ? 0 : 6));
+      g.quadraticCurveTo(s * 60, 8 - 10 * f, s * 8, 12);
+      g.fill();
+    }
+    g.beginPath(); g.ellipse(0, 4, 11, 26, 0, 0, TAU); g.fill();
+    g.fillStyle = '#f4f1ea'; poly([-10, 26, 10, 26, 14, 46, -14, 46]);
+    circle(0, -24, 10);
+    g.fillStyle = '#f0b429'; poly([-4, -18, 4, -18, 0, -10]);
+    g.restore();
+  }
+  function sMountains(lt) {
+    const pan = lt * 10;
+    sky([[0, '#5d97d6'], [1, '#e9f2fb']], H * 0.72);
+    peaks(FAR, pan * 0.3, H * 0.66, '#9db1d1', true);
+    peaks(MID, pan * 0.6, H * 0.74, '#5f7899', true);
+    g.fillStyle = '#3a5a52';
+    g.beginPath(); g.moveTo(0, H);
+    for (let x = 0; x <= W; x += 16) g.lineTo(x, H * 0.72 - 20 * Math.sin((x + pan) * 0.006) - 10 * Math.sin((x + pan) * 0.017));
+    g.lineTo(W, H); g.fill();
+    g.fillStyle = '#9fd0ee';
+    g.beginPath(); g.moveTo(560, H);
+    g.bezierCurveTo(620, H * 0.9, 820, H * 0.84, 700, H * 0.76);
+    g.lineTo(716, H * 0.76);
+    g.bezierCurveTo(880, H * 0.84, 760, H * 0.92, 760, H);
+    g.fill();
+    for (const p of PINES) pine(((p.x - pan * 1.4 * p.s) % (W + 200) + W + 200) % (W + 200) - 100, H - 10 + 30 * (1 - p.s), p.s);
+    const ex = -160 + clamp01(lt / 10) * (W + 320), ey = H * 0.28 + Math.sin(lt * 0.8) * 40;
+    const f = Math.sin(lt * 5) * (0.35 + 0.25 * Math.sin(lt * 0.9));
+    eagle(ex, ey, f, Math.sin(lt * 0.8 + 1) * 0.12);
+  }
+
+  // Scene: city night
+  function hash(a, b, c) { const s = Math.sin(a * 127.1 + b * 311.7 + c * 74.7) * 43758.5453; return s - Math.floor(s); }
+  function sCity(lt) {
+    sky([[0, '#03051a'], [0.75, '#1c1d4c'], [1, '#4a2b62']], H - 60);
+    stars(lt, 0.4);
+    glow(1090, 110, 120, '220,230,255', 0.35); g.fillStyle = '#eef1ff'; circle(1090, 110, 32);
+    const pan = lt * 6;
+    g.fillStyle = '#12173a';
+    for (const b of BACK) g.fillRect(b.x - pan * 0.3, H - 60 - b.h, b.w, b.h);
+    // Landmark tower with a tricolor crown
+    const lx = 640 - pan * 0.6, gy = H - 60;
+    g.fillStyle = '#0b0e26';
+    g.fillRect(lx - 70, gy - 330, 140, 330); g.fillRect(lx - 50, gy - 400, 100, 70); g.fillRect(lx - 32, gy - 452, 64, 52); g.fillRect(lx - 16, gy - 492, 32, 40);
+    g.fillRect(lx - 3, gy - 570, 6, 80);
+    const bands = ['220,40,63', '255,255,255', '70,120,230'];
+    bands.forEach((c, i) => { g.fillStyle = `rgba(${c},.9)`; g.fillRect(lx - 32 + i * 0, gy - 452 + i * 17, 64, 16); });
+    glow(lx, gy - 500, 120, '255,255,255', 0.18);
+    g.fillStyle = '#ff5566'; circle(lx, gy - 572, 3 + Math.sin(lt * 4));
+    for (const b of TOWERS) {
+      const x = b.x - pan, top = gy - b.h;
+      if (x > lx - 90 && x < lx + 90 && b.h > 250) continue;
+      g.fillStyle = '#070920'; g.fillRect(x, top, b.w, b.h);
+      const cols = Math.floor((b.w - 8) / 11), rows = Math.floor((b.h - 10) / 16);
+      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+        const h = hash(b.seed, i, j);
+        const on = h < 0.42 !== (hash(b.seed, i + 50, j) < 0.04 && Math.sin(lt * 0.7 + h * 40) > 0);
+        if (!on) continue;
+        g.fillStyle = h < 0.08 ? '#9fd4ff' : '#ffd98a';
+        g.globalAlpha = 0.55 + 0.4 * h;
+        g.fillRect(x + 6 + i * 11, top + 8 + j * 16, 6, 9);
+      }
+      g.globalAlpha = 1;
+    }
+    g.fillStyle = '#05060f'; g.fillRect(0, gy, W, 60);
+    for (const c of CARS) {
+      const x = ((c.o + lt * c.v * c.dir) % (W + 200) + W + 200) % (W + 200) - 100, y = c.dir > 0 ? gy + 22 : gy + 40;
+      const gr = g.createLinearGradient(x - c.dir * 90, 0, x, 0);
+      const col = c.dir > 0 ? '255,70,70' : '255,240,210';
+      gr.addColorStop(0, `rgba(${col},0)`); gr.addColorStop(1, `rgba(${col},.9)`);
+      g.fillStyle = gr; g.fillRect(Math.min(x, x - c.dir * 90), y, 90, 3);
+    }
+  }
+
+  // Scene: rocket launch
+  function sRocket(lt) {
+    const shake = lt > 2 && lt < 6 ? Math.sin(lt * 70) * 2.5 * (1 - (lt - 2) / 4) : 0;
+    g.save(); g.translate(shake, shake * 0.6);
+    const p = clamp01(lt / 10);
+    sky([[0, mix('#0b1236', '#03061a', p)], [0.6, '#3a2d6a'], [1, '#ff9a5a']], GROUND);
+    stars(lt, 0.3 + p * 0.5);
+    g.fillStyle = '#1d2a44'; g.fillRect(-10, GROUND - 4, W + 20, 10);
+    g.fillStyle = '#0c1016'; g.fillRect(-10, GROUND + 6, W + 20, H - GROUND);
+    // Launch tower
+    g.strokeStyle = '#3a4150'; g.lineWidth = 3;
+    const tx = 560, top = GROUND - 330;
+    g.beginPath(); g.moveTo(tx, GROUND); g.lineTo(tx, top); g.moveTo(tx + 40, GROUND); g.lineTo(tx + 40, top);
+    for (let y = GROUND; y > top; y -= 30) { g.moveTo(tx, y); g.lineTo(tx + 40, y - 30); g.moveTo(tx + 40, y); g.lineTo(tx, y - 30); }
+    g.moveTo(tx + 40, top + 60); g.lineTo(tx + 80, top + 60);
+    g.stroke();
+    g.fillStyle = '#ff4a4a'; circle(tx + 20, top - 6, 3 + Math.sin(lt * 5));
+    // Rocket
+    const by = rocketBottom(lt), rx = 660;
+    if (lt > 2) {
+      const fl = 70 + Math.sin(lt * 40) * 12 + Math.min(80, Math.max(0, lt - 2.5) * 30);
+      glow(rx, by + 30, 160, '255,170,80', 0.55);
+      const fg = g.createLinearGradient(0, by, 0, by + fl);
+      fg.addColorStop(0, '#ffffff'); fg.addColorStop(0.3, '#ffe38a'); fg.addColorStop(1, 'rgba(255,110,40,0)');
+      g.fillStyle = fg;
+      g.beginPath(); g.moveTo(rx - 14, by); g.quadraticCurveTo(rx, by + fl * 1.2, rx + 14, by); g.fill();
+    }
+    const bg = g.createLinearGradient(rx - 18, 0, rx + 18, 0);
+    bg.addColorStop(0, '#9aa3b5'); bg.addColorStop(0.4, '#ffffff'); bg.addColorStop(1, '#b7bfcd');
+    g.fillStyle = bg; g.fillRect(rx - 18, by - 190, 36, 190);
+    g.fillStyle = '#d8dde6'; poly([rx - 18, by - 190, rx + 18, by - 190, rx, by - 250]);
+    g.fillStyle = '#b21f35'; poly([rx - 18, by - 40, rx - 38, by + 4, rx - 18, by]); poly([rx + 18, by - 40, rx + 38, by + 4, rx + 18, by]);
+    g.fillStyle = '#1b2f6b'; g.fillRect(rx - 18, by - 172, 36, 8);
+    g.fillStyle = '#c8102e'; g.fillRect(rx - 18, by - 160, 36, 4);
+    g.save(); g.translate(rx + 5, by - 80); g.rotate(-Math.PI / 2);
+    text('USA', 0, 0, '400 22px "Alfa Slab One", Georgia, serif', '#1b2f6b', 3);
+    g.restore();
+    for (const s of smoke) {
+      g.globalAlpha = clamp01(s.life / s.max) * 0.35;
+      g.fillStyle = '#d9d6e0'; circle(s.x, s.y, s.r);
+    }
+    g.globalAlpha = 1;
+    g.restore();
+  }
+
+  // Scene: Golden Gate at sunset
+  function sPacific(lt) {
+    const hy = H * 0.64, p = clamp01(lt / 20);
+    sky([[0, '#1d1440'], [0.5, '#8e3b6e'], [0.85, '#f2665a'], [1, '#ffb35c']], hy);
+    stars(lt, p * 0.6);
+    const sx = W * 0.62, sy = hy - 70 + p * 120;
+    glow(sx, sy, 300, '255,170,90', 0.6);
+    g.fillStyle = '#ffd08a'; circle(sx, sy, 58);
+    drawFireworks();
+    g.fillStyle = '#1e1030';
+    g.beginPath(); g.moveTo(0, hy); g.lineTo(0, hy - 90); g.quadraticCurveTo(140, hy - 120, 300, hy); g.fill();
+    g.beginPath(); g.moveTo(W, hy); g.lineTo(W, hy - 70); g.quadraticCurveTo(1120, hy - 110, 980, hy); g.fill();
+    const og = g.createLinearGradient(0, hy, 0, H);
+    og.addColorStop(0, '#6a2e5c'); og.addColorStop(1, '#140a24');
+    g.fillStyle = og; g.fillRect(0, hy, W, H - hy);
+    for (let i = 0; i < 28; i++) {
+      const y = hy + 4 + i * 8, w = (170 - i * 5) * (0.7 + 0.3 * Math.sin(lt * 3 + i));
+      if (w <= 0) break;
+      g.fillStyle = `rgba(255,190,120,${0.5 - i * 0.017})`;
+      g.fillRect(sx - w / 2 + Math.sin(lt * 2 + i) * 8, y, w, 2.5);
+    }
+    // Bridge
+    const x1 = 330, x2 = 930, top = H * 0.17, deck = H * 0.5, c = 2 * (deck - 14) - (top + 6);
+    const col = '#8e2a2c';
+    g.strokeStyle = col; g.fillStyle = col;
+    g.lineWidth = 1.5;
+    g.beginPath();
+    for (let x = x1 + 16; x < x2; x += 16) {
+      const s = (x - x1) / (x2 - x1), y = (1 - s) * (1 - s) * (top + 6) + 2 * (1 - s) * s * c + s * s * (top + 6);
+      g.moveTo(x, y); g.lineTo(x, deck);
+    }
+    for (let x = 16; x < x1; x += 16) { const s = x / x1; g.moveTo(x, deck - 8 - (top + 6 - deck + 8) * s * s); g.lineTo(x, deck); }
+    for (let x = x2 + 16; x < W; x += 16) { const s = (W - x) / (W - x2); g.moveTo(x, deck - 8 - (top + 6 - deck + 8) * s * s); g.lineTo(x, deck); }
+    g.stroke();
+    g.lineWidth = 4;
+    g.beginPath(); g.moveTo(x1, top + 6); g.quadraticCurveTo((x1 + x2) / 2, c, x2, top + 6);
+    g.moveTo(0, deck - 8); g.quadraticCurveTo(x1 * 0.6, deck - 8, x1, top + 6);
+    g.moveTo(W, deck - 8); g.quadraticCurveTo(x2 + (W - x2) * 0.4, deck - 8, x2, top + 6);
+    g.stroke();
+    for (const x of [x1, x2]) {
+      g.fillRect(x - 20, top, 12, hy - top + 10); g.fillRect(x + 8, top, 12, hy - top + 10);
+      for (const y of [top + 4, top + 70, top + 140, deck - 30]) g.fillRect(x - 20, y, 40, 10);
+    }
+    g.fillRect(0, deck, W, 12);
+    g.fillStyle = '#ffd98a';
+    for (let i = 0; i < 6; i++) { const x = ((lt * 90 + i * 230) % (W + 40)) - 20; g.fillRect(x, deck + 3, 5, 3); }
+  }
+
+  const SCENES = [
+    { a: 0,   b: 10,  draw: sIntro,                label: null },
+    { a: 10,  b: 30,  draw: sHarbor,               label: 'New York Harbor',       sub: 'Verse 1' },
+    { a: 30,  b: 50,  draw: lt => sFlag(lt, 1),    label: 'Old Glory',              sub: 'Chorus' },
+    { a: 50,  b: 60,  draw: sPrairie,              label: 'Kansas Wheat Country',   sub: 'Verse 2' },
+    { a: 60,  b: 70,  draw: sMountains,            label: 'The Rocky Mountains',    sub: 'Verse 2' },
+    { a: 70,  b: 90,  draw: lt => sFlag(lt, 2),    label: 'Washington, D.C.',       sub: 'Chorus' },
+    { a: 90,  b: 100, draw: sCity,                 label: 'New York City',          sub: 'Bridge' },
+    { a: 100, b: 110, draw: sRocket,               label: 'Cape Canaveral, Florida', sub: 'Bridge' },
+    { a: 110, b: 130, draw: sPacific,              label: 'Golden Gate, San Francisco', sub: 'Final Chorus' },
+    { a: 130, b: 140.5, draw: lt => sFlag(lt, 3),  label: null },
+  ];
+  const FADE = 0.8;
+
+  function lowerThird(sc, lt) {
+    if (!sc.label || lt < 0.5 || lt > 5.5) return;
+    const a = Math.min(clamp01((lt - 0.5) / 0.5), clamp01((5.5 - lt) / 0.6));
+    g.globalAlpha = a;
+    g.fillStyle = 'rgba(5,9,24,.55)'; g.fillRect(40, 40, 22 + measure(sc.label), 64);
+    g.fillStyle = '#d8283f'; g.fillRect(40, 40, 5, 64);
+    text(sc.sub.toUpperCase(), 58, 64, '500 13px "IBM Plex Mono", monospace', '#f0bf4c', 3, 'left');
+    text(sc.label.toUpperCase(), 58, 92, '800 22px "Libre Franklin", Arial, sans-serif', '#ffffff', 2, 'left');
+    g.globalAlpha = 1;
+  }
+  function measure(str) {
+    g.font = '800 22px "Libre Franklin", Arial, sans-serif';
+    if ('letterSpacing' in g) g.letterSpacing = '2px';
+    const w = g.measureText(str.toUpperCase()).width;
+    if ('letterSpacing' in g) g.letterSpacing = '0px';
+    return Math.max(w, 180) + 16;
+  }
+
+  function render(t) {
+    let i = SCENES.findIndex(s => t >= s.a && t < s.b);
+    if (i < 0) i = SCENES.length - 1;
+    const sc = SCENES[i], lt = t - sc.a;
+    if (i > 0 && lt < FADE) {
+      const prev = SCENES[i - 1];
+      g = main; prev.draw(t - prev.a);
+      g = bufCtx; g.setTransform(1, 0, 0, 1, 0, 0); sc.draw(lt);
+      main.globalAlpha = lt / FADE; main.drawImage(buf, 0, 0); main.globalAlpha = 1;
+    } else {
+      g = main; sc.draw(lt);
+    }
+    g = main;
+    lowerThird(sc, lt);
+    // Final fade to black
+    if (t > TOTAL - 1.5) { main.fillStyle = `rgba(0,0,0,${clamp01((t - (TOTAL - 1.5)) / 1.5)})`; main.fillRect(0, 0, W, H); }
+  }
+
+  // ───────────────────────── UI ─────────────────────────
+  const $ = id => document.getElementById(id);
+  const fmt = s => { s = Math.max(0, Math.floor(s + 0.001)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  const PLAY = 'M6 4l14 8-14 8z', PAUSE = 'M6 4h4v16H6zM14 4h4v16h-4z';
+
+  const chapBox = $('chapters'), chapBtns = [];
+  SECTIONS.forEach(sec => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chap';
+    b.innerHTML = `<span>${sec.name}</span><small>${fmt(sec.start)}</small>`;
+    b.addEventListener('click', () => seek(sec.start, true));
+    chapBox.appendChild(b); chapBtns.push(b);
+  });
+  const track = $('track');
+  SECTIONS.slice(1).forEach(sec => {
+    const k = document.createElement('div'); k.className = 'tick'; k.style.left = (sec.start / TOTAL * 100) + '%'; track.appendChild(k);
+  });
+  const sheet = $('sheet'), lineBtns = [];
+  let li = 0;
+  STANZAS.forEach(st => {
+    const div = document.createElement('div'); div.className = 'stanza';
+    div.innerHTML = `<h3>${st.name}<span>${fmt(st.t)}</span></h3>`;
+    st.lines.forEach(() => {
+      const L = LINES[li++];
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'line'; b.textContent = L.text;
+      b.addEventListener('click', () => seek(L.t, true));
+      div.appendChild(b); lineBtns.push(b);
+    });
+    sheet.appendChild(div);
+  });
+
+  function syncButtons() {
+    $('ppIcon').setAttribute('d', playing ? PAUSE : PLAY);
+    $('pp').setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    $('bigPlay').hidden = playing;
+    $('bigLabel').textContent = offset >= TOTAL - 0.05 ? 'Watch again' : offset > 0 ? 'Resume' : 'Play with sound on';
+  }
+  $('bigPlay').addEventListener('click', play);
+  $('pp').addEventListener('click', toggle);
+  track.addEventListener('pointerdown', e => {
+    const r = track.getBoundingClientRect();
+    seek(clamp01((e.clientX - r.left) / r.width) * TOTAL, false);
+  });
+  track.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') { seek(songPos() + 5); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { seek(songPos() - 5); e.preventDefault(); }
+  });
+  document.addEventListener('keydown', e => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'button' || tag === 'input') return;
+    if (e.key === ' ') { toggle(); e.preventDefault(); }
+    else if (e.target === track) return;
+    else if (e.key === 'ArrowRight') seek(songPos() + 5);
+    else if (e.key === 'ArrowLeft') seek(songPos() - 5);
+  });
+
+  const lyricEl = $('lyric');
+  let lastT = 0, curLine = -2, curChap = -1;
+  function frame() {
+    let t = playing ? songPos() : offset;
+    if (playing && t >= TOTAL) { pause(); offset = TOTAL; t = TOTAL; syncButtons(); }
+    const dt = playing ? Math.min(0.1, Math.max(0, t - lastT)) : 0;
+    lastT = t;
+    updateParticles(t, dt);
+    render(Math.min(t, TOTAL - 0.001));
+
+    $('time').textContent = `${fmt(t)} / ${fmt(TOTAL)}`;
+    $('fill').style.width = (t / TOTAL * 100) + '%';
+    track.setAttribute('aria-valuenow', Math.round(t));
+    track.setAttribute('aria-valuetext', fmt(t));
+
+    const ci = SECTIONS.findIndex(s => t >= s.start && t < s.start + s.bars * BAR);
+    if (ci !== curChap) { chapBtns.forEach((b, i) => b.classList.toggle('on', i === ci)); curChap = ci; }
+    const n = LINES.findIndex(L => t >= L.t && t < L.t + L.dur);
+    if (n !== curLine) {
+      lineBtns.forEach((b, i) => b.classList.toggle('on', i === n));
+      lyricEl.textContent = n >= 0 ? LINES[n].text : '';
+      curLine = n;
+    }
+    if (n >= 0) lyricEl.style.setProperty('--p', (clamp01((t - LINES[n].t) / (LINES[n].dur * 0.8)) * 100).toFixed(1) + '%');
+    requestAnimationFrame(frame);
+  }
+  syncButtons();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
