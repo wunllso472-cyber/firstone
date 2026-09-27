@@ -148,14 +148,7 @@
         </g>
 
         <!-- First-person: left arm and paw (mirrored for the right) -->
-        <g id="fArmL">
-          <path d="M20,480 Q70,450 118,432" fill="none" stroke="#e8913a" stroke-width="48" stroke-linecap="round"/>
-          <path d="M52,478 l16,-24 M78,468 l14,-22 M100,456 l10,-18" stroke="#b8641f" stroke-width="6" stroke-linecap="round"/>
-          <g transform="translate(124,430) rotate(-32)">
-            <ellipse rx="32" ry="23" fill="#f3a95b"/>
-            <path d="M-12,-20 Q-10,-8 -12,2 M2,-23 Q4,-10 2,0 M16,-19 Q17,-8 15,2" stroke="#c9772c" stroke-width="3" fill="none" stroke-linecap="round"/>
-          </g>
-        </g>
+        <g id="fArmL"></g>
       </defs>
 
       <!-- ============ SIDE VIEW ============ -->
@@ -182,8 +175,6 @@
             <g class="rearSpin"><use href="#rearSpokes"/></g>
             <circle r="4" fill="#b83232"/>
           </g>
-          <!-- far arm -->
-          <path d="M414,270 Q423,275 428,266" fill="none" stroke="#c9772c" stroke-width="8" stroke-linecap="round"/>
           <g id="sFarLeg"></g>
           <!-- frame -->
           <path d="M335,360 L395,350 L443,293" fill="none" stroke="#d23c3c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
@@ -199,9 +190,9 @@
           </g>
           <!-- fork, stem, handlebar -->
           <path d="M452,346 L442,292" stroke="#d23c3c" stroke-width="6" stroke-linecap="round"/>
-          <path d="M442,292 L446,267" stroke="#b83232" stroke-width="8" stroke-linecap="round"/>
-          <path d="M446,267 L446,263 L436,262" stroke="#9aa0a6" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M437,262 L428,263" stroke="#222" stroke-width="6" stroke-linecap="round"/>
+          <path d="M442,292 L449,270" stroke="#b83232" stroke-width="8" stroke-linecap="round"/>
+          <path d="M452,265 L449,268 L447,270" stroke="#9aa0a6" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="452" cy="265" r="4" fill="#151515"/>
           <!-- rear deck + near rear wheel -->
           <path d="M314,351 H358" stroke="#8e8e8e" stroke-width="5" stroke-linecap="round"/>
           <g transform="translate(335,360)">
@@ -214,6 +205,7 @@
           <path id="sFlag" fill="#ffb300"/>
           <!-- seat -->
           <ellipse cx="390" cy="319" rx="17" ry="5" fill="#222"/>
+          <g id="sFarArm"></g>
 
           <g id="sRider">
             <path id="sTail" fill="none" stroke="#e8913a" stroke-width="11" stroke-linecap="round"/>
@@ -239,10 +231,8 @@
             <path d="M453,240 L458,241 L455,245Z" fill="#e8757a"/>
             <path d="M455,245 q-2,4 -6,3" stroke="#6b3b2a" stroke-width="1.3" fill="none" stroke-linecap="round"/>
             <path d="M452,247 L474,242 M452,249 L475,250 M451,251 L471,257" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
-            <!-- near arm -->
-            <path d="M416,272 Q427,278 432,266" fill="none" stroke="#e8913a" stroke-width="9" stroke-linecap="round"/>
-            <ellipse cx="433" cy="263" rx="5.5" ry="4.5" fill="#f3a95b"/>
           </g>
+          <g id="sNearArm"></g>
           <g id="sNearLeg"></g>
         </g>
         <g id="sFore"></g>
@@ -267,7 +257,7 @@
         <!-- camera behind the cat -->
         <g id="behindRig">
           <ellipse cx="400" cy="437" rx="135" ry="12" fill="#000" opacity=".22"/>
-          <g id="bRoll">
+          <g>
             <rect x="391" y="322" width="18" height="62" rx="9" fill="#2b2b2b"/>
             <g id="bLegs"></g>
             <path d="M400,398 L400,335" stroke="#d23c3c" stroke-width="12" stroke-linecap="round"/>
@@ -282,18 +272,17 @@
             <path d="M476,392 L488,148" stroke="#6a6a6a" stroke-width="3"/>
             <path id="bFlag" fill="#ffb300"/>
             <ellipse cx="400" cy="338" rx="40" ry="9" fill="#222"/>
+            <g id="bBar"></g>
+            <g class="bSway">
             <!-- body from behind -->
             <path d="M343,342 C333,300 350,256 400,249 C450,256 467,300 457,342 Z" fill="#e8913a"/>
             <path d="M366,279 Q400,269 434,279 M359,301 Q400,289 441,301 M357,322 Q400,310 443,322" stroke="#b8641f" stroke-width="5" fill="none" stroke-linecap="round"/>
             <path id="bTail" fill="none" stroke="#e8913a" stroke-width="15" stroke-linecap="round"/>
             <path id="bTailTip" fill="none" stroke="#b8641f" stroke-width="15" stroke-linecap="round" pathLength="100" stroke-dasharray="0 78 22"/>
-            <!-- arms to handlebar grips -->
-            <rect x="302" y="272" width="22" height="10" rx="4" fill="#222"/>
-            <rect x="476" y="272" width="22" height="10" rx="4" fill="#222"/>
-            <path d="M362,262 Q336,262 322,276" fill="none" stroke="#e8913a" stroke-width="16" stroke-linecap="round"/>
-            <path d="M438,262 Q464,262 478,276" fill="none" stroke="#e8913a" stroke-width="16" stroke-linecap="round"/>
-            <ellipse cx="320" cy="277" rx="11" ry="9" fill="#f3a95b"/>
-            <ellipse cx="480" cy="277" rx="11" ry="9" fill="#f3a95b"/>
+            </g>
+            <!-- grips, arms and paws are drawn per frame -->
+            <g id="bArms"></g>
+            <g class="bSway">
             <!-- scarf -->
             <path id="bScarf" fill="#d6322f"/>
             <path d="M366,252 Q400,265 434,252 L434,238 Q400,251 366,238Z" fill="#d6322f"/>
@@ -305,6 +294,7 @@
             <circle cx="400" cy="210" r="44" fill="#e8913a"/>
             <path d="M385,172 Q389,184 386,197 M400,168 L400,196 M415,172 Q411,184 414,197" stroke="#b8641f" stroke-width="5" fill="none" stroke-linecap="round"/>
             <path d="M358,226 L326,220 M358,232 L324,236 M442,226 L474,220 M442,232 L476,236" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+            </g>
           </g>
         </g>
 
@@ -317,8 +307,6 @@
             <rect x="392" y="366" width="16" height="24" fill="#aab0b6"/>
             <path d="M128,434 C210,374 320,374 400,374 C480,374 590,374 672,434" fill="none" stroke="#7d848b" stroke-width="17" stroke-linecap="round"/>
             <path d="M140,423 C215,370 320,369 400,369 C480,369 585,370 660,423" fill="none" stroke="#e3e7eb" stroke-width="4" stroke-linecap="round" opacity=".8"/>
-            <path d="M138,427 L104,452" stroke="#1f1f1f" stroke-width="28" stroke-linecap="round"/>
-            <path d="M662,427 L696,452" stroke="#1f1f1f" stroke-width="28" stroke-linecap="round"/>
             <circle cx="470" cy="362" r="14" fill="#cfd4d9"/>
             <circle cx="466" cy="358" r="5" fill="#fff" opacity=".8"/>
             <path d="M482,358 l10,-6" stroke="#8a9096" stroke-width="4" stroke-linecap="round"/>
@@ -505,13 +493,86 @@ tufts.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
     const b = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + D * D - L2 * L2) / (2 * L1 * D))));
     return [hx + L1 * Math.cos(a - b), hy + L1 * Math.sin(a - b)];
   }
+  // two-bone solve that picks the joint position nearest `hint` (elbow down, elbow out, ...)
+  function ikHint(h, f, L1, L2, hint) {
+    const dx = f[0] - h[0], dy = f[1] - h[1];
+    const D = Math.max(Math.abs(L1 - L2) + 0.5, Math.min(Math.hypot(dx, dy), L1 + L2 - 0.5));
+    const a = Math.atan2(dy, dx);
+    const b = Math.acos(Math.max(-1, Math.min(1, (L1 * L1 + D * D - L2 * L2) / (2 * L1 * D))));
+    const j1 = [h[0] + L1 * Math.cos(a - b), h[1] + L1 * Math.sin(a - b)];
+    const j2 = [h[0] + L1 * Math.cos(a + b), h[1] + L1 * Math.sin(a + b)];
+    const d2 = p => (p[0] - hint[0]) ** 2 + (p[1] - hint[1]) ** 2;
+    return d2(j1) < d2(j2) ? j1 : j2;
+  }
+  const pt = p => f1(p[0]) + ',' + f1(p[1]);
+  // maps a point from a translate(c) rotate(deg) scale(flip,1) frame to screen space
+  function basis(c, deg, flip = 1) {
+    const r = deg * Math.PI / 180, co = Math.cos(r), si = Math.sin(r);
+    const map = ([x, y]) => [c[0] + flip * x * co - y * si, c[1] + flip * x * si + y * co];
+    map.attr = `translate(${pt(c)}) rotate(${deg.toFixed(2)})${flip < 0 ? ' scale(-1,1)' : ''}`;
+    return map;
+  }
+  // upper arm + forearm with round joints and tabby bands across them
+  function armMarkup(S, E, Wr, ws, we, fur, band) {
+    let m = `<path d="M${pt(S)}L${pt(E)}" stroke="${fur}" stroke-width="${ws}" stroke-linecap="round"/>` +
+            `<path d="M${pt(E)}L${pt(Wr)}" stroke="${fur}" stroke-width="${we}" stroke-linecap="round"/>`;
+    const bands = (A, B, w, ts) => {
+      const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L, h = w * 0.33;
+      for (const t of ts) {
+        const c = [A[0] + dx * t, A[1] + dy * t];
+        m += `<path d="M${pt([c[0] - nx * h, c[1] - ny * h])}L${pt([c[0] + nx * h, c[1] + ny * h])}" stroke="${band}" stroke-width="${f1(w * 0.2)}" stroke-linecap="round"/>`;
+      }
+    };
+    bands(S, E, ws, [0.5]);
+    bands(E, Wr, we, [0.35, 0.68]);
+    return m;
+  }
+  const FUR = { near: ['#e8913a', '#f3a95b', '#b8641f', '#c9772c'], far: ['#c9772c', '#d98c45', '#9a5520', '#a8612a'] };
+
+  // Side view: the grip points at the camera, so the paw curls round its end like a "C".
+  function sidePaw(G, wristAng, near) {
+    const [, paw, , crease] = near ? FUR.near : FUR.far;
+    const R = 8, polar = (deg, r) => [G[0] + r * Math.cos(deg * Math.PI / 180), G[1] + r * Math.sin(deg * Math.PI / 180)];
+    const a0 = wristAng * 180 / Math.PI, a1 = a0 + 288;
+    let m = `<path d="M${pt(polar(a0, R))}A${R},${R} 0 1 1 ${pt(polar(a1, R))}" fill="none" stroke="${paw}" stroke-width="8.5" stroke-linecap="round"/>`;
+    for (const a of [-58, -18, 22, 60]) { const c = polar(a, 10.4); m += `<circle cx="${f1(c[0])}" cy="${f1(c[1])}" r="3.3" fill="${paw}"/>`; }
+    for (const a of [-38, 2, 41]) m += `<path d="M${pt(polar(a, 9.6))}L${pt(polar(a, 12.2))}" stroke="${crease}" stroke-width=".9" stroke-linecap="round" opacity=".85"/>`;
+    if (near) {
+      const b = polar(92, 6.6);
+      m += `<ellipse cx="${f1(b[0])}" cy="${f1(b[1])}" rx="2" ry="1.4" fill="#f4a7a0"/>`;
+    }
+    m += `<circle cx="${G[0]}" cy="${G[1]}" r="${near ? 4.4 : 3.8}" fill="#161616"/>`;
+    if (near) m += `<circle cx="${G[0]}" cy="${G[1]}" r="2.4" fill="#2e2e2e"/><circle cx="${G[0] - 1.3}" cy="${G[1] - 1.4}" r="0.9" fill="#6a6a6a"/>`;
+    return m;
+  }
+  function sideArm(S, G, near) {
+    const [fur, , band] = near ? FUR.near : FUR.far;
+    const wa = Math.atan2(S[1] - G[1], S[0] - G[0]);
+    const Wr = [G[0] + 8 * Math.cos(wa), G[1] + 8 * Math.sin(wa)];
+    const E = ikHint(S, Wr, 14, 13, [S[0] + 8, S[1] + 14]);          // elbow tucked down
+    return armMarkup(S, E, Wr, near ? 10 : 9, near ? 8 : 7, fur, band) + sidePaw(G, wa, near);
+  }
+
+  // Behind view: grip runs left-right; we see the back of the paw over the top of it.
+  // Local frame: +x points inward toward the stem, the outer bar end is at -x.
+  const B_GRIP = `<rect x="-18" y="-5.5" width="36" height="11" rx="5.5" fill="#1f1f1f"/>` +
+    `<path d="M-14,-4.5V4.5M-10,-4.5V4.5M-6,-4.5V4.5M6,-4.5V4.5M10,-4.5V4.5M14,-4.5V4.5" stroke="#2d2d2d" stroke-width="1.4"/>` +
+    `<path d="M-15,-2.8H15" stroke="#3d3d3d" stroke-width="1.8" stroke-linecap="round"/>` +
+    `<ellipse cx="-18.5" cy="0" rx="2.6" ry="6.2" fill="#3a3a3a"/>`;
+  const B_PAW = `<ellipse cx="0" cy="4.5" rx="12.5" ry="3.5" fill="#000" opacity=".28"/>` +
+    `<path d="M-11,5 C-13,-2 -11,-7 -8,-8 L8,-8 C11,-7 13,-2 11,5 C6,8.5 -6,8.5 -11,5Z" fill="#f3a95b"/>` +
+    `<circle cx="-7.3" cy="-7.6" r="3.5" fill="#f5b06a"/><circle cx="-2.45" cy="-9.2" r="3.6" fill="#f5b06a"/>` +
+    `<circle cx="2.45" cy="-9.2" r="3.6" fill="#f5b06a"/><circle cx="7.3" cy="-7.6" r="3.5" fill="#f5b06a"/>` +
+    `<path d="M-4.9,-9.6 L-4.7,-5.4 M0,-11 V-6 M4.9,-9.6 L4.7,-5.4" stroke="#c9772c" stroke-width="1.1" stroke-linecap="round"/>` +
+    `<path d="M-7,0 Q0,-2.2 7,0 M-6,3.6 Q0,1.8 6,3.6" stroke="#dc8c40" stroke-width="1.5" fill="none" stroke-linecap="round"/>` +
+    `<ellipse cx="10.2" cy="5" rx="2.6" ry="2.1" fill="#eea055"/>`;
   const tx = (el, x, y = 0) => el.setAttribute('transform', `translate(${f1(x)},${f1(y)})`);
 
   // ---------- Side view ----------
   const sEls = {
     clouds: $('sClouds'), far: $('sFar'), mid: $('sMid'), hill: $('sHill'), fence: $('sFence'),
     path: $('sPath'), fore: $('sFore'), front: $('sFrontSpin'), rear: document.querySelectorAll('.rearSpin'),
-    far_leg: $('sFarLeg'), near_leg: $('sNearLeg'), rider: $('sRider'), tail: $('sTail'), tailTip: $('sTailTip'),
+    far_arm: $('sFarArm'), near_arm: $('sNearArm'), far_leg: $('sFarLeg'), near_leg: $('sNearLeg'), rider: $('sRider'), tail: $('sTail'), tailTip: $('sTailTip'),
     scarf: $('sScarf'), flag: $('sFlag')
   };
   function legMarkup(hip, theta, near) {
@@ -542,6 +603,8 @@ tufts.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
     const hip = [390, 306 + bob];
     sEls.far_leg.innerHTML = legMarkup(hip, theta + Math.PI, false);
     sEls.near_leg.innerHTML = legMarkup(hip, theta, true);
+    sEls.far_arm.innerHTML = sideArm([419, 268 + bob], [452, 265], false);
+    sEls.near_arm.innerHTML = sideArm([415, 271 + bob], [447, 270], true);
 
     const sw = 6 * Math.sin(t * 2.4);
     const tail = `M376,301 C352,305 ${f1(338 + sw)},288 ${f1(344 + sw)},266 S${f1(348 + sw * 1.6)},240 ${f1(338 + sw * 2)},232`;
@@ -556,11 +619,48 @@ tufts.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
     sEls.flag.setAttribute('d', ribbon(flag, 20, 1));
   }
 
+  // ---------- First-person paws: looking down at the backs of the paws wrapped over the grips ----------
+  const F_GRIP = basis([121, 440], -36);        // left grip; local +x runs inward along the bar
+  const F_PLUG = F_GRIP([-33, 0]);
+  {
+    let m = `<g transform="${F_GRIP.attr}">` +
+      `<rect x="-30" y="-12.5" width="60" height="25" rx="12" fill="#1c1c1c"/>` +
+      Array.from({ length: 12 }, (_, i) => `<path d="M${-26 + i * 4.7},-11V11" stroke="#2b2b2b" stroke-width="1.8"/>`).join('') +
+      `<path d="M-25,-6.5H25" stroke="#404040" stroke-width="3" stroke-linecap="round"/>` +
+      `<ellipse cx="-31" cy="0" rx="5" ry="13" fill="#454545"/><ellipse cx="-32.5" cy="0" rx="2.4" ry="7" fill="#7a7a7a"/>` +
+      `</g>`;
+    // forearm comes up from below the frame, meeting the wrist along the paw's own axis
+    const PAW = 1.18;                            // seen up close, the paw reads bigger than the grip
+    const Wr = F_GRIP([0, 20 * PAW]), dir = F_GRIP([0, 80]);
+    const ctrl = [dir[0] - (Wr[0] - dir[0]) * 0.1, dir[1] + 10], start = [236, 560];
+    const pts = [];
+    for (let i = 0; i <= 12; i++) {
+      const u = i / 12, v = 1 - u;
+      pts.push([v * v * start[0] + 2 * u * v * ctrl[0] + u * u * Wr[0], v * v * start[1] + 2 * u * v * ctrl[1] + u * u * Wr[1]]);
+    }
+    m += `<path d="${ribbon(pts, 60, 36)}" fill="#e8913a"/>`;
+    for (const i of [6, 8, 10]) {
+      const a = pts[i - 1], b = pts[i + 1], L = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L, w = 60 - 24 * i / 12, h = w * 0.3, c = pts[i];
+      m += `<path d="M${pt([c[0] - nx * h, c[1] - ny * h])}Q${pt([c[0] + (b[0] - a[0]) / L * 3, c[1] + (b[1] - a[1]) / L * 3])} ${pt([c[0] + nx * h, c[1] + ny * h])}" stroke="#b8641f" stroke-width="${f1(w * 0.16)}" fill="none" stroke-linecap="round"/>`;
+    }
+    m += `<g transform="${F_GRIP.attr} scale(${PAW})">` +
+      `<ellipse cx="0" cy="-3" rx="21" ry="12" fill="#000" opacity=".3"/>` +
+      `<path d="M-18,24 C-20,8 -19,-6 -15,-10 L13,-10 C17,-6 18,8 16,24Z" fill="#f3a95b"/>` +
+      `<path d="M-13,6 Q-1,2 11,6 M-12,14 Q-1,10 10,14" stroke="#de9044" stroke-width="2.6" fill="none" stroke-linecap="round"/>` +
+      [-12, -4, 4, 12].map(x => `<circle cx="${x}" cy="${Math.abs(x) > 8 ? -10.5 : -12}" r="5.6" fill="#f6b56e"/>`).join('') +
+      `<path d="M-8,-15.5 L-8,-7 M0,-16.5 V-7.5 M8,-15.5 L8,-7" stroke="#c9772c" stroke-width="1.7" stroke-linecap="round"/>` +
+      [-12, -4, 4, 12].map(x => `<path d="M${x - 3.5},${Math.abs(x) > 8 ? -14 : -15.5} Q${x},${Math.abs(x) > 8 ? -16.8 : -18.3} ${x + 3.5},${Math.abs(x) > 8 ? -14 : -15.5}" stroke="#d98c45" stroke-width="1.2" fill="none" stroke-linecap="round"/>`).join('') +
+      `<ellipse cx="16.5" cy="10" rx="3.4" ry="4.4" fill="#eea055"/>` +
+      `</g>`;
+    $('fArmL').innerHTML = m;
+  }
+
   // ---------- Perspective views ----------
   const pEls = {
     world: $('pWorld'), ground: $('pGround'), objects: $('pObjects'), grass: $('pGrass'), haze: $('pHaze'),
     far: $('pFar'), mid: $('pMid'), hill: $('pHill'), clouds: $('pClouds'),
-    behind: $('behindRig'), fpv: $('fpvRig'), bRoll: $('bRoll'), bLegs: $('bLegs'), bTail: $('bTail'), bTailTip: $('bTailTip'),
+    behind: $('behindRig'), fpv: $('fpvRig'), bSway: document.querySelectorAll('.bSway'), bBar: $('bBar'), bArms: $('bArms'), bLegs: $('bLegs'), bTail: $('bTail'), bTailTip: $('bTailTip'),
     bScarf: $('bScarf'), bFlag: $('bFlag'), bTreadL: $('bTreadL'), bTreadR: $('bTreadR'),
     fBar: $('fBar'), fTread: $('fTread'), fStreamL: $('fStreamL'), fStreamR: $('fStreamR'), fWhiskers: $('fWhiskers')
   };
@@ -649,18 +749,36 @@ tufts.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
   }
 
   function renderBehindRider(theta, ph) {
-    const bob = -1.6 * Math.abs(Math.sin(theta));
-    pEls.bRoll.setAttribute('transform', `translate(0,${f1(bob)}) rotate(${(1.6 * Math.sin(theta)).toFixed(2)},400,436)`);
+    // the tricycle stays level; the cat rocks on the seat as it pedals
+    const bob = -1.6 * Math.abs(Math.sin(theta)), roll = 1.8 * Math.sin(theta);
+    const sway = basis([400, 340 + bob], roll);
+    const swayAttr = `translate(0,${f1(bob)}) rotate(${roll.toFixed(2)},400,340)`;
+    pEls.bSway.forEach(e => e.setAttribute('transform', swayAttr));
+    const body = p => sway([p[0] - 400, p[1] - 340]);
     const off = f1(-mod(dist * 0.9, 12));
     pEls.bTreadL.setAttribute('stroke-dashoffset', off);
     pEls.bTreadR.setAttribute('stroke-dashoffset', off);
 
     const fL = 362 + 9 * Math.sin(theta), fR = 362 - 9 * Math.sin(theta);
     const leg = (hx, fx, fy) =>
-      `<path d="M${hx},330 L${fx},${f1(fy)}" stroke="#e8913a" stroke-width="16" stroke-linecap="round"/>` +
+      `<path d="M${pt(body([hx, 330]))} L${fx},${f1(fy)}" stroke="#e8913a" stroke-width="16" stroke-linecap="round"/>` +
       `<rect x="${fx - 11}" y="${f1(fy + 4)}" width="22" height="5" rx="2" fill="#555"/>` +
       `<ellipse cx="${fx}" cy="${f1(fy)}" rx="10" ry="7" fill="#f3a95b"/>`;
     pEls.bLegs.innerHTML = leg(370, 377, fL) + leg(430, 423, fR);
+
+    // handlebar with a small steering wobble; grips sweep back so outer ends sit lower
+    const steer = 1.3 * Math.sin(theta + 0.6);
+    const gL = basis([319, 282 + steer], -6), gR = basis([481, 282 - steer], 6, -1);
+    pEls.bBar.innerHTML =
+      `<path d="M${pt(gL([17, 0]))}Q370,287 400,289Q430,287 ${pt(gR([17, 0]))}" fill="none" stroke="#8f969d" stroke-width="8" stroke-linecap="round"/>` +
+      `<path d="M${pt(gL([17, -2]))}Q370,285 400,287Q430,285 ${pt(gR([17, -2]))}" fill="none" stroke="#dfe3e7" stroke-width="2.2" stroke-linecap="round"/>`;
+    let arms = `<g transform="${gL.attr}">${B_GRIP}</g><g transform="${gR.attr}">${B_GRIP}</g>`;
+    for (const [g, sh, hint] of [[gL, [366, 262], [346, 296]], [gR, [434, 262], [454, 296]]]) {
+      const S = body(sh), Wr = g([2.5, 6.5]);
+      arms += armMarkup(S, ikHint(S, Wr, 26, 24, hint), Wr, 17, 14, '#e8913a', '#b8641f');
+    }
+    arms += `<g transform="${gL.attr}">${B_PAW}</g><g transform="${gR.attr}">${B_PAW}</g>`;
+    pEls.bArms.innerHTML = arms;
 
     const sw = 10 * Math.sin(t * 2.2);
     const tail = `M400,336 C446,344 ${f1(470 + sw * .3)},318 ${f1(462 + sw * .6)},286 S${f1(470 + sw)},252 ${f1(488 + sw * 1.4)},240`;
@@ -681,15 +799,15 @@ tufts.map(([x, y, sc, t]) => use(t, x + o, y, sc)).join(''));
     pEls.fTread.setAttribute('stroke-dashoffset', f1(mod(dist * 1.2, 15)));
     pEls.fWhiskers.setAttribute('transform', `translate(0,${f1(bob * 0.5)})`);
     const colors = ['#e94b4b', '#ffcc33', '#3fa7e0'];
-    const streams = (x0, dir) => colors.map((c, j) => {
+    const streams = (x0, y0, dir) => colors.map((c, j) => {
       const pts = [];
       for (let i = 0; i <= 7; i++) {
-        pts.push([x0 + dir * i * (9 + j), 446 + i * (2 + j * 1.6) + 5 * Math.sin(ph * 1.3 - i * 0.8 + j) * i / 7]);
+        pts.push([x0 + dir * i * (9 + j), y0 + i * (2 + j * 1.6) + 5 * Math.sin(ph * 1.3 - i * 0.8 + j) * i / 7]);
       }
       return `<path d="${ribbon(pts, 6, 3)}" fill="${c}"/>`;
     }).join('');
-    pEls.fStreamL.innerHTML = streams(98, -1);
-    pEls.fStreamR.innerHTML = streams(702, 1);
+    pEls.fStreamL.innerHTML = streams(F_PLUG[0], F_PLUG[1], -1);
+    pEls.fStreamR.innerHTML = streams(800 - F_PLUG[0], F_PLUG[1], 1);
   }
 
   // ---------- Loop ----------
