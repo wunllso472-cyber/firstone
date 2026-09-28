@@ -1,0 +1,6 @@
+frames/
+photos/
+*.mp4
+*.wav
+*.log
+p2*.log*
