@@ -24,6 +24,7 @@
     --body: "Libre Franklin", "Franklin Gothic Medium", "Helvetica Neue", Arial, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
   }
+  [hidden] { display: none !important; }
   html, body { background: var(--ink); color: var(--text); }
   body {
     margin: 0;
@@ -144,7 +145,7 @@
   <header class="head">
     <p class="eyebrow">Original song &amp; music video · F major · 96 BPM · 2:20</p>
     <h1>Land of the Wide Horizon <span class="stars">★★★</span></h1>
-    <p class="lede">An anthem for the United States that travels from the Atlantic dawn to the Pacific sunset. Your browser plays the music live, in time with the pictures.</p>
+    <p class="lede">An anthem for the United States that travels from the Atlantic dawn to the Pacific sunset. A synthetic voice sings the melody over a band your browser plays live, in time with the pictures.</p>
   </header>
 
   <section class="player" aria-label="Music video player">
@@ -173,9 +174,39 @@
     <div class="cols" id="sheet"></div>
   </section>
 
-  <p class="note">Words and music are original. Every note is synthesized in real time with the Web Audio API (brass, strings, bells, bass, snare and timpani) and every frame is drawn on a canvas, so nothing here is prerecorded. Click a lyric or a section to jump to it. Keyboard: <b>Space</b> plays and pauses, <b>←</b> / <b>→</b> skip five seconds.</p>
+  <p class="note">Words and music are original. The lead vocal is a synthetic singing voice: a neural text-to-speech voice (Kokoro, “Heart”) retuned note by note onto the melody with the WORLD vocoder, with a harmony part in the final chorus. The band is synthesized live with the Web Audio API and every frame is drawn on a canvas. Click a lyric or a section to jump to it. Keyboard: <b>Space</b> plays and pauses, <b>←</b> / <b>→</b> skip five seconds.</p>
 </main>
 
+<script type="application/json" id="song">
+{"lines":[
+{"sec":"Verse 1","t":10,"dur":5,"text":"When the harbor lights meet the morning tide,","notes":[[0.5,2,"When"],[0.5,3,"the"],[1,4,"har"],[1,4,"-bor"],[1,4,"lights"],[0.5,5,"meet"],[0.5,5,"the"],[1,7,"mor"],[1,5,"-ning"],[1,5,"tide"]]},
+{"sec":"Verse 1","t":15,"dur":5,"text":"And the Lady lifts her torch with pride,","notes":[[0.5,4,"And"],[0.5,4,"the"],[1,4,"La"],[1,2,"-dy"],[0.5,0,"lifts"],[0.5,2,"her"],[1,4,"torch"],[1,6,"with"],[2,4,"pride"]]},
+{"sec":"Verse 1","t":20,"dur":5,"text":"Every tired heart from a distant shore","notes":[[0.5,5,"Ev"],[0.5,5,"-ery"],[1,7,"tired"],[1,5,"heart"],[0.5,5,"from"],[0.5,5,"a"],[1,3,"dis"],[1,5,"-tant"],[2,7,"shore"]]},
+{"sec":"Verse 1","t":25,"dur":5,"text":"Finds a welcome here at the open door.","notes":[[0.5,7,"Finds"],[0.5,6,"a"],[1,4,"wel"],[1,2,"-come"],[0.5,4,"here"],[0.5,4,"at"],[0.5,4,"the"],[0.5,6,"o"],[1,4,"-pen"],[2,1,"door"]]},
+{"sec":"Chorus","t":30,"dur":5,"text":"Oh, America, land of the wide horizon,","notes":[[0.5,4,"Oh"],[0.5,4,"A"],[1,7,"-mer"],[0.5,7,"-i"],[0.5,6,"-ca"],[0.5,4,"land"],[0.5,4,"of"],[0.5,4,"the"],[1,8,"wide"],[0.5,6,"ho"],[1,6,"-ri"],[1,4,"-zon"]]},
+{"sec":"Chorus","t":35,"dur":5,"text":"Fifty stars that burn as one,","notes":[[0.5,5,"Fif"],[0.5,7,"-ty"],[2,9,"stars"],[1,7,"that"],[1.5,7,"burn"],[0.5,5,"as"],[2,3,"one"]]},
+{"sec":"Chorus","t":40,"dur":5,"text":"From the Eastern shore to the Western skyline,","notes":[[0.5,4,"From"],[0.5,4,"the"],[1,7,"East"],[0.5,7,"-ern"],[1,9,"shore"],[0.5,7,"to"],[0.5,7,"the"],[1,10,"West"],[0.5,9,"-ern"],[1,9,"sky"],[1,7,"-line"]]},
+{"sec":"Chorus","t":45,"dur":5,"text":"Home of the brave beneath the sun.","notes":[[1,8,"Home"],[0.5,8,"of"],[0.5,6,"the"],[1.5,8,"brave"],[0.5,6,"be"],[1,4,"-neath"],[0.5,6,"the"],[2.5,7,"sun"]]},
+{"sec":"Verse 2","t":50,"dur":5,"text":"Golden wheat rolls across the plains,","notes":[[1,2,"Gold"],[1,3,"-en"],[1,4,"wheat"],[1,4,"rolls"],[0.5,5,"a"],[1.5,7,"-cross"],[0.5,5,"the"],[1.5,5,"plains"]]},
+{"sec":"Verse 2","t":55,"dur":5,"text":"Barn doors open to the summer rains,","notes":[[1,4,"Barn"],[1,2,"doors"],[0.5,0,"o"],[0.5,2,"-pen"],[0.5,2,"to"],[0.5,2,"the"],[1,4,"sum"],[1,6,"-mer"],[2,4,"rains"]]},
+{"sec":"Verse 2","t":60,"dur":5,"text":"Eagles circle where the Rockies climb,","notes":[[0.5,5,"Ea"],[0.5,5,"-gles"],[1,7,"cir"],[1,5,"-cle"],[0.5,5,"where"],[0.5,5,"the"],[1,3,"Rock"],[1,5,"-ies"],[2,7,"climb"]]},
+{"sec":"Verse 2","t":65,"dur":5,"text":"Rivers carry every dream in time.","notes":[[0.5,7,"Riv"],[0.5,6,"-ers"],[1,4,"car"],[1,2,"-ry"],[0.5,4,"ev"],[0.5,4,"-ery"],[1,6,"dream"],[1,4,"in"],[2,1,"time"]]},
+{"sec":"Chorus","t":70,"dur":5,"text":"Oh, America, land of the wide horizon,","notes":[[0.5,4,"Oh"],[0.5,4,"A"],[1,7,"-mer"],[0.5,7,"-i"],[0.5,6,"-ca"],[0.5,4,"land"],[0.5,4,"of"],[0.5,4,"the"],[1,8,"wide"],[0.5,6,"ho"],[1,6,"-ri"],[1,4,"-zon"]]},
+{"sec":"Chorus","t":75,"dur":5,"text":"Fifty stars that burn as one,","notes":[[0.5,5,"Fif"],[0.5,7,"-ty"],[2,9,"stars"],[1,7,"that"],[1.5,7,"burn"],[0.5,5,"as"],[2,3,"one"]]},
+{"sec":"Chorus","t":80,"dur":5,"text":"From the Eastern shore to the Western skyline,","notes":[[0.5,4,"From"],[0.5,4,"the"],[1,7,"East"],[0.5,7,"-ern"],[1,9,"shore"],[0.5,7,"to"],[0.5,7,"the"],[1,10,"West"],[0.5,9,"-ern"],[1,9,"sky"],[1,7,"-line"]]},
+{"sec":"Chorus","t":85,"dur":5,"text":"Home of the brave beneath the sun.","notes":[[1,8,"Home"],[0.5,8,"of"],[0.5,6,"the"],[1.5,8,"brave"],[0.5,6,"be"],[1,4,"-neath"],[0.5,6,"the"],[2.5,7,"sun"]]},
+{"sec":"Bridge","t":90,"dur":5,"text":"Neon towers light the city night,","notes":[[1,5,"Ne"],[0.5,5,"-on"],[1,7,"tow"],[0.5,5,"-ers"],[1,5,"light"],[0.5,3,"the"],[1,5,"ci"],[0.5,3,"-ty"],[2,5,"night"]]},
+{"sec":"Bridge","t":95,"dur":5,"text":"Engines thunder and the rockets take flight,","notes":[[0.5,4,"En"],[0.5,2,"-gines"],[1,4,"thun"],[0.5,4,"-der"],[0.5,2,"and"],[0.5,2,"the"],[0.5,4,"rock"],[0.5,4,"-ets"],[1,6,"take"],[2.5,8,"flight"]]},
+{"sec":"Bridge","t":100,"dur":5,"text":"Many voices, and one song we share,","notes":[[0.5,9,"Ma"],[0.5,9,"-ny"],[1,7,"voi"],[1,5,"-ces"],[0.5,7,"and"],[0.5,7,"one"],[1.5,7,"song"],[0.5,7,"we"],[2,10,"share"]]},
+{"sec":"Bridge","t":105,"dur":5,"text":"Freedom ringing through the open air.","notes":[[1,8,"Free"],[0.5,6,"-dom"],[1,8,"ring"],[0.5,6,"-ing"],[0.5,6,"through"],[0.5,6,"the"],[0.5,8,"o"],[0.5,8,"-pen"],[3,11,"air"]]},
+{"sec":"Final Chorus","t":110,"dur":5,"text":"Oh, America, land of the wide horizon,","notes":[[0.5,4,"Oh"],[0.5,4,"A"],[1,7,"-mer"],[0.5,7,"-i"],[0.5,6,"-ca"],[0.5,4,"land"],[0.5,4,"of"],[0.5,4,"the"],[1,8,"wide"],[0.5,6,"ho"],[1,6,"-ri"],[1,4,"-zon"]]},
+{"sec":"Final Chorus","t":115,"dur":5,"text":"Fifty stars that burn as one,","notes":[[0.5,5,"Fif"],[0.5,7,"-ty"],[2,9,"stars"],[1,7,"that"],[1.5,7,"burn"],[0.5,5,"as"],[2,3,"one"]]},
+{"sec":"Final Chorus","t":120,"dur":5,"text":"From the Golden Gate to the Liberty skyline,","notes":[[0.5,4,"From"],[0.5,4,"the"],[1,7,"Gold"],[0.5,7,"-en"],[1,9,"Gate"],[0.5,7,"to"],[0.5,7,"the"],[0.5,10,"Lib"],[0.5,10,"-er"],[0.5,9,"-ty"],[1,9,"sky"],[1,7,"-line"]]},
+{"sec":"Final Chorus","t":125,"dur":5,"text":"Home of the brave beneath the sun.","notes":[[1,8,"Home"],[0.5,8,"of"],[0.5,6,"the"],[1.5,8,"brave"],[0.5,6,"be"],[1,4,"-neath"],[0.5,6,"the"],[2.5,7,"sun"]]},
+{"sec":"Outro","t":130,"dur":10,"text":"Land of the free, home of the brave.","notes":[[1,5,"Land"],[0.5,5,"of"],[0.5,5,"the"],[2,5,"free"],[1,4,"home"],[0.5,6,"of"],[0.5,8,"the"],[8,7,"brave"]]}
+]}
+</script>
+<script src="vocals.js"></script>
 <script>
 (() => {
   // ───────────────────────── Song structure ─────────────────────────
@@ -186,41 +217,15 @@
   const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
   const CH = { I: [0, 2, 4], IV: [3, 5, 7], V: [4, 6, 8], vi: [5, 7, 9] };
 
-  // Melodies: one entry per two-bar line, as [scale degree, beats].
-  const MEL = {
-    verse: [
-      [[4,1],[4,1],[5,1],[4,1],[5,1],[7,1],[5,2]],
-      [[4,1],[2,1],[0,1],[2,1],[4,1],[6,1],[4,2]],
-      [[5,1],[5,1],[7,1],[5,1],[3,1],[5,1],[7,2]],
-      [[7,1],[6,1],[4,1],[2,1],[4,2],[1,2]],
-    ],
-    chorus: [
-      [[4,1],[7,2],[7,1],[6,1],[4,1],[6,2]],
-      [[5,1],[7,1],[9,2],[7,1],[5,1],[3,2]],
-      [[4,1],[7,1],[9,1],[7,1],[10,2],[9,1],[7,1]],
-      [[8,1],[8,1],[6,1],[4,1],[7,4]],
-    ],
-    bridge: [
-      [[5,2],[7,1],[5,1],[3,2],[5,2]],
-      [[4,2],[2,1],[4,1],[6,2],[8,2]],
-      [[9,2],[7,1],[5,1],[7,2],[10,2]],
-      [[8,2],[6,1],[8,1],[11,4]],
-    ],
-    outro: [
-      [[5,4],[6,4]],
-      [[7,8]],
-    ],
-  };
-
   const SECTIONS = [
-    { name: 'Intro',        bars: 4, ch: ['I','IV','I','V'],                     mel: null,     style: 'intro'  },
-    { name: 'Verse 1',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   mel: 'verse',  style: 'verse'  },
-    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   mel: 'chorus', style: 'chorus' },
-    { name: 'Verse 2',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   mel: 'verse',  style: 'verse'  },
-    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   mel: 'chorus', style: 'chorus' },
-    { name: 'Bridge',       bars: 8, ch: ['vi','IV','I','V','vi','IV','V','V'],  mel: 'bridge', style: 'bridge' },
-    { name: 'Final Chorus', bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   mel: 'chorus', style: 'final'  },
-    { name: 'Outro',        bars: 4, ch: ['IV','V','I','I'],                     mel: 'outro',  style: 'outro'  },
+    { name: 'Intro',        bars: 4, ch: ['I','IV','I','V'],                     style: 'intro'  },
+    { name: 'Verse 1',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   style: 'verse'  },
+    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   style: 'chorus' },
+    { name: 'Verse 2',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   style: 'verse'  },
+    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   style: 'chorus' },
+    { name: 'Bridge',       bars: 8, ch: ['vi','IV','I','V','vi','IV','V','V'],  style: 'bridge' },
+    { name: 'Final Chorus', bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   style: 'final'  },
+    { name: 'Outro',        bars: 4, ch: ['IV','V','I','I'],                     style: 'outro'  },
   ];
   const BARMAP = [];
   SECTIONS.forEach(sec => {
@@ -229,49 +234,42 @@
   });
   const TOTAL_BARS = BARMAP.length, TOTAL = TOTAL_BARS * BAR; // 56 bars = 140 s
 
-  const CHORUS = [
-    'Oh, America, land of the wide horizon,',
-    'Fifty stars that burn as one,',
-    'From the Eastern shore to the Western skyline,',
-    'Home of the brave beneath the sun.',
-  ];
-  const STANZAS = [
-    { name: 'Verse 1', t: 10, lines: [
-      'When the harbor lights meet the morning tide,',
-      'And the Lady lifts her torch with pride,',
-      'Every tired heart from a distant shore',
-      'Finds a welcome here at the open door.',
-    ]},
-    { name: 'Chorus', t: 30, lines: CHORUS },
-    { name: 'Verse 2', t: 50, lines: [
-      'Golden wheat rolls across the plains,',
-      'Barn doors open to the summer rains,',
-      'Eagles circle where the Rockies climb,',
-      'Rivers carry every dream in time.',
-    ]},
-    { name: 'Chorus', t: 70, lines: CHORUS },
-    { name: 'Bridge', t: 90, lines: [
-      'Neon towers light the city night,',
-      'Engines thunder and the rockets take flight,',
-      'Many voices, and one song we share,',
-      'Freedom ringing through the open air.',
-    ]},
-    { name: 'Final Chorus', t: 110, lines: [
-      'Oh, America, land of the wide horizon,',
-      'Fifty stars that burn as one,',
-      'From the Golden Gate to the Liberty skyline,',
-      'Home of the brave beneath the sun.',
-    ]},
-    { name: 'Outro', t: 130, lines: ['Land of the free, home of the brave.'], dur: 10 },
-  ];
-  const LINES = [];
-  STANZAS.forEach(s => s.lines.forEach((text, i) => {
-    const dur = s.dur || 5;
-    LINES.push({ text, t: s.t + i * dur, dur });
-  }));
+  // Every sung syllable as [beats, scale degree, syllable]; "-" continues a word.
+  // make_vocals.py reads this same block to render the singing voice.
+  const SONG = JSON.parse(document.getElementById('song').textContent);
+  const LINES = SONG.lines.map(L => {
+    let beat = 0, cursor = 0;
+    const low = L.text.toLowerCase();
+    const syl = L.notes.map(([len, d, s]) => {
+      const bare = s.replace(/^-/, '');
+      const at = low.indexOf(bare.toLowerCase(), cursor);
+      cursor = at + bare.length;
+      const n = { t: L.t + beat * BEAT, dur: len * BEAT, d, at, len: bare.length };
+      beat += len;
+      return n;
+    });
+    return { ...L, syl };
+  });
+  const NOTES = LINES.flatMap(L => L.syl);
+  const STANZAS = [];
+  LINES.forEach(L => {
+    const last = STANZAS[STANZAS.length - 1];
+    if (last && last.name === L.sec) last.lines.push(L); else STANZAS.push({ name: L.sec, t: L.t, lines: [L] });
+  });
 
   // ───────────────────────── Audio engine ─────────────────────────
   let ac = null, bus = null, noiseBuf = null, irBuf = null;
+  // The sung vocal is a prerendered track (vocals.js); everything else is synthesized live.
+  const VOCALS_B64 = window.WH_VOCALS || null;
+  let vocalBuf = null, vocalLoading = null, vocalSrc = null, starting = false;
+  function loadVocals() {
+    if (!vocalLoading) {
+      const bin = atob(VOCALS_B64), bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      vocalLoading = new Promise(res => ac.decodeAudioData(bytes.buffer, res, () => res(null)));
+    }
+    return vocalLoading;
+  }
 
   function ensureAudio() {
     if (ac) return;
@@ -436,26 +434,17 @@
       [root, fifth, root + 12, fifth].forEach((m, i) => sus(i * BEAT, BEAT, (t, d) => bass(m, t, d * 0.85, 0.2)));
     }
 
-    // Melody
-    if (sec.mel) {
-      const line = MEL[sec.mel][Math.floor(b / 2)];
-      const lo = (b % 2) * 4;
-      let beat = 0;
-      for (const [d, len] of line) {
-        if (beat >= lo && beat < lo + 4) {
-          const s = (beat - lo) * BEAT, dur = len * BEAT * 0.94, m = KEY + 12 + semi(d);
-          sus(s, dur, (t, du) => {
-            if (style === 'verse') flute(m, t, du, 0.13);
-            else if (style === 'bridge') { flute(m, t, du, 0.11); brass(m - 12, t, du, 0.05); }
-            else {
-              brass(m, t, du, style === 'final' ? 0.1 : 0.095);
-              if (style === 'final' || style === 'outro') brass(KEY + 12 + semi(d - 2), t, du, 0.055);
-            }
-          });
-          if (style === 'chorus' || style === 'final') hit(s, t => bell(m + 12, t, 0.04));
-        }
-        beat += len;
-      }
+    // Instrumental line doubling the singer an octave up; quieter when the voice is present.
+    const lead = VOCALS_B64 ? 0.45 : 1;
+    for (const n of NOTES) {
+      if (n.t < t0 || n.t >= t0 + BAR) continue;
+      const s = n.t - t0, dur = n.dur * 0.94, m = KEY + 12 + semi(n.d);
+      sus(s, dur, (t, du) => {
+        if (style === 'verse') flute(m, t, du, 0.13 * lead);
+        else if (style === 'bridge') flute(m, t, du, 0.11 * lead);
+        else brass(m, t, du, 0.095 * lead);
+      });
+      if (style === 'chorus' || style === 'final') hit(s, t => bell(m + 12, t, 0.035));
     }
 
     // Bell arpeggios
@@ -501,15 +490,28 @@
     const pos = songPos();
     while (nextBar < TOTAL_BARS && nextBar * BAR < pos + 0.6) scheduleBar(nextBar++);
   }
-  function play() {
+  async function play() {
+    if (playing || starting) return;
     ensureAudio();
     if (ac.state === 'suspended') ac.resume();
+    if (VOCALS_B64 && !vocalBuf) {
+      starting = true;
+      document.getElementById('bigLabel').textContent = 'Loading the voice…';
+      vocalBuf = await loadVocals();
+      starting = false;
+    }
     if (offset >= TOTAL - 0.05) { offset = 0; clearParticles(); }
     bus = makeBus();
     playOffset = offset;
     startCtx = ac.currentTime + 0.06;
     nextBar = Math.floor(offset / BAR);
     playing = true;
+    if (vocalBuf && offset < vocalBuf.duration) {
+      vocalSrc = ac.createBufferSource(); vocalSrc.buffer = vocalBuf;
+      const vg = ac.createGain(); vg.gain.value = 1.1;
+      vocalSrc.connect(vg); route(vg, 0.22);
+      vocalSrc.start(startCtx, offset);
+    }
     tick();
     timer = setInterval(tick, 80);
     syncButtons();
@@ -519,6 +521,7 @@
     offset = Math.min(songPos(), TOTAL);
     playing = false;
     clearInterval(timer);
+    if (vocalSrc) { try { vocalSrc.stop(ac.currentTime + 0.05); } catch (e) {} vocalSrc = null; }
     const b = bus; bus = null;
     b.out.gain.setTargetAtTime(0, ac.currentTime, 0.03);
     setTimeout(() => b.out.disconnect(), 300);
@@ -1107,12 +1110,10 @@
     const k = document.createElement('div'); k.className = 'tick'; k.style.left = (sec.start / TOTAL * 100) + '%'; track.appendChild(k);
   });
   const sheet = $('sheet'), lineBtns = [];
-  let li = 0;
   STANZAS.forEach(st => {
     const div = document.createElement('div'); div.className = 'stanza';
     div.innerHTML = `<h3>${st.name}<span>${fmt(st.t)}</span></h3>`;
-    st.lines.forEach(() => {
-      const L = LINES[li++];
+    st.lines.forEach(L => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'line'; b.textContent = L.text;
       b.addEventListener('click', () => seek(L.t, true));
       div.appendChild(b); lineBtns.push(b);
@@ -1168,7 +1169,14 @@
       lyricEl.textContent = n >= 0 ? LINES[n].text : '';
       curLine = n;
     }
-    if (n >= 0) lyricEl.style.setProperty('--p', (clamp01((t - LINES[n].t) / (LINES[n].dur * 0.8)) * 100).toFixed(1) + '%');
+    if (n >= 0) {
+      // Fill the words syllable by syllable, as they are sung.
+      const L = LINES[n], last = L.syl[L.syl.length - 1];
+      let p = 0;
+      for (const s of L.syl) { if (t < s.t) break; p = (s.at + s.len * clamp01((t - s.t) / Math.min(s.dur, 0.45))) / L.text.length; }
+      if (t >= last.t + Math.min(last.dur, 0.45)) p = 1;
+      lyricEl.style.setProperty('--p', (p * 100).toFixed(1) + '%');
+    }
     requestAnimationFrame(frame);
   }
   syncButtons();
