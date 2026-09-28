@@ -9,6 +9,7 @@ Open `index.html` in a browser. There is no build step. It loads three.js 0.160 
 - **Tour** (`1`): 12 guided stops with descriptions. `←` / `→` to step, `Space` to pause. Dragging the view or scrolling hands control to Walk or Aerial.
 - **Walk** (`2`): first person at eye height. `WASD` or `↑` / `↓` to move, `←` / `→` or `Q` / `E` to turn, drag to look, `Shift` to run. On touch screens, use the joystick. Buildings and the lake block movement. Pressing a movement key during the tour starts walking from the current stop. Keys also work with a Chinese input method switched on.
 - **Aerial** (`3`): drag to orbit, scroll or pinch to zoom, `Shift` or right-drag to pan.
+- **Drive** (`4`): a hands-free drive, about 1¾ minutes. It opens with a bird's-eye sweep over the whole park, descends onto the north road, and drives the main roads in the right-hand lane: the north road past the rain canopies, the service road past B1, the car park and A5, and the south road past A3. It then turns up the central axis to the lake and A4 and ends with a crane shot. `Space` pauses. **Record video** records the drive from the start and saves `park-drive.webm` (or `.mp4`) when it ends. Recording needs Chrome or Edge with the page opened from a file or local server; the Claude artifact viewer blocks downloads.
 
 Click the minimap to go to that spot.
 

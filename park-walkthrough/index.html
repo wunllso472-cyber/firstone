@@ -107,7 +107,7 @@
   .modes button[aria-pressed="true"] .k { color: inherit; opacity: 0.7; }
   button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  #tourCard {
+  #tourCard, #driveCard {
     position: absolute;
     left: 16px;
     bottom: calc(16px + env(safe-area-inset-bottom, 0px));
@@ -118,6 +118,21 @@
   .eyebrow {
     font: 500 11px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
   }
+  #driveTitle { margin: 6px 0 0; font: 700 20px/1.25 var(--cn); text-wrap: balance; }
+  #driveSub { margin: 2px 0 10px; font-size: 14px; color: var(--muted); max-width: 60ch; }
+  #recState { font: 500 12px/1.3 var(--mono); color: var(--muted); margin-left: auto; text-align: right; }
+  #recState.on { color: #d33b2c; }
+  #recState.on::before { content: "● "; }
+  #caption {
+    position: absolute; left: 28px; bottom: 26px; display: none;
+    color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.55);
+  }
+  #caption strong { display: block; font: 700 24px/1.2 var(--cn); letter-spacing: 0.02em; }
+  #caption span { font: 500 15px/1.4 var(--sans); opacity: 0.92; }
+  body.capture .topbar, body.capture #mapWrap, body.capture #hud, body.capture #driveCard,
+  body.capture #tourCard, body.capture #joystick { display: none !important; }
+  body.capture #caption { display: block; }
+  body.capture .blabel .en { display: none; }
   #stopTitle { margin: 6px 0 0; font: 700 20px/1.25 var(--cn); text-wrap: balance; }
   #stopSub { margin: 1px 0 0; font-size: 14px; color: var(--muted); font-weight: 500; }
   #stopText { margin: 8px 0 10px; font-size: 14px; max-width: 60ch; }
@@ -202,7 +217,7 @@
     .brand p { display: none; }
     #minimap { width: 150px; height: 103px; }
     #mapWrap .cap { display: none; }
-    #tourCard { bottom: calc(135px + env(safe-area-inset-bottom, 0px)); }
+    #tourCard, #driveCard { bottom: calc(135px + env(safe-area-inset-bottom, 0px)); }
     #stopText { font-size: 13px; }
     #hud { bottom: calc(135px + env(safe-area-inset-bottom, 0px)); }
     body.touch #hud .keys { display: none; }
@@ -228,6 +243,7 @@
       <button id="mTour" aria-pressed="true"><span class="k">1</span>Tour</button>
       <button id="mWalk" aria-pressed="false"><span class="k">2</span>Walk</button>
       <button id="mAerial" aria-pressed="false"><span class="k">3</span>Aerial</button>
+      <button id="mDrive" aria-pressed="false"><span class="k">4</span>Drive</button>
     </div>
   </div>
 
@@ -248,6 +264,24 @@
     <div class="progress"><i id="bar"></i></div>
     <p class="tour-hint">Press <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> to walk from here, or drag the view to look around.</p>
   </section>
+
+  <section id="driveCard" class="panel" hidden aria-live="polite">
+    <div class="stop-meta">
+      <span class="eyebrow">Auto-drive · main roads</span>
+      <span class="eyebrow" id="driveTime">0:00 / 0:00</span>
+    </div>
+    <h2 id="driveTitle">北侧园区道路</h2>
+    <p id="driveSub">North road</p>
+    <div class="tour-controls">
+      <button id="dRestart">Restart</button>
+      <button id="dPlay">Pause</button>
+      <button id="dRec">Record video</button>
+      <span id="recState"></span>
+    </div>
+    <div class="progress"><i id="dBar"></i></div>
+  </section>
+
+  <div id="caption"><strong>创新园区 · 主路巡游</strong><span id="capRoad"></span></div>
 
   <div id="hud" class="panel" hidden>
     <div class="readout" id="readout">X 0.0 m · Z 0.0 m · 180° S</div>
@@ -1004,6 +1038,14 @@ for (const [px, py] of [[1500, 330], [1580, 330]]) {
   const roofM = new THREE.MeshStandardMaterial({ color: '#dfe7ea', roughness: 0.4, metalness: 0.3, transparent: true, opacity: 0.85 });
   const postM = new THREE.MeshStandardMaterial({ color: '#7d8a90', roughness: 0.5, metalness: 0.6 });
   const angle = Math.atan2(68 - 205, 1865 - 125);   // follows the north boundary
+  // Keep each canopy on the verge beside its road rather than over the carriageway
+  const besideRoad = ([px, py, len], road, side) => {
+    const [[ax, ay], [bx, by]] = road;
+    const t = (px - ax) / (bx - ax), ry = ay + (by - ay) * t;          // road centre at this x
+    const d = Math.hypot(bx - ax, by - ay), nx = -(by - ay) / d, ny = (bx - ax) / d;  // unit normal (plan px)
+    const off = (7 / 2 + 3.4) / S * side;                                // half road width + half canopy + gap
+    return [px + nx * off, ry + ny * off, len];
+  };
   const make = ([px, py, len], ang, n) => {
     const L = len * S, grp = new THREE.Group();
     const roof = new THREE.Mesh(new THREE.BoxGeometry(L, 0.18, 5.5), roofM);
@@ -1016,8 +1058,8 @@ for (const [px, py] of [[1500, 330], [1580, 330]]) {
     scene.add(grp);
     labelDefs.push({ id: '', name: `${n}号雨棚`, en: 'Canopy', pos: V(px, py, 5), minor: true });
   };
-  CANOPIES.forEach((c, i) => make(c, angle, i + 1));
-  make(SOUTH_CANOPY, 0, 6);
+  CANOPIES.forEach((c, i) => make(besideRoad(c, [ROADS[0].pts[0], ROADS[0].pts[1]], -1), angle, i + 1));
+  make(besideRoad(SOUTH_CANOPY, ROADS[2].pts, 1), Math.atan2(1040 - 1012, 1498 - 640), 6);
 }
 
 /* ------------------------------- Trees ------------------------------- */
@@ -1030,6 +1072,12 @@ const trees = [];
     return md[(j * MW + i) * 4] > 128;
   };
   const siteW = SITE.map(([x, y]) => [wx(x), wz(y)]);
+  // true within 3 m of the edge of an internal road
+  const roadSegs = ROADS.flatMap(r => r.pts.slice(1).map((p, i) => [wx(r.pts[i][0]), wz(r.pts[i][1]), wx(p[0]), wz(p[1]), r.w / 2 + 3]));
+  const nearRoad = (x, z) => roadSegs.some(([ax, az, bx, bz, lim]) => {
+    const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz)));
+    return Math.hypot(x - ax - t * dx, z - az - t * dz) < lim;
+  });
   const add = (x, z, kind, s) => {
     if (!kind) {
       const dl = distToPoly(x, z, LAKE_W);
@@ -1052,7 +1100,7 @@ const trees = [];
     // keep a clear margin around facades
     let near = false;
     for (const c of COLLIDERS) if (x > c[0] - 3 && x < c[2] + 3 && z > c[1] - 3 && z < c[3] + 3) { near = true; break; }
-    if (near) continue;
+    if (near || nearRoad(x, z)) continue;
     add(x, z);
   }
   // Rows: young staked trees on the central axis, camphor on the service road, goldenrain on 红旗路
@@ -1726,7 +1774,7 @@ const labelLayer = document.getElementById('labels');
 const labels = labelDefs.map(d => {
   const el = document.createElement('div');
   el.className = 'blabel';
-  el.innerHTML = (d.id ? `<b>${d.id}</b>` : '') + d.name + (d.minor ? '' : ` <span style="color:var(--muted)">${d.en}</span>`);
+  el.innerHTML = (d.id ? `<b>${d.id}</b>` : '') + d.name + (d.minor ? '' : ` <span class="en" style="color:var(--muted)">${d.en}</span>`);
   labelLayer.appendChild(el);
   return { el, pos: d.pos, minor: d.minor };
 });
@@ -1883,15 +1931,172 @@ let mode = 'tour';
 const walk = { yaw: 0, pitch: 0, pos: V(750, 240, 1.7), joy: new THREE.Vector2() };
 const orbit = { target: V(1000, 600, 0), r: 420, theta: -2.3, phi: 0.95 };
 
+/* ------------------------------ Auto-drive ------------------------------ *
+ * A hands-free drive along the main roads at vehicle eye height, keeping to
+ * the right-hand lane: the north road, the N–S service road, the south road,
+ * then up the central axis to the lake, ending with a crane shot over the park.
+ * driveAt(t) is a pure function of time so the drive can also be rendered
+ * frame by frame for video.
+ */
+const DRIVE = (() => {
+  const centre = [[160, 227], [1335, 133], [1335, 1034], [750, 1015.6], [750, 832]];
+  const lanes = [1.9, 1.9, 1.9, 0];
+  const legs = [
+    { t: '北侧园区道路', s: 'North road · rain canopies 1–5, the A1 and A2 R&D clusters on the right' },
+    { t: '南北向服务路', s: 'Service road · A2, B2/B1 and the car park, then A5 on the lake and the sports courts' },
+    { t: '南侧园区道路', s: 'South road · bike canopy 6, the 11-floor A3 tower and the A3 cluster' },
+    { t: '中央景观轴', s: 'Central axis · north to the lake, with A4 across the water' },
+  ];
+  const P = centre.map(([x, y]) => new THREE.Vector3(wx(x), 0, wz(y)));
+  const dirs = [], rights = [];
+  for (let i = 0; i < P.length - 1; i++) {
+    const d = P[i + 1].clone().sub(P[i]).normalize();
+    dirs.push(d); rights.push(new THREE.Vector3(-d.z, 0, d.x));
+  }
+  // lane-offset vertices (mitred at the corners)
+  const Q = P.map((p, i) => {
+    if (i === 0) return p.clone().addScaledVector(rights[0], lanes[0]);
+    if (i === P.length - 1) return p.clone().addScaledVector(rights[i - 1], lanes[i - 1]);
+    const o = (lanes[i - 1] + lanes[i]) / 2, m = rights[i - 1].clone().add(rights[i]).normalize();
+    return p.clone().addScaledVector(m, o / Math.max(0.5, m.dot(rights[i])));
+  });
+  const pts = [], corners = [];
+  for (let i = 0; i < Q.length - 1; i++) {
+    const a = Q[i], b = Q[i + 1], d = dirs[i], len = a.distanceTo(b);
+    const r0 = i === 0 ? 0 : Math.min(16, len / 3), r1 = i === Q.length - 2 ? 0 : Math.min(16, len / 3);
+    for (let s = r0; s <= len - r1 + 0.01; s += Math.max(8, (len - r0 - r1) / Math.ceil((len - r0 - r1) / 30))) pts.push(a.clone().addScaledVector(d, s));
+    if (i < Q.length - 2) {
+      // rounded corner: a point on the fillet between the two legs
+      const mid = b.clone().addScaledVector(dirs[i + 1].clone().sub(d), r1 * 0.29);
+      pts.push(mid); corners.push(mid);
+    }
+  }
+  const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal');
+  const L = curve.getLength();
+  // where along the curve each leg starts (by nearest sample to its corner)
+  const samples = curve.getSpacedPoints(2000);
+  const legStart = [0, ...corners.map(c => {
+    let best = 0, bd = Infinity;
+    samples.forEach((p, k) => { const dd = p.distanceToSquared(c); if (dd < bd) { bd = dd; best = k; } });
+    return best / 2000 * L;
+  })];
+  const v = 11, ramp = 3, Td = L / v + ramp, Tc = 9, hold = 2;
+  // Bird's-eye opening: sweep over the whole park from the south-west, then descend onto the start of the drive
+  const Ti = 16;
+  const start = curve.getPointAt(0); start.y = 2.1;
+  const startDir = curve.getTangentAt(0);
+  const introPath = new THREE.CatmullRomCurve3([
+    V(420, 1480, 260), V(-80, 1000, 250), V(-150, 380, 200),
+    start.clone().addScaledVector(startDir, -70).add(new THREE.Vector3(0, 38, 0)),
+    start.clone().addScaledVector(startDir, -18).add(new THREE.Vector3(0, 6, 0)),
+    start.clone(),
+  ], false, 'centripetal');
+  const introLook = t => {
+    // look at the park centre, then hand over to the road ahead
+    const k = Math.max(0, Math.min(1, (t - 8) / (Ti - 8)));
+    const kk = k * k * (3 - 2 * k);
+    const ahead = start.clone().addScaledVector(startDir, 15.3); ahead.y = 1.75;
+    return V(1000, 600, 0).lerp(ahead, kk);
+  };
+  const T = Ti + Td + Tc + hold;
+  const endTan = curve.getTangentAt(1);
+  const pointAt = s => s <= L ? curve.getPointAt(Math.max(0, s) / L) : curve.getPointAt(1).addScaledVector(endTan, s - L);
+  const dist = t => t < ramp ? v * t * t / (2 * ramp) : t < Td - ramp ? v * (t - ramp / 2) : L - v * Math.pow(Math.max(0, Td - t), 2) / (2 * ramp);
+  const ease = k => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  const EYE = 2.1;
+  function frameAt(t) {
+    if (t < Ti) {
+      const k = t / Ti, u = 1 - Math.pow(1 - k, 2.2);   // slows to a stop where the drive begins
+      return { pos: introPath.getPointAt(Math.min(1, u)), look: introLook(t), leg: -1, progress: t / T };
+    }
+    t -= Ti;
+    const s = dist(Math.min(t, Td));
+    const pos = pointAt(s); pos.y = EYE;
+    // look ahead, averaged over a few points so corners turn smoothly
+    const look = new THREE.Vector3();
+    for (const a of [9, 15, 22]) look.add(pointAt(s + a));
+    look.multiplyScalar(1 / 3); look.y = 1.75;
+    let leg = 0; for (let i = 0; i < legStart.length; i++) if (s >= legStart[i] - 4) leg = i;
+    if (t > Td) {
+      // crane up and back over the lake and A4
+      const k = ease(Math.min(1, (t - Td) / Tc));
+      pos.lerp(V(760, 1010, 105), k);
+      look.lerp(V(930, 650, 0), k);
+    }
+    return { pos, look, leg, progress: Math.min(1, (t + Ti) / T) };
+  }
+  return { frameAt, T, legs, L };
+})();
+const drive = { t: 0, playing: true };
+const fmt = x => `${Math.floor(x / 60)}:${String(Math.floor(x % 60)).padStart(2, '0')}`;
+function driveAt(t) {
+  const f = DRIVE.frameAt(t);
+  camera.position.copy(f.pos); camera.lookAt(f.look); lookNow.copy(f.look);
+  const leg = f.leg < 0 ? { t: '园区鸟瞰', s: 'Campus overview · the whole park from above before the drive' } : DRIVE.legs[f.leg];
+  if (driveAt.leg !== f.leg) {
+    driveAt.leg = f.leg;
+    $('driveTitle').textContent = leg.t; $('driveSub').textContent = leg.s;
+    $('capRoad').textContent = `${leg.t} · ${leg.s.split(' · ')[0]}`;
+  }
+  $('dBar').style.width = (f.progress * 100).toFixed(1) + '%';
+  $('driveTime').textContent = `${fmt(t)} / ${fmt(DRIVE.T)}`;
+}
+function updateDrive(dt) {
+  if (drive.playing) drive.t += dt;
+  if (drive.t >= DRIVE.T) {
+    drive.t = DRIVE.T; drive.playing = false; $('dPlay').textContent = 'Play';
+    if (rec.recorder && rec.recorder.state === 'recording') stopRecording();
+  }
+  driveAt(drive.t);
+}
+
+// Real-time recording of the canvas (browser MediaRecorder). The file is offered as a download when the drive ends.
+const rec = { recorder: null, chunks: [] };
+function startRecording() {
+  const mime = ['video/mp4;codecs=avc1', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
+    .find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+  if (!view.captureStream || !mime) { $('recState').textContent = 'This browser can’t record the view. Try Chrome or Edge.'; return; }
+  rec.chunks = [];
+  rec.mime = mime;
+  rec.recorder = new MediaRecorder(view.captureStream(30), { mimeType: mime, videoBitsPerSecond: 12e6 });
+  rec.recorder.ondataavailable = e => { if (e.data.size) rec.chunks.push(e.data); };
+  rec.recorder.onstop = () => {
+    const ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+    const url = URL.createObjectURL(new Blob(rec.chunks, { type: mime }));
+    const a = document.createElement('a');
+    a.href = url; a.download = `park-drive.${ext}`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
+    $('recState').classList.remove('on');
+    $('recState').textContent = `Saved park-drive.${ext} to your downloads`;
+    $('dRec').textContent = 'Record video';
+  };
+  drive.t = 0; drive.playing = true; $('dPlay').textContent = 'Pause';
+  rec.recorder.start(1000);
+  $('recState').classList.add('on'); $('recState').textContent = 'Recording';
+  $('dRec').textContent = 'Stop recording';
+}
+function stopRecording() { if (rec.recorder && rec.recorder.state === 'recording') rec.recorder.stop(); }
+$('dRestart').onclick = () => { drive.t = 0; drive.playing = true; $('dPlay').textContent = 'Pause'; };
+$('dPlay').onclick = () => {
+  if (drive.t >= DRIVE.T) drive.t = 0;
+  drive.playing = !drive.playing; $('dPlay').textContent = drive.playing ? 'Pause' : 'Play';
+};
+$('dRec').onclick = () => (rec.recorder && rec.recorder.state === 'recording') ? stopRecording() : startRecording();
+
 function setMode(m) {
   mode = m;
-  document.body.classList.remove('mode-tour', 'mode-walk', 'mode-aerial');
+  document.body.classList.remove('mode-tour', 'mode-walk', 'mode-aerial', 'mode-drive');
   document.body.classList.add('mode-' + m);
   $('mTour').setAttribute('aria-pressed', m === 'tour');
   $('mWalk').setAttribute('aria-pressed', m === 'walk');
   $('mAerial').setAttribute('aria-pressed', m === 'aerial');
+  $('mDrive').setAttribute('aria-pressed', m === 'drive');
   $('tourCard').hidden = m !== 'tour';
-  $('hud').hidden = m === 'tour';
+  $('driveCard').hidden = m !== 'drive';
+  $('hud').hidden = m === 'tour' || m === 'drive';
+  if (m !== 'drive') stopRecording();
+  if (m === 'drive') { drive.t = 0; drive.playing = true; $('dPlay').textContent = 'Pause'; driveAt.leg = -2; }
   if (m === 'walk') {
     const p = camera.position;
     const dir = new THREE.Vector3(); camera.getWorldDirection(dir);
@@ -1937,6 +2142,7 @@ function freeSpotNear(x, z) {
 $('mTour').onclick = () => setMode('tour');
 $('mWalk').onclick = () => setMode('walk');
 $('mAerial').onclick = () => setMode('aerial');
+$('mDrive').onclick = () => setMode('drive');
 
 // Movement keys are resolved from code, key and keyCode, so they still work
 // with a Chinese IME switched on (keydown then reports key "Process").
@@ -1956,6 +2162,11 @@ document.addEventListener('keydown', e => {
   if (e.key === '1' || e.code === 'Digit1') return setMode('tour');
   if (e.key === '2' || e.code === 'Digit2') return setMode('walk');
   if (e.key === '3' || e.code === 'Digit3') return setMode('aerial');
+  if (e.key === '4' || e.code === 'Digit4') return setMode('drive');
+  if (mode === 'drive') {
+    if (e.key === ' ') { e.preventDefault(); return $('dPlay').click(); }
+    if (act && act !== 'run') setMode('walk');
+  }
   if (mode === 'tour') {
     if (e.key === 'ArrowRight') { e.preventDefault(); return goStop(tour.i + 1); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); return goStop(tour.i - 1); }
@@ -1987,7 +2198,7 @@ view.addEventListener('pointerdown', e => {
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   panMode = e.button === 2 || e.shiftKey;
   view.classList.add('dragging');
-  if (mode === 'tour') { setMode(camera.position.y < 4 ? 'walk' : 'aerial'); }
+  if (mode === 'tour' || mode === 'drive') { setMode(camera.position.y < 4 ? 'walk' : 'aerial'); }
   if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinchD = Math.hypot(a.x - b.x, a.y - b.y); }
 });
 view.addEventListener('pointermove', e => {
@@ -2012,7 +2223,7 @@ view.addEventListener('pointerup', endPtr);
 view.addEventListener('pointercancel', endPtr);
 view.addEventListener('wheel', e => {
   e.preventDefault();
-  if (mode === 'tour') setMode('aerial');
+  if (mode === 'tour' || mode === 'drive') setMode('aerial');
   if (mode === 'aerial') orbit.r = THREE.MathUtils.clamp(orbit.r * Math.exp(e.deltaY * 0.001), 40, 900);
 }, { passive: false });
 function panBy(dx, dy) {
@@ -2043,7 +2254,7 @@ function panBy(dx, dy) {
 mini.addEventListener('click', e => {
   const r = mini.getBoundingClientRect();
   const x = GROUND.x0 + (e.clientX - r.left) / r.width * 640, z = GROUND.z0 + (e.clientY - r.top) / r.height * 440;
-  if (mode === 'tour') setMode('walk');
+  if (mode === 'tour' || mode === 'drive') setMode('walk');
   if (mode === 'walk') {
     // nearest free spot in a small spiral
     for (let rad = 0; rad < 60; rad += 2) {
@@ -2126,11 +2337,15 @@ function adaptQuality(dt) {
   renderer.setPixelRatio(perf.ratio);
   resize();
 }
+let captureMode = false;
 function tick() {
+  requestAnimationFrame(tick);
   const dt = Math.min(0.2, clock.getDelta());
+  if (captureMode) return;          // frames are driven by capture.frame() instead
   const t = clock.elapsedTime;
   if (mode === 'tour') updateTour(dt);
   else if (mode === 'walk') updateWalk(dt);
+  else if (mode === 'drive') updateDrive(dt);
   else updateAerial();
   waterNormal.offset.set(t * 0.01, t * 0.006);
   windTime.value = t;
@@ -2139,13 +2354,33 @@ function tick() {
   renderer.render(scene, camera);
   adaptQuality(dt);
   updateLabels();
-  if (frame++ % 2 === 0) { drawMinimap(); if (mode !== 'tour') updateReadout(); }
-  requestAnimationFrame(tick);
+  if (frame++ % 2 === 0) { drawMinimap(); if (mode !== 'tour' && mode !== 'drive') updateReadout(); }
 }
+
+// Offline capture: render the drive at exact times, one frame per call, for encoding to video.
+const capture = {
+  begin(pixelRatio = 1) {
+    captureMode = true;
+    document.body.classList.add('capture');
+    setMode('drive'); drive.playing = false;
+    renderer.setPixelRatio(pixelRatio); resize();
+    return DRIVE.T;
+  },
+  frame(t, dt, draw = true) {
+    driveAt(t);
+    waterNormal.offset.set(t * 0.01, t * 0.006);
+    windTime.value = t; skyMat.uniforms.time.value = t;
+    updateWalkers(dt);
+    if (!draw) return;              // advance the scene only (used to seek)
+    renderer.render(scene, camera);
+    updateLabels();
+  },
+  end() { captureMode = false; document.body.classList.remove('capture'); },
+};
 
 setMode('tour');
 goStop(0, true);
-window.park = { goStop, setMode, get camera() { return camera; } };
+window.park = { goStop, setMode, get camera() { return camera; }, capture };
 requestAnimationFrame(() => {
   tick();
   const l = $('loading'); l.style.opacity = 0; setTimeout(() => l.remove(), 600);
