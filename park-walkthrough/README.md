@@ -22,4 +22,17 @@ Everything is placed from the site plan at about 0.3 m per plan pixel. Heights c
 - **A3 cluster** including the 11-floor tower, plus **B1 / B2**: dark glass with staggered white fins, as in the photos.
 - **B3 110 kV substation**, the surface car park with parked cars, the sports courts, rain canopies 1–6, internal roads with the blue cycle lane, and the surrounding roads 光明桥路, 红旗路 and 杨家墩路.
 
+## Trees
+
+Trees are grown procedurally from the species typical of Zhejiang campuses, not placed as generic shapes. Each species has a real trunk and limb structure, leaf cards drawn at runtime, and a gentle wind sway:
+
+- **香樟 camphor**: broad domed crowns of glossy dark leaves. The main tree on lawns and along the service road.
+- **垂柳 weeping willow**: leaning trunks with curtains of hanging strands. Planted around the lake.
+- **栾树 goldenrain tree**: lighter, more upright crowns. Planted along 红旗路.
+- **桂花 osmanthus**: low, dense, two-stemmed.
+- **紫薇 crape myrtle**: multi-stemmed, pale bark, pink blossom.
+- **水杉 dawn redwood**: narrow cones, mostly in the park to the north.
+- **Young staked street trees**: the rows on the central axis, with green support poles as in the photos.
+- **Clipped hedges** along the axis and shrubs on the green roofs.
+
 Textures are all drawn at runtime on canvases. There are no image assets.
