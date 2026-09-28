@@ -276,6 +276,7 @@
       <button id="dRestart">Restart</button>
       <button id="dPlay">Pause</button>
       <button id="dRec">Record video</button>
+      <button id="dSave" hidden>Save video</button>
       <span id="recState"></span>
     </div>
     <div class="progress"><i id="dBar"></i></div>
@@ -2058,24 +2059,45 @@ function startRecording() {
   if (!view.captureStream || !mime) { $('recState').textContent = 'This browser can’t record the view. Try Chrome or Edge.'; return; }
   rec.chunks = [];
   rec.mime = mime;
+  rec.blob = null; $('dSave').hidden = true;
   rec.recorder = new MediaRecorder(view.captureStream(30), { mimeType: mime, videoBitsPerSecond: 12e6 });
   rec.recorder.ondataavailable = e => { if (e.data.size) rec.chunks.push(e.data); };
   rec.recorder.onstop = () => {
-    const ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
-    const url = URL.createObjectURL(new Blob(rec.chunks, { type: mime }));
-    const a = document.createElement('a');
-    a.href = url; a.download = `park-drive.${ext}`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 120000);
+    rec.ext = mime.startsWith('video/mp4') ? 'mp4' : 'webm';
+    rec.blob = new Blob(rec.chunks, { type: mime });
     $('recState').classList.remove('on');
-    $('recState').textContent = `Saved park-drive.${ext} to your downloads`;
-    $('dRec').textContent = 'Record video';
+    $('recState').textContent = `park-drive.${rec.ext} · ${(rec.blob.size / 1048576).toFixed(1)} MB`;
+    $('dRec').textContent = 'Record again';
+    $('dSave').hidden = false;
   };
   drive.t = 0; drive.playing = true; $('dPlay').textContent = 'Pause';
   rec.recorder.start(1000);
   $('recState').classList.add('on'); $('recState').textContent = 'Recording';
   $('dRec').textContent = 'Stop recording';
 }
+// Saving goes through the viewer's download prompt inside claude.ai, or a plain download link elsewhere
+const downloadsReady = window.claude?.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+async function saveRecording() {
+  if (!rec.blob) return;
+  const filename = `park-drive.${rec.ext}`;
+  const downloads = await downloadsReady;
+  if (downloads) {
+    try {
+      await downloads.save({ filename, data: rec.blob });
+      $('recState').textContent = `Saved ${filename}`;
+    } catch (err) {
+      $('recState').textContent = err && err.code === 'declined' ? 'Not saved' : 'This view can’t save files. Open index.html from the repository to save.';
+    }
+    return;
+  }
+  const url = URL.createObjectURL(rec.blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 120000);
+  $('recState').textContent = `Saved ${filename} to your downloads`;
+}
+$('dSave').onclick = saveRecording;
 function stopRecording() { if (rec.recorder && rec.recorder.state === 'recording') rec.recorder.stop(); }
 $('dRestart').onclick = () => { drive.t = 0; drive.playing = true; $('dPlay').textContent = 'Pause'; };
 $('dPlay').onclick = () => {
