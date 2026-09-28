@@ -944,9 +944,51 @@
     else if (e.key === 'ArrowLeft') seek(songPos() - 5);
   });
 
+  const lineAt = t => LINES.findIndex(L => t >= L.t - 0.4 && t < L.end);
+  // How many characters of a line have been sung by time t (fractional), filling word by word.
+  function sungChars(L, t) {
+    const last = L.words[L.words.length - 1];
+    if (t >= last.t + last.dur) return L.text.length;
+    let c = 0;
+    for (const w of L.words) { if (t < w.t) break; c = w.at + w.len * clamp01((t - w.t) / w.dur); }
+    return c;
+  }
+  // Captions drawn into the canvas itself, for the MP4 export (the page shows them as text instead).
+  function drawCaption(t) {
+    const n = lineAt(t);
+    if (n < 0) return;
+    const L = LINES[n], c = sungChars(L, t);
+    let size = 36;
+    main.font = `800 ${size}px "Libre Franklin", Arial, sans-serif`;
+    const full = main.measureText(L.text).width;
+    if (full > W * 0.88) { size = Math.floor(size * W * 0.88 / full); main.font = `800 ${size}px "Libre Franklin", Arial, sans-serif`; }
+    const tw = main.measureText(L.text).width, x = (W - tw) / 2, y = H * 0.925;
+    const k = Math.floor(c), fillW = main.measureText(L.text.slice(0, k)).width + (c - k) * (k < L.text.length ? main.measureText(L.text[k]).width : 0);
+    main.save();
+    main.textAlign = 'left'; main.textBaseline = 'alphabetic';
+    main.shadowColor = 'rgba(0,0,0,.85)'; main.shadowBlur = 10; main.shadowOffsetY = 2;
+    main.fillStyle = '#ffffff'; main.fillText(L.text, x, y);
+    main.shadowColor = 'transparent';
+    main.beginPath(); main.rect(x - 2, y - size * 1.2, fillW + 2, size * 1.6); main.clip();
+    main.fillStyle = '#f0bf4c'; main.fillText(L.text, x, y);
+    main.restore();
+  }
+  // Frame-exact rendering hook used by export_video.js.
+  window.WH_RENDER = {
+    duration: TOTAL,
+    frame(t, dt) {
+      updateParticles(t, dt);
+      render(Math.min(t, TOTAL - 0.001));
+      drawCaption(t);
+    },
+    stop() { rendering = true; },
+  };
+  let rendering = false;
+
   const lyricEl = $('lyric');
   let lastT = 0, curLine = -2, curChap = -1;
   function frame() {
+    if (rendering) return;
     let t = playing ? songPos() : offset;
     if (playing && t >= TOTAL) { pause(); offset = TOTAL; t = TOTAL; syncButtons(); }
     const dt = playing ? Math.min(0.1, Math.max(0, t - lastT)) : 0;
@@ -961,20 +1003,13 @@
 
     const ci = SECTIONS.findIndex(s => t >= s.start && t < s.end);
     if (ci !== curChap) { chapBtns.forEach((b, i) => b.classList.toggle('on', i === ci)); curChap = ci; }
-    const n = LINES.findIndex(L => t >= L.t - 0.4 && t < L.end);
+    const n = lineAt(t);
     if (n !== curLine) {
       lineBtns.forEach((b, i) => b.classList.toggle('on', i === n));
       lyricEl.textContent = n >= 0 ? LINES[n].text : '';
       curLine = n;
     }
-    if (n >= 0) {
-      // Fill the words as they are sung in the recording.
-      const L = LINES[n], last = L.words[L.words.length - 1];
-      let p = 0;
-      for (const w of L.words) { if (t < w.t) break; p = (w.at + w.len * clamp01((t - w.t) / w.dur)) / L.text.length; }
-      if (t >= last.t + last.dur) p = 1;
-      lyricEl.style.setProperty('--p', (p * 100).toFixed(1) + '%');
-    }
+    if (n >= 0) lyricEl.style.setProperty('--p', (sungChars(LINES[n], t) / LINES[n].text.length * 100).toFixed(1) + '%');
     requestAnimationFrame(frame);
   }
   syncButtons();
