@@ -65,6 +65,10 @@
   #app { position: fixed; inset: 0; overflow: hidden; }
   #view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
   #view.dragging { cursor: grabbing; }
+  #view:focus { outline: none; }
+  #view:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+  .tour-hint { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+  body.touch .tour-hint { display: none; }
 
   .panel {
     background: var(--panel);
@@ -212,7 +216,7 @@
 </head>
 <body>
 <div id="app">
-  <canvas id="view" aria-label="3D view of the innovation park"></canvas>
+  <canvas id="view" tabindex="0" aria-label="3D view of the innovation park. In walk mode, use W A S D or the arrow keys to move."></canvas>
   <div id="labels"></div>
 
   <div class="topbar">
@@ -242,6 +246,7 @@
       <div class="dots" id="dots"></div>
     </div>
     <div class="progress"><i id="bar"></i></div>
+    <p class="tour-hint">Press <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> to walk from here, or drag the view to look around.</p>
   </section>
 
   <div id="hud" class="panel" hidden>
@@ -528,6 +533,9 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// the sun never moves, so the shadow map is drawn once instead of every frame
+renderer.shadowMap.autoUpdate = false;
+renderer.shadowMap.needsUpdate = true;
 const maxAniso = renderer.capabilities.getMaxAnisotropy();
 
 const scene = new THREE.Scene();
@@ -1488,7 +1496,6 @@ const walkers = [];
   for (let i = 0; i < 46; i++) {
     const r = routes[i % routes.length];
     const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: shirt[i % shirt.length], roughness: 0.8 }));
-    m.castShadow = true;
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), new THREE.MeshStandardMaterial({ color: '#2a2320', roughness: 0.9 }));
     head.position.y = 1.72; m.add(head);
     scene.add(m);
@@ -1685,7 +1692,7 @@ function updateTour(dt) {
 
 /* ------------------------------ Controls ------------------------------ */
 let mode = 'tour';
-const walk = { yaw: 0, pitch: 0, pos: V(750, 240, 1.7), keys: new Set(), joy: new THREE.Vector2() };
+const walk = { yaw: 0, pitch: 0, pos: V(750, 240, 1.7), joy: new THREE.Vector2() };
 const orbit = { target: V(1000, 600, 0), r: 420, theta: -2.3, phi: 0.95 };
 
 function setMode(m) {
@@ -1699,12 +1706,17 @@ function setMode(m) {
   $('hud').hidden = m === 'tour';
   if (m === 'walk') {
     const p = camera.position;
-    if (p.y < 4 && !blocked(p.x, p.z)) walk.pos.set(p.x, 1.7, p.z);
-    else if (m === 'walk' && !walkStarted) walk.pos.copy(V(750, 240, 1.7));
     const dir = new THREE.Vector3(); camera.getWorldDirection(dir);
+    if (p.y < 4) walk.pos.copy(freeSpotNear(p.x, p.z));
+    else {
+      // from the air, land a little short of the point being looked at
+      const hit = dir.y < -0.05 ? p.clone().addScaledVector(dir, -p.y / dir.y) : p.clone().addScaledVector(dir, 80);
+      const back = new THREE.Vector3(dir.x, 0, dir.z).normalize().multiplyScalar(25);
+      walk.pos.copy(freeSpotNear(THREE.MathUtils.clamp(hit.x - back.x, -300, 300), THREE.MathUtils.clamp(hit.z - back.z, -200, 200)));
+    }
     walk.yaw = Math.atan2(-dir.x, -dir.z);
     walk.pitch = p.y < 4 ? Math.asin(THREE.MathUtils.clamp(dir.y, -1, 1)) : 0;
-    walkStarted = true;
+    view.focus({ preventScroll: true });
     $('keys').innerHTML = isTouch
       ? 'Joystick to move · drag to look'
       : '<kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move · drag to look · <kbd>Shift</kbd> run';
@@ -1725,24 +1737,57 @@ function setMode(m) {
   }
   if (m === 'tour') goStop(tour.i);
 }
-let walkStarted = false;
+function freeSpotNear(x, z) {
+  for (let rad = 0; rad < 80; rad += 1.5) {
+    for (let a = 0; a < 6.28; a += 0.4) {
+      const px = x + Math.cos(a) * rad, pz = z + Math.sin(a) * rad;
+      if (!blocked(px, pz)) return new THREE.Vector3(px, 1.7, pz);
+    }
+  }
+  return V(750, 240, 1.7);
+}
 $('mTour').onclick = () => setMode('tour');
 $('mWalk').onclick = () => setMode('walk');
 $('mAerial').onclick = () => setMode('aerial');
 
-addEventListener('keydown', e => {
-  if (e.target.closest && e.target.closest('input,textarea')) return;
-  if (e.key === '1') setMode('tour');
-  else if (e.key === '2') setMode('walk');
-  else if (e.key === '3') setMode('aerial');
-  else if (mode === 'tour' && e.key === 'ArrowRight') goStop(tour.i + 1);
-  else if (mode === 'tour' && e.key === 'ArrowLeft') goStop(tour.i - 1);
-  else if (mode === 'tour' && e.key === ' ') { e.preventDefault(); $('tPlay').click(); }
-  walk.keys.add(e.code);
-  if (mode === 'walk' && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) e.preventDefault();
-});
-addEventListener('keyup', e => walk.keys.delete(e.code));
-addEventListener('blur', () => walk.keys.clear());
+// Movement keys are resolved from code, key and keyCode, so they still work
+// with a Chinese IME switched on (keydown then reports key "Process").
+const MOVE_KEYS = {
+  KeyW: 'fwd', ArrowUp: 'fwd', KeyS: 'back', ArrowDown: 'back', KeyA: 'left', KeyD: 'right',
+  ArrowLeft: 'turnL', ArrowRight: 'turnR', KeyQ: 'turnL', KeyE: 'turnR', ShiftLeft: 'run', ShiftRight: 'run',
+  w: 'fwd', s: 'back', a: 'left', d: 'right', q: 'turnL', e: 'turnR',
+  87: 'fwd', 83: 'back', 65: 'left', 68: 'right', 81: 'turnL', 69: 'turnR', 38: 'fwd', 40: 'back', 37: 'turnL', 39: 'turnR', 16: 'run',
+};
+const actionOf = e => MOVE_KEYS[e.code] || MOVE_KEYS[(e.key || '').toLowerCase()] || MOVE_KEYS[e.key] || MOVE_KEYS[e.keyCode];
+const keyActions = new Map();   // physical key id -> action, so keyup releases what keydown pressed
+const keyId = e => e.code || e.key || e.keyCode;
+document.addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input,textarea,[contenteditable]')) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const act = actionOf(e);
+  if (e.key === '1' || e.code === 'Digit1') return setMode('tour');
+  if (e.key === '2' || e.code === 'Digit2') return setMode('walk');
+  if (e.key === '3' || e.code === 'Digit3') return setMode('aerial');
+  if (mode === 'tour') {
+    if (e.key === 'ArrowRight') { e.preventDefault(); return goStop(tour.i + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); return goStop(tour.i - 1); }
+    if (e.key === ' ') { e.preventDefault(); return $('tPlay').click(); }
+    // pressing a movement key during the tour starts walking from here
+    if (act && act !== 'run') setMode('walk');
+  }
+  if (act) {
+    keyActions.set(keyId(e), act);
+    if (e.target.tagName === 'BUTTON') e.target.blur();
+    if (mode !== 'tour') e.preventDefault();
+  }
+}, true);
+document.addEventListener('keyup', e => {
+  keyActions.delete(keyId(e));
+  if (e.key === 'Shift' || e.keyCode === 16) for (const [k, a] of keyActions) if (a === 'run') keyActions.delete(k);
+}, true);
+addEventListener('blur', () => keyActions.clear());
+document.addEventListener('visibilitychange', () => keyActions.clear());
+const held = a => { for (const v of keyActions.values()) if (v === a) return true; return false; };
 
 // Pointer: drag to look / orbit, pinch to zoom
 const pointers = new Map();
@@ -1750,6 +1795,7 @@ let pinchD = 0, panMode = false;
 view.addEventListener('contextmenu', e => e.preventDefault());
 view.addEventListener('pointerdown', e => {
   view.setPointerCapture(e.pointerId);
+  view.focus({ preventScroll: true });
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   panMode = e.button === 2 || e.shiftKey;
   view.classList.add('dragging');
@@ -1824,25 +1870,29 @@ mini.addEventListener('click', e => {
 });
 
 function updateWalk(dt) {
-  const k = walk.keys;
   let f = 0, s = 0;
-  if (k.has('KeyW') || k.has('ArrowUp')) f += 1;
-  if (k.has('KeyS') || k.has('ArrowDown')) f -= 1;
-  if (k.has('KeyD')) s += 1;
-  if (k.has('KeyA')) s -= 1;
-  if (k.has('ArrowLeft')) walk.yaw += dt * 1.6;
-  if (k.has('ArrowRight')) walk.yaw -= dt * 1.6;
+  if (held('fwd')) f += 1;
+  if (held('back')) f -= 1;
+  if (held('right')) s += 1;
+  if (held('left')) s -= 1;
+  if (held('turnL')) walk.yaw += dt * 1.6;
+  if (held('turnR')) walk.yaw -= dt * 1.6;
   f -= walk.joy.y; s += walk.joy.x;
-  const speed = (k.has('ShiftLeft') || k.has('ShiftRight')) ? 14 : 4.5;
+  const speed = held('run') ? 14 : 4.5;
   const len = Math.hypot(f, s);
   if (len > 0.01) {
     const n = Math.min(1, len);
     f /= len; s /= len;
     const sy = Math.sin(walk.yaw), cy = Math.cos(walk.yaw);
-    const dx = (-sy * f + cy * s) * speed * n * dt, dz = (-cy * f - sy * s) * speed * n * dt;
-    // slide along obstacles one axis at a time
-    if (!blocked(walk.pos.x + dx, walk.pos.z)) walk.pos.x += dx;
-    if (!blocked(walk.pos.x, walk.pos.z + dz)) walk.pos.z += dz;
+    // if we somehow start inside an obstacle's margin, let the player walk out
+    const stuck = blocked(walk.pos.x, walk.pos.z);
+    const dist = speed * n * dt, steps = Math.ceil(dist / 0.4);
+    for (let i = 0; i < steps; i++) {
+      const dx = (-sy * f + cy * s) * dist / steps, dz = (-cy * f - sy * s) * dist / steps;
+      // slide along obstacles one axis at a time
+      if (stuck || !blocked(walk.pos.x + dx, walk.pos.z)) walk.pos.x += dx;
+      if (stuck || !blocked(walk.pos.x, walk.pos.z + dz)) walk.pos.z += dz;
+    }
   }
   const bob = len > 0.01 ? Math.sin(performance.now() / 160) * 0.03 : 0;
   camera.position.set(walk.pos.x, 1.7 + bob, walk.pos.z);
@@ -1875,8 +1925,21 @@ resize();
 
 const clock = new THREE.Clock();
 let frame = 0;
+// If the GPU can't keep up, render at a lower resolution so input stays responsive
+const perf = { t: 0, n: 0, ratio: renderer.getPixelRatio() };
+function adaptQuality(dt) {
+  perf.t += dt; perf.n++;
+  if (perf.t < 2) return;
+  const fps = perf.n / perf.t;
+  perf.t = 0; perf.n = 0;
+  if (fps < 28 && perf.ratio > 0.75) perf.ratio = Math.max(0.75, perf.ratio - 0.25);
+  else if (fps > 55 && perf.ratio < Math.min(devicePixelRatio, 2)) perf.ratio = Math.min(devicePixelRatio, 2, perf.ratio + 0.25);
+  else return;
+  renderer.setPixelRatio(perf.ratio);
+  resize();
+}
 function tick() {
-  const dt = Math.min(0.05, clock.getDelta());
+  const dt = Math.min(0.2, clock.getDelta());
   const t = clock.elapsedTime;
   if (mode === 'tour') updateTour(dt);
   else if (mode === 'walk') updateWalk(dt);
@@ -1892,6 +1955,7 @@ function tick() {
     w.m.position.copy(p).addScaledVector(side, w.off);
   }
   renderer.render(scene, camera);
+  adaptQuality(dt);
   updateLabels();
   if (frame++ % 2 === 0) { drawMinimap(); if (mode !== 'tour') updateReadout(); }
   requestAnimationFrame(tick);

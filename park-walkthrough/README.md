@@ -7,7 +7,7 @@ Open `index.html` in a browser. There is no build step. It loads three.js 0.160 
 ## Modes
 
 - **Tour** (`1`): 12 guided stops with descriptions. `←` / `→` to step, `Space` to pause. Dragging the view or scrolling hands control to Walk or Aerial.
-- **Walk** (`2`): first person at eye height. `WASD` or arrow keys to move, drag to look, `Shift` to run. On touch screens, use the joystick. Buildings and the lake block movement.
+- **Walk** (`2`): first person at eye height. `WASD` or `↑` / `↓` to move, `←` / `→` or `Q` / `E` to turn, drag to look, `Shift` to run. On touch screens, use the joystick. Buildings and the lake block movement. Pressing a movement key during the tour starts walking from the current stop. Keys also work with a Chinese input method switched on.
 - **Aerial** (`3`): drag to orbit, scroll or pinch to zoom, `Shift` or right-drag to pan.
 
 Click the minimap to go to that spot.
