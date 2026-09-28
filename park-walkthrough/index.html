@@ -1484,22 +1484,210 @@ TREES.plant(shrubSpots.map(([x, h, z]) => ({ x, y: h, z, kind: R() < 0.2 ? 'myrt
   busWin.position.copy(bus.position); scene.add(busWin);
 }
 
-/* ------------------------------- People ------------------------------- */
+/* ------------------------------- People ------------------------------- *
+ * Jointed figures: hips → torso → head, shoulders → elbows → hands,
+ * hips → knees → shoes. Each body part is one merged mesh with vertex
+ * colours (clothes, skin, eyes, lips, hair), so a person is ten draw calls.
+ */
 const walkers = [];
 {
+  const col = new THREE.Color();
+  // merge [geometry, colour, position, rotation, scale] parts into one vertex-coloured mesh
+  function merged(parts) {
+    const P = [], N = [], C = [];
+    for (const [geo, colour, pos = [0, 0, 0], rot = [0, 0, 0], scl = [1, 1, 1]] of parts) {
+      const g = geo.index ? geo.toNonIndexed() : geo.clone();
+      g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(...pos), new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)), new THREE.Vector3(...scl)));
+      col.set(colour);
+      P.push(...g.attributes.position.array); N.push(...g.attributes.normal.array);
+      for (let i = 0; i < g.attributes.position.count; i++) C.push(col.r, col.g, col.b);
+    }
+    const out = new THREE.BufferGeometry();
+    out.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+    out.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
+    out.setAttribute('color', new THREE.Float32BufferAttribute(C, 3));
+    out.computeBoundingSphere();
+    return out;
+  }
+  const sph = new THREE.SphereGeometry(1, 20, 14);
+  const sphLo = new THREE.SphereGeometry(1, 10, 8);
+  const cyl = (r0, r1, h, seg = 12) => new THREE.CylinderGeometry(r1, r0, h, seg);
+  const box = (x, y, z) => new THREE.BoxGeometry(x, y, z);
+  const hairCap = new THREE.SphereGeometry(1, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.56);
+  // one smooth skull: narrows toward the chin and pushes the jaw forward slightly
+  const skull = (() => {
+    const g = new THREE.SphereGeometry(1, 28, 22), p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+      if (y < 0) { const k = y * y; x *= 1 - 0.3 * k; z *= 1 - 0.12 * k; if (z > 0) z += 0.06 * k; y *= 1 + 0.12 * k; }
+      if (z > 0.3 && y > -0.2 && y < 0.35) z *= 0.97;   // slightly flatter face plane
+      p.setXYZ(i, x, y, z);
+    }
+    g.computeVertexNormals();
+    return g;
+  })();
+  const skinMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.72, metalness: 0 });
+
+  const SKIN = ['#eac7a6', '#e0b793', '#d2a47f', '#f1d3b8', '#c8966f'];
+  const HAIR = ['#15110f', '#1e1713', '#2b1f18', '#3a2a1f', '#0f0d0c'];
+  const TOPS = ['#f4f4f0', '#dfe6ee', '#9fb7d3', '#1f2c45', '#3a3d42', '#7e8a92', '#c9b99a', '#a8453c', '#2f5d50', '#e7d8c6'];
+  const BOTTOMS = ['#1d2433', '#23262b', '#3a4a66', '#6b6a64', '#b9a888', '#2e3a52', '#141414'];
+  const SHOES = ['#f0f0ee', '#1a1a1a', '#5a4332', '#2a2d33', '#d8d4cc'];
+  const pick = a => a[Math.floor(R() * a.length)];
+
+  function makePerson() {
+    const skin = pick(SKIN), hair = pick(HAIR), top = pick(TOPS), bottom = pick(BOTTOMS), shoe = pick(SHOES);
+    const longHair = R() < 0.4, shortSleeve = R() < 0.55, skirt = longHair && R() < 0.35;
+    const h = rand(0.92, 1.06);                       // overall height factor (1.0 ≈ 1.70 m)
+    const root = new THREE.Group();
+    const hips = new THREE.Group(); hips.position.y = 0.95; root.add(hips);
+
+    // Torso, pelvis, neck
+    const body = merged([
+      [cyl(0.14, 0.15, 0.2), skirt ? bottom : bottom, [0, 0.0, 0], [0, 0, 0], [1, 1, 0.68]],
+      [cyl(0.155, 0.19, 0.46), top, [0, 0.31, 0], [0, 0, 0], [1, 1, 0.6]],
+      [sph, top, [0, 0.52, 0], [0, 0, 0], [0.188, 0.062, 0.11]],
+      [cyl(0.148, 0.148, 0.035), '#2a2522', [0, 0.095, 0], [0, 0, 0], [1, 1, 0.7]],
+      [cyl(0.048, 0.044, 0.12, 10), skin, [0, 0.61, 0.005]],
+      ...(skirt ? [[cyl(0.2, 0.15, 0.36, 16), bottom, [0, -0.2, 0], [0, 0, 0], [1, 1, 0.8]]] : []),
+    ]);
+    const bodyM = new THREE.Mesh(body, skinMat); hips.add(bodyM);
+
+    // Head: skull, jaw, ears, eyes (sclera + iris), brows, nose, lips, hair — face looks down +z
+    const head = new THREE.Group(); head.position.y = 0.745; hips.add(head);
+    const eyeW = '#f3f0ea', iris = pick(['#2a1b12', '#3b2618', '#1c1510']), lip = '#b8645c';
+    const skinDark = new THREE.Color(skin).multiplyScalar(0.88).getStyle();
+    const headParts = [
+      [skull, skin, [0, 0, 0], [0, 0, 0], [0.093, 0.118, 0.104]],
+      [sph, skin, [-0.093, -0.005, -0.004], [0, 0, 0], [0.012, 0.024, 0.019]],
+      [sph, skin, [0.093, -0.005, -0.004], [0, 0, 0], [0.012, 0.024, 0.019]],
+      // eyes
+      [sph, eyeW, [-0.034, 0.008, 0.093], [0, 0, 0], [0.016, 0.0105, 0.009]],
+      [sph, eyeW, [0.034, 0.008, 0.093], [0, 0, 0], [0.016, 0.0105, 0.009]],
+      [sph, iris, [-0.034, 0.008, 0.1005], [0, 0, 0], [0.0085, 0.0085, 0.004]],
+      [sph, iris, [0.034, 0.008, 0.1005], [0, 0, 0], [0.0085, 0.0085, 0.004]],
+      [sph, '#050505', [-0.034, 0.008, 0.1043], [0, 0, 0], [0.0038, 0.0038, 0.0015]],
+      [sph, '#050505', [0.034, 0.008, 0.1043], [0, 0, 0], [0.0038, 0.0038, 0.0015]],
+      // upper eyelid line
+      [box(0.034, 0.004, 0.006), hair, [-0.034, 0.0185, 0.0955], [0, 0, 0.05]],
+      [box(0.034, 0.004, 0.006), hair, [0.034, 0.0185, 0.0955], [0, 0, -0.05]],
+      // eyebrows
+      [box(0.036, 0.0075, 0.008), hair, [-0.036, 0.036, 0.0935], [-0.15, 0, 0.1]],
+      [box(0.036, 0.0075, 0.008), hair, [0.036, 0.036, 0.0935], [-0.15, 0, -0.1]],
+      // nose: bridge, tip, nostrils
+      [box(0.016, 0.042, 0.018), skin, [0, -0.008, 0.1], [-0.28, 0, 0]],
+      [sph, skin, [0, -0.03, 0.108], [0, 0, 0], [0.0135, 0.011, 0.011]],
+      [sph, skinDark, [-0.009, -0.036, 0.104], [0, 0, 0], [0.006, 0.0045, 0.006]],
+      [sph, skinDark, [0.009, -0.036, 0.104], [0, 0, 0], [0.006, 0.0045, 0.006]],
+      // lips
+      [sph, lip, [0, -0.0585, 0.0955], [0, 0, 0], [0.021, 0.0065, 0.008]],
+      [sph, lip, [0, -0.0655, 0.0945], [0, 0, 0], [0.018, 0.0065, 0.008]],
+      [box(0.038, 0.0025, 0.006), '#6e3431', [0, -0.062, 0.1005]],
+      // hair: cap tilted back so the hairline clears the forehead
+      [hairCap, hair, [0, 0.012, -0.008], [-0.42, 0, 0], [0.1, 0.124, 0.112]],
+      ...(longHair
+        ? [[sph, hair, [0, -0.07, -0.05], [0.15, 0, 0], [0.098, 0.145, 0.07]],
+           [sph, hair, [-0.075, -0.05, -0.01], [0, 0, 0.1], [0.03, 0.1, 0.06]],
+           [sph, hair, [0.075, -0.05, -0.01], [0, 0, -0.1], [0.03, 0.1, 0.06]]]
+        : [[sph, hair, [0, -0.02, -0.04], [0, 0, 0], [0.094, 0.1, 0.075]]]),
+    ];
+    head.add(new THREE.Mesh(merged(headParts), skinMat));
+
+    // Arms: shoulder → upper arm → elbow → forearm + hand
+    const arms = [-1, 1].map(side => {
+      const shoulder = new THREE.Group(); shoulder.position.set(side * 0.205, 0.5, 0); hips.add(shoulder);
+      shoulder.rotation.z = side * 0.06;
+      const upper = merged([
+        [sphLo, top, [0, 0, 0], [0, 0, 0], [0.058, 0.058, 0.058]],
+        [cyl(0.05, 0.043, 0.29, 10), shortSleeve ? skin : top, [0, -0.15, 0]],
+        ...(shortSleeve ? [[cyl(0.056, 0.052, 0.13, 10), top, [0, -0.06, 0]]] : []),
+      ]);
+      shoulder.add(new THREE.Mesh(upper, skinMat));
+      const elbow = new THREE.Group(); elbow.position.y = -0.295; shoulder.add(elbow);
+      const fore = merged([
+        [cyl(0.042, 0.033, 0.25, 10), shortSleeve ? skin : top, [0, -0.125, 0]],
+        [sph, skin, [0, -0.3, 0.004], [0, 0, 0], [0.028, 0.06, 0.042]],             // palm
+        [sph, skin, [side * -0.004, -0.33, 0.018], [0.3, 0, 0], [0.016, 0.03, 0.02]], // fingers curled
+        [sph, skin, [0, -0.278, 0.036], [0.6, 0, 0], [0.012, 0.028, 0.012]],          // thumb
+      ]);
+      elbow.add(new THREE.Mesh(fore, skinMat));
+      return { shoulder, elbow };
+    });
+
+    // Legs: hip → thigh → knee → shin + shoe
+    const legs = [-1, 1].map(side => {
+      const hip = new THREE.Group(); hip.position.set(side * 0.088, -0.03, 0); hips.add(hip);
+      const thigh = merged([[cyl(0.078, 0.058, 0.45, 12), skirt ? skin : bottom, [0, -0.225, 0]]]);
+      hip.add(new THREE.Mesh(thigh, skinMat));
+      const knee = new THREE.Group(); knee.position.y = -0.45; hip.add(knee);
+      const shin = merged([
+        [sphLo, skirt ? skin : bottom, [0, 0, 0], [0, 0, 0], [0.058, 0.058, 0.058]],
+        [cyl(0.055, 0.04, 0.42, 12), skirt ? skin : bottom, [0, -0.21, 0]],
+        [box(0.088, 0.07, 0.25), shoe, [0, -0.44, 0.045]],
+        [box(0.09, 0.02, 0.255), '#e6e3dc', [0, -0.47, 0.045]],   // sole
+      ]);
+      knee.add(new THREE.Mesh(shin, skinMat));
+      return { hip, knee };
+    });
+
+    root.scale.setScalar(h);
+    // soft contact shadow so figures sit on the paving
+    const blob = new THREE.Mesh(new THREE.CircleGeometry(0.34, 16).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: '#000', transparent: true, opacity: 0.22, depthWrite: false }));
+    blob.position.y = 0.015; root.add(blob);
+    return { root, hips, head, arms, legs };
+  }
+
+  // Routes along paved paths: [from, to, half-width of the lane people keep to]
   const routes = [
-    [V(750, 235), V(750, 540)], [V(740, 540), V(1300, 548)], [V(750, 800), V(750, 1030)],
-    [V(516, 250), V(516, 590)], [V(981, 190), V(981, 540)], [V(150, 598), V(690, 598)],
+    [V(750, 235), V(750, 540), 3.5], [V(740, 548), V(1300, 551), 1.8], [V(750, 805), V(750, 1030), 3],
+    [V(516, 250), V(516, 588), 0.8], [V(981, 190), V(981, 540), 0.8], [V(150, 598), V(690, 598), 1.4],
+    [V(800, 364), V(1320, 364), 1.2], [V(1318, 560), V(1318, 990), 1.5],
   ];
-  const geo = new THREE.CapsuleGeometry(0.24, 1.1, 3, 8).translate(0, 0.8, 0);
-  const shirt = ['#2c3e57', '#e8e6e0', '#3b3b3b', '#7e8f9c', '#b6493f', '#d9cfb8'];
-  for (let i = 0; i < 46; i++) {
-    const r = routes[i % routes.length];
-    const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: shirt[i % shirt.length], roughness: 0.8 }));
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), new THREE.MeshStandardMaterial({ color: '#2a2320', roughness: 0.9 }));
-    head.position.y = 1.72; m.add(head);
-    scene.add(m);
-    walkers.push({ m, a: r[0], b: r[1], t: R(), v: rand(0.9, 1.4) / r[0].distanceTo(r[1]), dir: R() < 0.5 ? 1 : -1, off: rand(-3, 3) });
+  for (let i = 0; i < 40; i++) {
+    const [a, b, lane] = routes[i % routes.length];
+    const p = makePerson();
+    scene.add(p.root);
+    const len = a.distanceTo(b);
+    walkers.push({
+      ...p, a, b, len, t: R(), dir: R() < 0.5 ? 1 : -1, off: rand(-lane, lane),
+      speed: rand(1.15, 1.5), phase: rand(0, 6.28), yaw: 0, stride: rand(1.35, 1.55),
+    });
+  }
+}
+const _wp = new THREE.Vector3(), _side = new THREE.Vector3();
+function updateWalkers(dt) {
+  for (const w of walkers) {
+    w.t += w.speed * dt / w.len * w.dir;
+    if (w.t > 1 || w.t < 0) { w.dir *= -1; w.t = THREE.MathUtils.clamp(w.t, 0, 1); }
+    _side.set(w.b.z - w.a.z, 0, w.a.x - w.b.x).normalize();
+    _wp.copy(w.a).lerp(w.b, w.t).addScaledVector(_side, w.off * w.dir);   // keep to their side of the path
+    w.root.position.copy(_wp);
+    // face the direction of travel, turning smoothly at the ends
+    const target = Math.atan2((w.b.x - w.a.x) * w.dir, (w.b.z - w.a.z) * w.dir);
+    let d = target - w.yaw; d = Math.atan2(Math.sin(d), Math.cos(d));
+    w.yaw += d * Math.min(1, dt * 5);
+    w.root.rotation.y = w.yaw;
+    // skip the limb pose for people too far away to see it
+    if (w.root.position.distanceToSquared(camera.position) > 160 * 160) continue;
+    // gait: one full cycle per stride (two steps)
+    w.phase += (w.speed * dt / w.stride) * Math.PI * 2;
+    const ph = w.phase, s = Math.sin(ph), c = Math.cos(ph);
+    for (let k = 0; k < 2; k++) {
+      const sg = k === 0 ? 1 : -1;                 // left and right legs half a cycle apart
+      const ls = s * sg, lc = c * sg;
+      // negative X rotation swings a limb forward (+z)
+      w.legs[k].hip.rotation.x = -ls * 0.42;
+      // knee bends through the swing phase, nearly straight in stance
+      w.legs[k].knee.rotation.x = 0.08 + 0.95 * Math.pow(Math.max(0, lc), 1.6);
+      // arms swing opposite to the leg on the same side
+      w.arms[k].shoulder.rotation.x = ls * 0.36;
+      w.arms[k].elbow.rotation.x = -0.22 - 0.25 * Math.max(0, -ls);
+    }
+    w.hips.position.y = 0.95 + 0.022 * Math.cos(2 * ph);   // rises as the legs pass under the body
+    w.hips.rotation.y = s * 0.06;                          // slight hip and shoulder twist
+    w.head.rotation.y = -s * 0.05;
+    w.hips.rotation.x = 0.03;                              // a little forward lean
   }
 }
 
@@ -1947,13 +2135,7 @@ function tick() {
   waterNormal.offset.set(t * 0.01, t * 0.006);
   windTime.value = t;
   skyMat.uniforms.time.value = t;
-  for (const w of walkers) {
-    w.t += w.v * dt * w.dir;
-    if (w.t > 1 || w.t < 0) { w.dir *= -1; w.t = THREE.MathUtils.clamp(w.t, 0, 1); }
-    const p = w.a.clone().lerp(w.b, w.t);
-    const side = new THREE.Vector3(w.b.z - w.a.z, 0, w.a.x - w.b.x).normalize();
-    w.m.position.copy(p).addScaledVector(side, w.off);
-  }
+  updateWalkers(dt);
   renderer.render(scene, camera);
   adaptQuality(dt);
   updateLabels();

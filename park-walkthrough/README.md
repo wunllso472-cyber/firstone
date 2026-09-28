@@ -35,4 +35,8 @@ Trees are grown procedurally from the species typical of Zhejiang campuses, not 
 - **Young staked street trees**: the rows on the central axis, with green support poles as in the photos.
 - **Clipped hedges** along the axis and shrubs on the green roofs.
 
+## People
+
+About 40 pedestrians walk the paved paths, each keeping to their side and turning around at the ends. They are jointed figures: a torso, two arms with elbows and hands, and two legs with knees and shoes. A walk cycle swings each leg forward in turn, bends the knee through the swing, counter-swings the arms, and adds a slight bob and hip twist. From the front you can see each face: eyes with irises and pupils, eyelids, eyebrows, nose, lips, ears and hair. Clothes, skin tone, hair style and height vary from person to person.
+
 Textures are all drawn at runtime on canvases. There are no image assets.
