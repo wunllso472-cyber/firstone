@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- page -->
-<title>Land of the Wide Horizon</title>
+<title>Land of the Free</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=IBM+Plex+Mono:wght@500&family=Libre+Franklin:wght@400;600;800&display=swap">
@@ -143,14 +143,14 @@
 <body>
 <main class="wrap">
   <header class="head">
-    <p class="eyebrow">Original song &amp; music video · F major · 96 BPM · 2:20</p>
-    <h1>Land of the Wide Horizon <span class="stars">★★★</span></h1>
-    <p class="lede">An anthem for the United States that travels from the Atlantic dawn to the Pacific sunset. A synthetic voice sings the melody over a band your browser plays live, in time with the pictures.</p>
+    <p class="eyebrow">Music video · 108 BPM · 3:25</p>
+    <h1>Land of the Free <span class="stars">★★★</span></h1>
+    <p class="lede">An anthem for the United States that travels from the Atlantic dawn to the Pacific sunset, cut to the beat of the recording.</p>
   </header>
 
   <section class="player" aria-label="Music video player">
     <div class="screen">
-      <canvas id="screen" width="1280" height="720" role="img" aria-label="Animated music video: New York Harbor, the flag, the Great Plains, the Rockies, Washington, city lights, a rocket launch and the Golden Gate"></canvas>
+      <canvas id="screen" width="1280" height="720" role="img" aria-label="Animated music video: New York Harbor, the flag, Monument Valley, the Great Plains, the Rockies, Washington, city lights, a rocket launch and the Golden Gate"></canvas>
       <div class="lyric-box"><span class="lyric" id="lyric"></span></div>
       <button class="big-play" id="bigPlay" type="button">
         <span class="disc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span>
@@ -161,8 +161,8 @@
       <button class="pp" id="pp" type="button" aria-label="Play">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path id="ppIcon" d="M6 4l14 8-14 8z"/></svg>
       </button>
-      <span class="time" id="time">0:00 / 2:20</span>
-      <div class="track" id="track" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="140" aria-valuenow="0">
+      <span class="time" id="time">0:00 / 3:24</span>
+      <div class="track" id="track" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="205" aria-valuenow="0">
         <div class="fill" id="fill"></div>
       </div>
     </div>
@@ -174,357 +174,98 @@
     <div class="cols" id="sheet"></div>
   </section>
 
-  <p class="note">Words and music are original. The lead vocal is a synthetic singing voice: a neural text-to-speech voice (Kokoro, “Heart”) retuned note by note onto the melody with the WORLD vocoder, with a harmony part in the final chorus. The band is synthesized live with the Web Audio API and every frame is drawn on a canvas. Click a lyric or a section to jump to it. Keyboard: <b>Space</b> plays and pauses, <b>←</b> / <b>→</b> skip five seconds.</p>
+  <p class="note">The soundtrack is the recording “Land of the Free” by breezygrunge5444, made with Suno, played unchanged. The video was cut to it: each scene changes on the beat before its lyric begins, the rocket lifts off on “rockets take flight”, fireworks burst on the beats and grow with the loudness, and the lyrics fill in word by word as they are sung. Click a lyric or a section to jump to it. Keyboard: <b>Space</b> plays and pauses, <b>←</b> / <b>→</b> skip five seconds.</p>
 </main>
 
-<script type="application/json" id="song">
-{"lines":[
-{"sec":"Verse 1","t":10,"dur":5,"text":"When the harbor lights meet the morning tide,","notes":[[0.5,2,"When"],[0.5,3,"the"],[1,4,"har"],[1,4,"-bor"],[1,4,"lights"],[0.5,5,"meet"],[0.5,5,"the"],[1,7,"mor"],[1,5,"-ning"],[1,5,"tide"]]},
-{"sec":"Verse 1","t":15,"dur":5,"text":"And the Lady lifts her torch with pride,","notes":[[0.5,4,"And"],[0.5,4,"the"],[1,4,"La"],[1,2,"-dy"],[0.5,0,"lifts"],[0.5,2,"her"],[1,4,"torch"],[1,6,"with"],[2,4,"pride"]]},
-{"sec":"Verse 1","t":20,"dur":5,"text":"Every tired heart from a distant shore","notes":[[0.5,5,"Ev"],[0.5,5,"-ery"],[1,7,"tired"],[1,5,"heart"],[0.5,5,"from"],[0.5,5,"a"],[1,3,"dis"],[1,5,"-tant"],[2,7,"shore"]]},
-{"sec":"Verse 1","t":25,"dur":5,"text":"Finds a welcome here at the open door.","notes":[[0.5,7,"Finds"],[0.5,6,"a"],[1,4,"wel"],[1,2,"-come"],[0.5,4,"here"],[0.5,4,"at"],[0.5,4,"the"],[0.5,6,"o"],[1,4,"-pen"],[2,1,"door"]]},
-{"sec":"Chorus","t":30,"dur":5,"text":"Oh, America, land of the wide horizon,","notes":[[0.5,4,"Oh"],[0.5,4,"A"],[1,7,"-mer"],[0.5,7,"-i"],[0.5,6,"-ca"],[0.5,4,"land"],[0.5,4,"of"],[0.5,4,"the"],[1,8,"wide"],[0.5,6,"ho"],[1,6,"-ri"],[1,4,"-zon"]]},
-{"sec":"Chorus","t":35,"dur":5,"text":"Fifty stars that burn as one,","notes":[[0.5,5,"Fif"],[0.5,7,"-ty"],[2,9,"stars"],[1,7,"that"],[1.5,7,"burn"],[0.5,5,"as"],[2,3,"one"]]},
-{"sec":"Chorus","t":40,"dur":5,"text":"From the Eastern shore to the Western skyline,","notes":[[0.5,4,"From"],[0.5,4,"the"],[1,7,"East"],[0.5,7,"-ern"],[1,9,"shore"],[0.5,7,"to"],[0.5,7,"the"],[1,10,"West"],[0.5,9,"-ern"],[1,9,"sky"],[1,7,"-line"]]},
-{"sec":"Chorus","t":45,"dur":5,"text":"Home of the brave beneath the sun.","notes":[[1,8,"Home"],[0.5,8,"of"],[0.5,6,"the"],[1.5,8,"brave"],[0.5,6,"be"],[1,4,"-neath"],[0.5,6,"the"],[2.5,7,"sun"]]},
-{"sec":"Verse 2","t":50,"dur":5,"text":"Golden wheat rolls across the plains,","notes":[[1,2,"Gold"],[1,3,"-en"],[1,4,"wheat"],[1,4,"rolls"],[0.5,5,"a"],[1.5,7,"-cross"],[0.5,5,"the"],[1.5,5,"plains"]]},
-{"sec":"Verse 2","t":55,"dur":5,"text":"Barn doors open to the summer rains,","notes":[[1,4,"Barn"],[1,2,"doors"],[0.5,0,"o"],[0.5,2,"-pen"],[0.5,2,"to"],[0.5,2,"the"],[1,4,"sum"],[1,6,"-mer"],[2,4,"rains"]]},
-{"sec":"Verse 2","t":60,"dur":5,"text":"Eagles circle where the Rockies climb,","notes":[[0.5,5,"Ea"],[0.5,5,"-gles"],[1,7,"cir"],[1,5,"-cle"],[0.5,5,"where"],[0.5,5,"the"],[1,3,"Rock"],[1,5,"-ies"],[2,7,"climb"]]},
-{"sec":"Verse 2","t":65,"dur":5,"text":"Rivers carry every dream in time.","notes":[[0.5,7,"Riv"],[0.5,6,"-ers"],[1,4,"car"],[1,2,"-ry"],[0.5,4,"ev"],[0.5,4,"-ery"],[1,6,"dream"],[1,4,"in"],[2,1,"time"]]},
-{"sec":"Chorus","t":70,"dur":5,"text":"Oh, America, land of the wide horizon,","notes":[[0.5,4,"Oh"],[0.5,4,"A"],[1,7,"-mer"],[0.5,7,"-i"],[0.5,6,"-ca"],[0.5,4,"land"],[0.5,4,"of"],[0.5,4,"the"],[1,8,"wide"],[0.5,6,"ho"],[1,6,"-ri"],[1,4,"-zon"]]},
-{"sec":"Chorus","t":75,"dur":5,"text":"Fifty stars that burn as one,","notes":[[0.5,5,"Fif"],[0.5,7,"-ty"],[2,9,"stars"],[1,7,"that"],[1.5,7,"burn"],[0.5,5,"as"],[2,3,"one"]]},
-{"sec":"Chorus","t":80,"dur":5,"text":"From the Eastern shore to the Western skyline,","notes":[[0.5,4,"From"],[0.5,4,"the"],[1,7,"East"],[0.5,7,"-ern"],[1,9,"shore"],[0.5,7,"to"],[0.5,7,"the"],[1,10,"West"],[0.5,9,"-ern"],[1,9,"sky"],[1,7,"-line"]]},
-{"sec":"Chorus","t":85,"dur":5,"text":"Home of the brave beneath the sun.","notes":[[1,8,"Home"],[0.5,8,"of"],[0.5,6,"the"],[1.5,8,"brave"],[0.5,6,"be"],[1,4,"-neath"],[0.5,6,"the"],[2.5,7,"sun"]]},
-{"sec":"Bridge","t":90,"dur":5,"text":"Neon towers light the city night,","notes":[[1,5,"Ne"],[0.5,5,"-on"],[1,7,"tow"],[0.5,5,"-ers"],[1,5,"light"],[0.5,3,"the"],[1,5,"ci"],[0.5,3,"-ty"],[2,5,"night"]]},
-{"sec":"Bridge","t":95,"dur":5,"text":"Engines thunder and the rockets take flight,","notes":[[0.5,4,"En"],[0.5,2,"-gines"],[1,4,"thun"],[0.5,4,"-der"],[0.5,2,"and"],[0.5,2,"the"],[0.5,4,"rock"],[0.5,4,"-ets"],[1,6,"take"],[2.5,8,"flight"]]},
-{"sec":"Bridge","t":100,"dur":5,"text":"Many voices, and one song we share,","notes":[[0.5,9,"Ma"],[0.5,9,"-ny"],[1,7,"voi"],[1,5,"-ces"],[0.5,7,"and"],[0.5,7,"one"],[1.5,7,"song"],[0.5,7,"we"],[2,10,"share"]]},
-{"sec":"Bridge","t":105,"dur":5,"text":"Freedom ringing through the open air.","notes":[[1,8,"Free"],[0.5,6,"-dom"],[1,8,"ring"],[0.5,6,"-ing"],[0.5,6,"through"],[0.5,6,"the"],[0.5,8,"o"],[0.5,8,"-pen"],[3,11,"air"]]},
-{"sec":"Final Chorus","t":110,"dur":5,"text":"Oh, America, land of the wide horizon,","notes":[[0.5,4,"Oh"],[0.5,4,"A"],[1,7,"-mer"],[0.5,7,"-i"],[0.5,6,"-ca"],[0.5,4,"land"],[0.5,4,"of"],[0.5,4,"the"],[1,8,"wide"],[0.5,6,"ho"],[1,6,"-ri"],[1,4,"-zon"]]},
-{"sec":"Final Chorus","t":115,"dur":5,"text":"Fifty stars that burn as one,","notes":[[0.5,5,"Fif"],[0.5,7,"-ty"],[2,9,"stars"],[1,7,"that"],[1.5,7,"burn"],[0.5,5,"as"],[2,3,"one"]]},
-{"sec":"Final Chorus","t":120,"dur":5,"text":"From the Golden Gate to the Liberty skyline,","notes":[[0.5,4,"From"],[0.5,4,"the"],[1,7,"Gold"],[0.5,7,"-en"],[1,9,"Gate"],[0.5,7,"to"],[0.5,7,"the"],[0.5,10,"Lib"],[0.5,10,"-er"],[0.5,9,"-ty"],[1,9,"sky"],[1,7,"-line"]]},
-{"sec":"Final Chorus","t":125,"dur":5,"text":"Home of the brave beneath the sun.","notes":[[1,8,"Home"],[0.5,8,"of"],[0.5,6,"the"],[1.5,8,"brave"],[0.5,6,"be"],[1,4,"-neath"],[0.5,6,"the"],[2.5,7,"sun"]]},
-{"sec":"Outro","t":130,"dur":10,"text":"Land of the free, home of the brave.","notes":[[1,5,"Land"],[0.5,5,"of"],[0.5,5,"the"],[2,5,"free"],[1,4,"home"],[0.5,6,"of"],[0.5,8,"the"],[8,7,"brave"]]}
-]}
-</script>
-<script src="vocals.js"></script>
+<script type="application/json" id="timing">{"duration":204.76,"bpm":107.7,"beats":[[0.19,1.0],[0.84,0.33],[1.39,0.69],[1.97,0.66],[2.53,0.52],[3.09,0.14],[3.62,0.56],[4.18,0.69],[4.71,0.74],[5.27,0.32],[5.83,0.6],[6.39,0.68],[6.94,0.59],[7.5,0.61],[8.06,0.61],[8.64,0.55],[9.17,0.56],[9.78,0.33],[10.31,0.5],[10.87,0.48],[11.4,0.54],[11.96,0.23],[12.49,0.52],[13.07,0.45],[13.63,0.5],[14.19,0.18],[14.74,0.31],[15.3,0.43],[15.84,0.49],[16.32,0.19],[16.83,0.13],[17.35,0.37],[17.86,0.78],[18.37,0.39],[18.9,0.46],[19.5,0.97],[20.06,0.61],[20.57,0.32],[21.11,1.0],[21.78,0.42],[22.31,1.0],[22.92,0.37],[23.57,0.62],[24.2,0.73],[24.75,0.67],[25.31,0.93],[25.87,0.95],[26.4,1.0],[26.98,0.69],[27.54,0.21],[28.1,0.34],[28.65,0.54],[29.16,1.0],[29.79,0.79],[30.33,0.37],[30.88,0.58],[31.44,0.62],[31.97,0.62],[32.53,0.82],[33.09,0.43],[33.65,0.36],[34.2,0.41],[34.76,0.76],[35.32,0.51],[35.87,0.94],[36.46,0.8],[37.01,0.5],[37.62,0.22],[38.24,0.45],[38.8,0.4],[39.36,0.5],[39.92,0.89],[40.47,0.82],[41.03,0.79],[41.59,0.42],[42.14,0.32],[42.7,0.5],[43.24,0.24],[43.82,0.56],[44.37,0.86],[44.93,0.84],[45.51,0.63],[46.05,0.73],[46.6,0.4],[47.16,0.82],[47.72,0.24],[48.27,0.25],[48.83,0.31],[49.39,0.44],[49.95,0.47],[50.48,0.49],[51.06,0.63],[51.62,0.63],[52.18,0.27],[52.73,0.86],[53.29,0.91],[53.85,0.98],[54.4,0.7],[54.96,1.0],[55.5,0.64],[56.05,0.38],[56.63,0.23],[57.17,0.27],[57.72,0.28],[58.28,0.32],[58.82,0.41],[59.4,0.34],[59.95,0.41],[60.49,0.65],[61.05,0.26],[61.6,0.27],[62.16,0.5],[62.72,0.81],[63.27,0.59],[63.83,0.38],[64.39,0.25],[64.95,0.78],[65.5,0.32],[66.06,0.47],[66.62,0.41],[67.18,0.52],[67.73,0.45],[68.27,0.58],[68.82,0.68],[69.38,0.69],[69.94,1.0],[70.5,1.0],[71.03,1.0],[71.59,1.0],[72.14,0.89],[72.7,0.82],[73.26,0.8],[73.82,0.71],[74.37,0.71],[74.91,1.0],[75.46,0.84],[76.05,0.84],[76.58,0.6],[77.14,0.59],[77.69,0.71],[78.23,1.0],[78.81,1.0],[79.37,0.62],[79.9,0.5],[80.48,0.58],[81.04,0.7],[81.57,0.79],[82.13,0.64],[82.69,0.75],[83.24,1.0],[83.82,0.66],[84.38,0.78],[84.92,0.66],[85.45,0.7],[86.03,0.59],[86.59,0.82],[87.14,0.56],[87.7,0.69],[88.26,0.68],[88.79,0.59],[89.37,0.64],[89.91,0.93],[90.46,0.37],[91.02,0.73],[91.58,0.64],[92.14,0.51],[92.69,0.68],[93.25,0.45],[93.81,0.61],[94.37,0.49],[94.92,0.58],[95.48,0.53],[96.04,0.62],[96.6,0.7],[97.13,0.59],[97.69,0.47],[98.24,0.64],[98.8,0.36],[99.36,0.83],[99.92,0.82],[100.47,0.75],[101.03,0.8],[101.59,0.58],[102.12,0.54],[102.68,0.4],[103.24,0.36],[103.82,0.43],[104.37,0.35],[104.91,0.51],[105.47,0.53],[106.0,0.59],[106.58,0.64],[107.14,0.41],[107.69,0.63],[108.25,0.87],[108.81,0.57],[109.37,0.75],[109.92,0.68],[110.48,0.73],[111.01,0.43],[111.57,0.43],[112.13,0.31],[112.69,0.38],[113.24,0.45],[113.8,0.46],[114.36,0.4],[114.92,0.4],[115.47,0.44],[116.01,0.43],[116.59,0.43],[117.14,0.52],[117.7,0.7],[118.24,0.75],[118.79,0.39],[119.35,0.51],[119.91,0.39],[120.47,0.74],[121.02,0.6],[121.58,0.92],[122.14,0.89],[122.69,0.75],[123.25,0.95],[123.81,0.8],[124.37,0.68],[124.92,0.63],[125.48,0.75],[126.01,0.9],[126.57,0.96],[127.13,0.98],[127.69,0.95],[128.24,0.88],[128.8,0.95],[129.36,0.99],[129.92,0.2],[130.47,0.37],[131.03,0.42],[131.59,0.46],[132.14,0.31],[132.7,0.41],[133.26,0.5],[133.79,0.64],[134.37,0.64],[134.91,0.27],[135.47,0.41],[136.02,0.65],[136.6,0.39],[137.14,0.6],[137.69,0.5],[138.25,1.0],[138.81,0.95],[139.37,0.33],[139.9,0.55],[140.48,0.85],[141.04,0.35],[141.6,0.41],[142.15,0.57],[142.69,0.6],[143.24,0.45],[143.8,0.61],[144.36,0.64],[144.92,0.44],[145.47,0.48],[146.03,0.58],[146.59,0.53],[147.14,0.5],[147.7,0.49],[148.26,0.46],[148.79,0.4],[149.37,0.52],[149.93,0.5],[150.53,0.62],[151.14,0.39],[151.74,0.46],[152.35,0.31],[152.93,0.55],[153.53,0.34],[154.09,0.72],[154.64,0.59],[155.18,0.53],[155.74,0.15],[156.29,0.51],[156.85,0.21],[157.41,0.89],[157.97,0.18],[158.5,0.43],[159.06,0.21],[159.61,0.67],[160.17,0.37],[160.71,0.3],[161.26,0.14],[161.8,0.46],[162.35,0.15],[162.89,0.29],[163.45,0.49],[163.98,0.56],[164.56,0.51],[165.09,0.36],[165.67,0.24],[166.21,0.88],[166.77,0.42],[167.3,0.4],[167.83,0.44],[168.39,0.5],[168.95,0.43],[169.48,0.69],[170.06,0.3],[170.62,0.4],[171.18,0.5],[171.71,0.74],[172.27,0.27],[172.83,0.52],[173.38,0.39],[173.92,0.56],[174.47,0.37],[175.01,0.48],[175.57,0.55],[176.12,0.44],[176.66,0.51],[177.24,0.54],[177.77,0.46],[178.33,0.37],[178.89,0.37],[179.44,0.66],[179.98,0.81],[180.54,0.8],[181.09,0.77],[181.65,0.73],[182.21,0.68],[182.76,0.62],[183.3,0.19],[183.83,0.51],[184.39,0.67],[184.95,0.59],[185.53,0.41],[186.06,0.65],[186.62,0.53],[187.18,0.83],[187.73,0.69],[188.29,0.61],[188.85,0.53],[189.38,0.65],[189.96,0.44],[190.52,0.71],[191.08,0.9],[191.63,0.7],[192.19,0.18],[192.75,0.37],[193.33,0.21],[193.89,0.87],[194.44,0.33],[194.98,0.97],[195.54,0.91],[196.09,1.0],[196.65,1.0],[197.21,0.85],[197.76,0.49],[198.32,0.66],[198.88,0.44],[199.41,1.0],[199.97,1.0],[200.53,0.83],[201.11,0.65]],"energy":[0.0,0.0,0.0,0.03,0.1,0.15,0.09,0.08,0.08,0.07,0.08,0.08,0.07,0.06,0.06,0.05,0.03,0.0,0.01,0.02,0.03,0.06,0.08,0.09,0.1,0.13,0.15,0.19,0.2,0.21,0.18,0.14,0.09,0.04,0.0,0.0,0.02,0.06,0.08,0.11,0.12,0.12,0.11,0.13,0.12,0.15,0.2,0.23,0.24,0.27,0.23,0.16,0.11,0.08,0.05,0.02,0.01,0.02,0.02,0.03,0.03,0.01,0.0,0.0,0.0,0.01,0.04,0.05,0.09,0.11,0.14,0.13,0.12,0.11,0.12,0.12,0.15,0.17,0.16,0.16,0.18,0.21,0.23,0.23,0.24,0.25,0.26,0.3,0.33,0.33,0.39,0.4,0.39,0.4,0.38,0.29,0.26,0.26,0.23,0.26,0.26,0.28,0.3,0.32,0.27,0.23,0.19,0.19,0.21,0.22,0.28,0.28,0.3,0.32,0.34,0.3,0.29,0.21,0.17,0.16,0.17,0.19,0.2,0.25,0.28,0.29,0.28,0.28,0.23,0.25,0.28,0.3,0.31,0.31,0.29,0.29,0.3,0.34,0.38,0.38,0.38,0.4,0.39,0.39,0.41,0.41,0.39,0.4,0.4,0.41,0.42,0.43,0.43,0.43,0.45,0.44,0.44,0.48,0.49,0.46,0.46,0.45,0.42,0.4,0.37,0.35,0.3,0.23,0.18,0.12,0.05,0.0,0.01,0.08,0.17,0.27,0.35,0.41,0.35,0.35,0.33,0.34,0.29,0.3,0.25,0.19,0.11,0.09,0.06,0.04,0.03,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.07,0.09,0.12,0.22,0.31,0.3,0.29,0.23,0.19,0.14,0.06,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.03,0.14,0.26,0.4,0.43,0.45,0.46,0.44,0.45,0.35,0.27,0.22,0.13,0.0,0.03,0.03,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.05,0.13,0.25,0.27,0.18,0.25,0.27,0.24,0.31,0.37,0.33,0.3,0.25,0.24,0.2,0.15,0.11,0.09,0.03,0.0,0.0,0.0,0.0,0.04,0.12,0.13,0.1,0.06,0.02,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.02,0.02,0.0,0.0,0.0,0.0,0.0,0.0,0.02,0.07,0.15,0.17,0.18,0.14,0.12,0.11,0.08,0.04,0.06,0.05,0.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.03,0.12,0.21,0.23,0.21,0.19,0.15,0.12,0.13,0.18,0.18,0.2,0.2,0.18,0.15,0.13,0.11,0.11,0.1,0.09,0.07,0.05,0.04,0.04,0.08,0.09,0.1,0.1,0.11,0.11,0.14,0.17,0.2,0.23,0.23,0.28,0.34,0.42,0.48,0.55,0.57,0.58,0.6,0.62,0.62,0.63,0.62,0.63,0.66,0.64,0.57,0.54,0.42,0.34,0.34,0.34,0.33,0.32,0.25,0.2,0.15,0.11,0.08,0.05,0.05,0.04,0.04,0.04,0.09,0.11,0.22,0.29,0.36,0.37,0.35,0.33,0.35,0.32,0.35,0.42,0.42,0.46,0.54,0.58,0.56,0.53,0.48,0.44,0.38,0.36,0.36,0.36,0.41,0.47,0.47,0.46,0.43,0.33,0.3,0.29,0.28,0.29,0.3,0.3,0.3,0.32,0.31,0.31,0.27,0.26,0.22,0.19,0.16,0.13,0.14,0.16,0.16,0.15,0.17,0.14,0.15,0.16,0.18,0.17,0.17,0.18,0.25,0.25,0.26,0.31,0.31,0.26,0.26,0.33,0.29,0.25,0.27,0.39,0.43,0.53,0.63,0.71,0.7,0.71,0.71,0.69,0.67,0.64,0.63,0.62,0.63,0.63,0.64,0.64,0.64,0.64,0.65,0.62,0.61,0.6,0.59,0.55,0.54,0.47,0.45,0.48,0.44,0.38,0.36,0.35,0.35,0.46,0.54,0.6,0.57,0.5,0.46,0.4,0.35,0.34,0.33,0.33,0.39,0.49,0.54,0.56,0.52,0.48,0.43,0.39,0.35,0.32,0.3,0.27,0.24,0.2,0.17,0.11,0.12,0.13,0.16,0.18,0.2,0.2,0.25,0.28,0.32,0.32,0.34,0.32,0.28,0.27,0.25,0.25,0.25,0.3,0.31,0.32,0.33,0.29,0.36,0.41,0.48,0.52,0.62,0.6,0.67,0.67,0.61,0.57,0.53,0.42,0.39,0.37,0.37,0.4,0.48,0.56,0.66,0.73,0.77,0.77,0.77,0.73,0.74,0.71,0.68,0.69,0.7,0.67,0.68,0.69,0.57,0.54,0.5,0.46,0.42,0.52,0.55,0.52,0.46,0.41,0.37,0.33,0.34,0.35,0.35,0.27,0.2,0.16,0.25,0.36,0.46,0.55,0.63,0.61,0.6,0.54,0.52,0.54,0.52,0.49,0.51,0.48,0.42,0.37,0.32,0.27,0.24,0.19,0.18,0.15,0.19,0.19,0.19,0.16,0.16,0.12,0.22,0.32,0.41,0.52,0.56,0.54,0.51,0.46,0.41,0.41,0.4,0.37,0.34,0.32,0.24,0.2,0.22,0.29,0.33,0.4,0.41,0.4,0.37,0.36,0.3,0.26,0.23,0.22,0.24,0.28,0.33,0.37,0.37,0.39,0.41,0.41,0.42,0.43,0.42,0.39,0.37,0.36,0.36,0.3,0.27,0.21,0.13,0.13,0.17,0.21,0.27,0.29,0.23,0.15,0.08,0.09,0.08,0.09,0.1,0.19,0.2,0.3,0.34,0.42,0.42,0.37,0.33,0.33,0.3,0.27,0.28,0.22,0.25,0.28,0.29,0.26,0.27,0.24,0.22,0.2,0.19,0.22,0.19,0.24,0.27,0.33,0.34,0.36,0.35,0.38,0.39,0.37,0.42,0.4,0.46,0.5,0.57,0.55,0.58,0.59,0.63,0.62,0.67,0.69,0.58,0.64,0.62,0.58,0.53,0.56,0.47,0.49,0.47,0.49,0.46,0.39,0.43,0.46,0.42,0.4,0.45,0.36,0.41,0.46,0.45,0.41,0.34,0.36,0.37,0.34,0.29,0.36,0.26,0.31,0.31,0.35,0.34,0.32,0.31,0.34,0.33,0.31,0.29,0.18,0.3,0.29,0.29,0.31,0.35,0.31,0.39,0.44,0.47,0.48,0.42,0.48,0.49,0.52,0.57,0.56,0.48,0.48,0.46,0.39,0.41,0.36,0.38,0.34,0.36,0.38,0.39,0.33,0.36,0.36,0.34,0.38,0.38,0.42,0.44,0.45,0.43,0.42,0.33,0.36,0.35,0.34,0.32,0.3,0.35,0.36,0.34,0.37,0.43,0.34,0.41,0.43,0.42,0.36,0.35,0.34,0.37,0.41,0.48,0.48,0.37,0.43,0.43,0.37,0.39,0.46,0.42,0.44,0.5,0.49,0.49,0.46,0.49,0.52,0.47,0.44,0.44,0.36,0.31,0.32,0.34,0.36,0.37,0.43,0.48,0.46,0.4,0.36,0.29,0.38,0.38,0.45,0.45,0.41,0.38,0.43,0.42,0.48,0.55,0.49,0.51,0.47,0.43,0.41,0.41,0.42,0.47,0.47,0.49,0.51,0.44,0.46,0.49,0.51,0.52,0.55,0.54,0.56,0.52,0.48,0.47,0.39,0.47,0.46,0.44,0.45,0.49,0.41,0.48,0.54,0.53,0.53,0.5,0.53,0.53,0.53,0.53,0.54,0.51,0.58,0.63,0.64,0.64,0.59,0.6,0.58,0.6,0.61,0.64,0.6,0.67,0.71,0.78,0.82,0.87,0.89,0.91,0.87,0.88,0.87,0.79,0.86,0.88,0.87,0.8,0.76,0.7,0.68,0.66,0.68,0.69,0.59,0.66,0.66,0.68,0.66,0.67,0.59,0.59,0.53,0.52,0.52,0.44,0.54,0.57,0.62,0.64,0.65,0.53,0.6,0.55,0.56,0.61,0.69,0.73,0.81,0.84,0.84,0.81,0.73,0.77,0.72,0.64,0.63,0.61,0.62,0.69,0.77,0.76,0.75,0.6,0.67,0.62,0.6,0.57,0.56,0.5,0.55,0.54,0.53,0.55,0.43,0.5,0.48,0.53,0.52,0.54,0.47,0.57,0.58,0.61,0.62,0.56,0.58,0.54,0.52,0.47,0.47,0.41,0.54,0.57,0.58,0.61,0.62,0.63,0.62,0.64,0.68,0.73,0.7,0.85,0.96,0.96,0.94,0.93,0.9,0.89,0.9,0.89,0.89,0.86,0.9,0.89,0.9,0.9,0.88,0.88,0.88,0.89,0.89,0.89,0.87,0.94,0.92,0.89,0.85,0.75,0.67,0.71,0.7,0.63,0.61,0.53,0.56,0.59,0.69,0.74,0.78,0.66,0.69,0.63,0.59,0.63,0.66,0.7,0.76,0.81,0.78,0.73,0.6,0.67,0.64,0.6,0.58,0.54,0.52,0.52,0.53,0.5,0.54,0.44,0.55,0.59,0.65,0.69,0.7,0.65,0.7,0.74,0.73,0.74,0.66,0.7,0.63,0.59,0.53,0.53,0.51,0.61,0.61,0.61,0.63,0.52,0.59,0.67,0.74,0.76,0.86,0.78,0.83,0.83,0.79,0.73,0.71,0.73,0.73,0.73,0.75,0.78,0.75,0.84,0.94,0.99,0.99,0.99,1.0,1.0,1.0,1.0,0.97,0.93,0.97,0.97,0.94,0.96,0.87,0.84,0.82,0.8,0.79,0.88,0.87,0.89,0.84,0.75,0.71,0.71,0.72,0.81,0.82,0.77,0.7,0.58,0.65,0.75,0.84,0.92,1.0,0.93,0.93,0.87,0.81,0.82,0.82,0.87,0.9,0.94,0.88,0.82,0.68,0.7,0.63,0.56,0.53,0.49,0.52,0.53,0.52,0.47,0.46,0.31,0.48,0.6,0.69,0.79,0.86,0.82,0.81,0.77,0.74,0.74,0.65,0.73,0.71,0.67,0.65,0.6,0.56,0.64,0.68,0.68,0.7,0.63,0.68,0.66,0.62,0.58,0.52,0.43,0.5,0.55,0.59,0.63,0.62,0.65,0.64,0.64,0.68,0.72,0.67,0.73,0.71,0.63,0.54,0.42,0.4,0.36,0.33,0.38,0.5,0.48,0.66,0.76,0.7,0.57,0.44,0.46,0.47,0.49,0.5,0.63,0.51,0.63,0.73,0.81,0.78,0.76,0.67,0.65,0.59,0.51,0.47,0.35,0.45,0.46,0.49,0.47,0.47,0.36,0.42,0.41,0.42,0.45,0.4,0.49,0.52,0.56,0.55,0.62,0.47,0.58,0.59,0.6,0.6,0.61,0.62,0.66,0.7,0.65,0.68,0.52,0.63,0.61,0.63,0.58,0.66,0.63,0.7,0.78,0.87,0.87,0.8,0.74,0.7,0.61,0.57,0.59,0.63,0.66,0.72,0.73,0.65,0.57,0.56,0.6,0.53,0.57,0.64,0.53,0.53,0.62,0.61,0.56,0.6,0.53,0.51,0.52,0.56,0.58,0.57,0.56,0.52,0.47,0.41,0.37,0.3,0.27,0.26,0.26,0.27,0.31,0.44,0.53,0.63,0.7,0.75,0.71,0.67,0.59,0.58,0.59,0.59,0.62,0.68,0.68,0.68,0.66,0.64,0.63,0.6,0.6,0.6,0.61,0.68,0.73,0.71,0.71,0.66,0.55,0.56,0.62,0.62,0.62,0.63,0.66,0.67,0.7,0.76,0.78,0.69,0.66,0.65,0.6,0.56,0.54,0.54,0.53,0.54,0.56,0.58,0.56,0.61,0.63,0.67,0.68,0.71,0.66,0.66,0.59,0.6,0.57,0.49,0.53,0.58,0.57,0.61,0.71,0.66,0.67,0.7,0.69,0.71,0.8,0.79,0.79,0.78,0.72,0.62,0.59,0.64,0.64,0.65,0.67,0.64,0.55,0.48,0.41,0.33,0.31,0.29,0.43,0.54,0.64,0.76,0.8,0.74,0.76,0.81,0.8,0.84,0.8,0.77,0.66,0.58,0.46,0.42,0.43,0.54,0.63,0.71,0.8,0.78,0.82,0.82,0.9,0.94,0.97,0.94,0.94,0.93,0.92,0.95,0.95,0.99,1.0,0.99,0.96,0.98,0.96,0.94,0.87,0.83,0.82,0.78,0.83,0.89,0.94,0.92,0.96,0.92,0.95,0.97,0.99,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.98,1.0,0.98,0.96,0.91,0.91,0.91,0.93,0.92,0.91,0.93,0.89,0.92,0.88,0.86,0.82,0.83,0.74,0.81,0.88,0.9,0.89,0.93,0.88,0.9,0.86,0.86,0.86,0.87,0.77,0.85,0.87,0.87,0.86,0.86,0.74,0.68,0.66,0.65,0.66,0.67,0.63,0.62,0.62,0.64,0.68,0.7,0.61,0.55,0.53,0.51,0.5,0.49,0.51,0.59,0.62,0.67,0.71,0.72,0.64,0.58,0.56,0.57,0.64,0.69,0.78,0.83,0.9,0.89,0.82,0.74,0.67,0.55,0.48,0.48,0.5,0.62,0.73,0.78,0.78,0.77,0.67,0.66,0.61,0.58,0.56,0.53,0.57,0.61,0.65,0.69,0.68,0.55,0.51,0.49,0.47,0.47,0.49,0.6,0.62,0.64,0.66,0.68,0.52,0.45,0.38,0.32,0.26,0.25,0.4,0.38,0.38,0.47,0.58,0.49,0.5,0.51,0.49,0.52,0.55,0.72,0.88,0.94,0.93,0.94,0.89,0.88,0.88,0.87,0.87,0.85,0.87,0.87,0.88,0.87,0.86,0.83,0.84,0.83,0.83,0.84,0.82,0.86,0.87,0.89,0.85,0.77,0.68,0.71,0.63,0.55,0.53,0.5,0.54,0.58,0.69,0.74,0.74,0.61,0.6,0.5,0.46,0.5,0.54,0.64,0.72,0.82,0.82,0.8,0.67,0.69,0.69,0.66,0.63,0.59,0.63,0.63,0.67,0.72,0.77,0.64,0.64,0.6,0.59,0.56,0.54,0.6,0.64,0.68,0.76,0.84,0.86,0.88,0.87,0.84,0.84,0.75,0.81,0.82,0.83,0.84,0.83,0.83,0.86,0.87,0.83,0.9,0.77,0.82,0.87,0.92,0.88,0.94,0.92,0.88,0.84,0.83,0.88,0.81,0.91,0.9,0.87,0.79,0.75,0.73,0.74,0.73,0.72,0.73,0.58,0.69,0.69,0.7,0.73,0.84,0.84,0.94,0.96,1.0,1.0,0.94,0.98,1.0,0.96,0.93,0.96,0.93,0.99,1.0,0.98,0.91,0.79,0.84,0.84,0.91,0.96,1.0,1.0,1.0,1.0,0.97,0.96,0.91,0.95,0.95,0.98,0.96,0.96,0.9,0.93,0.93,0.91,0.9,0.82,0.86,0.8,0.77,0.72,0.71,0.64,0.76,0.83,0.9,0.97,0.97,1.0,0.98,0.95,0.93,0.96,0.9,0.96,0.95,0.95,0.92,0.84,0.88,0.93,0.92,0.91,0.95,0.84,0.83,0.77,0.73,0.64,0.55,0.63,0.65,0.66,0.68,0.72,0.57,0.66,0.68,0.69,0.71,0.74,0.79,0.79,0.79,0.76,0.76,0.62,0.73,0.75,0.77,0.79,0.79,0.83,0.81,0.82,0.79,0.85,0.72,0.85,0.88,0.88,0.9,0.93,0.93,0.92,0.95,0.85,0.79,0.65,0.57,0.5,0.44,0.48,0.51,0.59,0.68,0.78,0.71,0.65,0.59,0.7,0.69,0.75,0.77,0.84,0.83,0.89,0.96,1.0,0.99,0.87,0.88,0.83,0.82,0.81,0.79,0.78,0.8,0.81,0.8,0.8,0.72,0.77,0.76,0.75,0.74,0.75,0.75,0.81,0.84,0.86,0.86,0.8,0.85,0.89,0.95,1.0,1.0,0.99,0.99,0.96,0.96,0.97,0.95,0.98,0.96,1.0,0.91,0.82,0.78,0.88,0.85,0.89,0.92,0.88,0.86,0.83,0.81,0.8,0.78,0.71,0.82,0.84,0.85,0.87,0.86,0.81,0.84,0.86,0.86,0.88,0.84,0.97,0.99,1.0,0.99,0.97,0.79,0.73,0.67,0.62,0.58,0.56,0.57,0.64,0.69,0.76,0.81,0.84,0.82,0.79,0.71,0.69,0.64,0.58,0.69,0.78,0.8,0.87,0.89,0.77,0.77,0.7,0.65,0.64,0.69,0.7,0.74,0.75,0.77,0.71,0.72,0.71,0.71,0.67,0.69,0.62,0.68,0.64,0.61,0.58,0.55,0.58,0.63,0.78,0.8,0.95,0.85,1.0,0.97,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.96,0.83,0.95,0.96,0.96,0.95,1.0,0.86,0.85,0.85,0.85,0.77,0.7,0.8,0.85,0.91,0.93,0.97,0.94,0.93,0.99,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.86,0.92,0.91,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.98,0.8,0.6,0.45,0.36,0.32,0.25,0.22,0.14,0.06,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"sections":[{"name":"Intro","start":0.0},{"name":"Verse 1","start":16.83},{"name":"Chorus","start":37.01},{"name":"Verse 2","start":73.26},{"name":"Chorus","start":92.14},{"name":"Bridge","start":128.8},{"name":"Final Chorus","start":149.93},{"name":"Outro","start":187.18}],"scenes":[{"k":"intro","a":0.0,"b":16.83,"label":null,"sub":null},{"k":"harbor","a":16.83,"b":37.01,"label":"New York Harbor","sub":"Verse 1"},{"k":"flag","a":37.01,"b":54.96,"label":"Old Glory","sub":"Chorus"},{"k":"valley","a":54.96,"b":73.26,"label":"Monument Valley, Arizona","sub":"Chorus"},{"k":"prairie","a":73.26,"b":82.69,"label":"Kansas Wheat Country","sub":"Verse 2"},{"k":"mountains","a":82.69,"b":92.14,"label":"The Rocky Mountains","sub":"Verse 2"},{"k":"capitol","a":92.14,"b":110.48,"label":"Washington, D.C.","sub":"Chorus"},{"k":"flag","a":110.48,"b":128.8,"label":"Fifty Stars","sub":"Chorus"},{"k":"city","a":128.8,"b":133.26,"label":"New York City","sub":"Bridge"},{"k":"rocket","a":133.26,"b":149.93,"label":"Cape Canaveral, Florida","sub":"Bridge"},{"k":"finale","a":149.93,"b":168.39,"label":"Old Glory","sub":"Final Chorus"},{"k":"pacific","a":168.39,"b":187.18,"label":"Golden Gate, San Francisco","sub":"Final Chorus"},{"k":"outro","a":187.18,"b":204.76,"label":null,"sub":null}],"lines":[{"sec":"Verse 1","text":"When the harbor lights meet the morning tide,","words":[[17.44,"When"],[17.8,"the"],[18.04,"harbor"],[19.0,"lights"],[19.64,"meet"],[20.04,"the"],[20.28,"morning"],[21.0,"tide,"]],"end":21.97},{"sec":"Verse 1","text":"And the Lady lifts her torch with pride,","words":[[22.12,"And"],[22.28,"the"],[22.52,"Lady"],[22.92,"lifts"],[23.4,"her"],[23.56,"torch"],[24.12,"with"],[24.44,"pride,"]],"end":26.29},{"sec":"Verse 1","text":"Every tired heart from a distant shore","words":[[26.44,"Every"],[26.92,"tired"],[27.72,"heart"],[28.52,"from"],[28.84,"a"],[29.08,"distant"],[29.88,"shore"]],"end":30.61},{"sec":"Verse 1","text":"Finds a welcome here at the open door.","words":[[30.76,"Finds"],[31.16,"a"],[31.4,"welcome"],[32.2,"here"],[33.2,"at"],[33.52,"the"],[33.84,"open"],[34.4,"door."]],"end":36.9},{"sec":"Chorus","text":"Oh, America, land of the wide horizon,","words":[[37.7,"Oh,"],[38.0,"America,"],[40.4,"land"],[40.96,"of"],[41.2,"the"],[41.44,"wide"],[42.32,"horizon,"]],"end":44.82},{"sec":"Chorus","text":"Fifty stars that burn as one,","words":[[46.0,"Fifty"],[47.12,"stars"],[49.96,"that"],[50.28,"burn"],[51.08,"as"],[51.64,"one,"]],"end":54.14},{"sec":"Chorus","text":"From the Eastern shore to the Western skyline,","words":[[55.4,"From"],[55.8,"the"],[56.04,"Eastern"],[56.92,"shore"],[58.68,"to"],[58.92,"the"],[59.16,"Western"],[60.2,"skyline,"]],"end":62.7},{"sec":"Chorus","text":"Home of the brave beneath the sun.","words":[[63.28,"Home"],[64.16,"of"],[64.48,"the"],[64.72,"brave"],[68.0,"beneath"],[68.88,"the"],[69.04,"sun."]],"end":71.54},{"sec":"Verse 2","text":"Golden wheat rolls across the plains,","words":[[74.08,"Golden"],[74.72,"wheat"],[75.2,"rolls"],[75.84,"across"],[76.48,"the"],[76.64,"plains,"]],"end":78.05},{"sec":"Verse 2","text":"Barn doors open to the summer rains,","words":[[78.2,"Barn"],[78.84,"doors"],[79.48,"open"],[79.88,"to"],[80.2,"the"],[80.44,"summer"],[81.16,"rains,"]],"end":83.01},{"sec":"Verse 2","text":"Eagles circle where the Rockies climb,","words":[[83.16,"Eagles"],[83.72,"circle"],[84.36,"where"],[84.6,"the"],[84.76,"Rockies"],[85.56,"climb,"]],"end":86.37},{"sec":"Verse 2","text":"Rivers carry every dream in time.","words":[[86.52,"Rivers"],[87.32,"carry"],[88.2,"every"],[88.68,"dream"],[89.88,"in"],[90.36,"time."]],"end":92.65},{"sec":"Chorus","text":"Oh, America, land of the wide horizon,","words":[[92.8,"Oh,"],[93.6,"America,"],[96.0,"land"],[96.56,"of"],[96.72,"the"],[96.96,"wide"],[97.84,"horizon,"]],"end":100.34},{"sec":"Chorus","text":"Fifty stars that burn as one,","words":[[101.44,"Fifty"],[102.4,"stars"],[105.44,"that"],[105.84,"burn"],[106.56,"as"],[106.96,"one,"]],"end":109.46},{"sec":"Chorus","text":"From the Eastern shore to the Western skyline,","words":[[110.92,"From"],[111.32,"the"],[111.56,"Eastern"],[112.36,"shore"],[114.2,"to"],[114.44,"the"],[114.68,"Western"],[115.72,"skyline,"]],"end":118.22},{"sec":"Chorus","text":"Home of the brave beneath the sun.","words":[[118.76,"Home"],[119.64,"of"],[119.96,"the"],[120.28,"brave"],[123.52,"beneath"],[124.32,"the"],[124.64,"sun."]],"end":127.14},{"sec":"Bridge","text":"Neon towers light the city night,","words":[[129.2,"Neon"],[130.16,"towers"],[130.96,"light"],[131.36,"the"],[131.76,"city"],[132.4,"night,"]],"end":133.61},{"sec":"Bridge","text":"Engines thunder and the rockets take flight,","words":[[133.76,"Engines"],[134.56,"thunder"],[135.44,"and"],[135.68,"the"],[135.84,"rockets"],[136.56,"take"],[136.96,"flight,"]],"end":138.53},{"sec":"Bridge","text":"Many voices, and one song we share,","words":[[138.68,"Many"],[139.08,"voices,"],[139.96,"and"],[140.2,"one"],[140.6,"song"],[141.16,"we"],[141.4,"share,"]],"end":142.37},{"sec":"Bridge","text":"Freedom ringing through the open air.","words":[[142.52,"Freedom"],[143.24,"ringing"],[144.2,"through"],[144.76,"the"],[145.08,"open"],[147.16,"air."]],"end":149.66},{"sec":"Final Chorus","text":"Oh, America, America, land of the wide horizon, wide horizon,","words":[[150.76,"Oh,"],[151.56,"America,"],[152.8,"America,"],[154.16,"land"],[154.56,"of"],[154.8,"the"],[155.04,"wide"],[155.92,"horizon,"],[157.36,"wide"],[158.08,"horizon,"]],"end":159.45},{"sec":"Final Chorus","text":"Fifty stars that burn as one, that burn as one,","words":[[159.6,"Fifty"],[160.48,"stars"],[163.44,"that"],[163.84,"burn"],[164.56,"as"],[164.96,"one,"],[165.76,"that"],[166.08,"burn"],[166.88,"as"],[167.44,"one,"]],"end":168.77},{"sec":"Final Chorus","text":"From the Golden Gate to the Liberty skyline,","words":[[168.92,"From"],[169.24,"the"],[169.48,"Golden"],[170.2,"Gate"],[171.96,"to"],[172.28,"the"],[172.6,"Liberty"],[173.8,"skyline,"]],"end":176.3},{"sec":"Final Chorus","text":"Home of the brave beneath the sun.","words":[[176.68,"Home"],[177.48,"of"],[177.96,"the"],[178.12,"brave"],[183.52,"beneath"],[184.4,"the"],[184.72,"sun."]],"end":187.22},{"sec":"Outro","text":"Land of the free, home of the brave.","words":[[187.68,"Land"],[188.56,"of"],[188.88,"the"],[189.12,"free,"],[192.72,"home"],[193.2,"of"],[193.52,"the"],[193.84,"brave."]],"end":196.34}]}</script>
+<script src="track.js"></script>
 <script>
 (() => {
-  // ───────────────────────── Song structure ─────────────────────────
-  const BPM = 96, BEAT = 60 / BPM, BAR = BEAT * 4;
-  const KEY = 53; // F3
-  const SCALE = [0, 2, 4, 5, 7, 9, 11];
-  const semi = d => SCALE[((d % 7) + 7) % 7] + 12 * Math.floor(d / 7);
-  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
-  const CH = { I: [0, 2, 4], IV: [3, 5, 7], V: [4, 6, 8], vi: [5, 7, 9] };
-
-  const SECTIONS = [
-    { name: 'Intro',        bars: 4, ch: ['I','IV','I','V'],                     style: 'intro'  },
-    { name: 'Verse 1',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   style: 'verse'  },
-    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   style: 'chorus' },
-    { name: 'Verse 2',      bars: 8, ch: ['I','IV','I','V','vi','IV','I','V'],   style: 'verse'  },
-    { name: 'Chorus',       bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   style: 'chorus' },
-    { name: 'Bridge',       bars: 8, ch: ['vi','IV','I','V','vi','IV','V','V'],  style: 'bridge' },
-    { name: 'Final Chorus', bars: 8, ch: ['I','V','vi','IV','I','IV','V','I'],   style: 'final'  },
-    { name: 'Outro',        bars: 4, ch: ['IV','V','I','I'],                     style: 'outro'  },
-  ];
-  const BARMAP = [];
-  SECTIONS.forEach(sec => {
-    sec.start = BARMAP.length * BAR;
-    for (let b = 0; b < sec.bars; b++) BARMAP.push({ sec, b });
-  });
-  const TOTAL_BARS = BARMAP.length, TOTAL = TOTAL_BARS * BAR; // 56 bars = 140 s
-
-  // Every sung syllable as [beats, scale degree, syllable]; "-" continues a word.
-  // make_vocals.py reads this same block to render the singing voice.
-  const SONG = JSON.parse(document.getElementById('song').textContent);
-  const LINES = SONG.lines.map(L => {
-    let beat = 0, cursor = 0;
+  // ───────────────────────── Song timing ─────────────────────────
+  // Measured from the supplied recording (analyze_track.py): beats with their strength,
+  // loudness ten times a second, section starts, scene cuts and when each sung word begins.
+  const TIMING = JSON.parse(document.getElementById('timing').textContent);
+  const TOTAL = TIMING.duration;
+  const SECTIONS = TIMING.sections.map((s, i, all) => ({ ...s, end: i + 1 < all.length ? all[i + 1].start : TOTAL }));
+  const BEATS = TIMING.beats.map(([t, s]) => ({ t, s }));
+  const LINES = TIMING.lines.map(L => {
+    let cursor = 0;
     const low = L.text.toLowerCase();
-    const syl = L.notes.map(([len, d, s]) => {
-      const bare = s.replace(/^-/, '');
-      const at = low.indexOf(bare.toLowerCase(), cursor);
-      cursor = at + bare.length;
-      const n = { t: L.t + beat * BEAT, dur: len * BEAT, d, at, len: bare.length };
-      beat += len;
-      return n;
+    const words = L.words.map(([t, w]) => {
+      const at = low.indexOf(w.toLowerCase(), cursor);
+      cursor = at + w.length;
+      return { t, at, len: w.length };
     });
-    return { ...L, syl };
+    words.forEach((w, i) => { w.dur = Math.max(0.15, Math.min(0.6, (i + 1 < words.length ? words[i + 1].t : L.end) - w.t)); });
+    return { sec: L.sec, text: L.text, t: words[0].t, end: L.end, words };
   });
-  const NOTES = LINES.flatMap(L => L.syl);
   const STANZAS = [];
   LINES.forEach(L => {
     const last = STANZAS[STANZAS.length - 1];
-    if (last && last.name === L.sec) last.lines.push(L); else STANZAS.push({ name: L.sec, t: L.t, lines: [L] });
+    if (last && last.name === L.sec && L.t - last.lines[last.lines.length - 1].end < 4) last.lines.push(L);
+    else STANZAS.push({ name: L.sec, t: L.t, lines: [L] });
   });
-
-  // ───────────────────────── Audio engine ─────────────────────────
-  let ac = null, bus = null, noiseBuf = null, irBuf = null;
-  // The sung vocal is a prerendered track (vocals.js); everything else is synthesized live.
-  const VOCALS_B64 = window.WH_VOCALS || null;
-  let vocalBuf = null, vocalLoading = null, vocalSrc = null, starting = false;
-  function loadVocals() {
-    if (!vocalLoading) {
-      const bin = atob(VOCALS_B64), bytes = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-      vocalLoading = new Promise(res => ac.decodeAudioData(bytes.buffer, res, () => res(null)));
-    }
-    return vocalLoading;
+  function energyAt(t) {
+    const e = TIMING.energy;
+    return e[Math.max(0, Math.min(e.length - 1, Math.round(t * 10)))];
+  }
+  function beatIndex(t) {
+    let lo = 0, hi = BEATS.length - 1, ans = -1;
+    while (lo <= hi) { const m = (lo + hi) >> 1; if (BEATS[m].t <= t) { ans = m; lo = m + 1; } else hi = m - 1; }
+    return ans;
+  }
+  function pulseAt(t) {
+    const i = beatIndex(t);
+    if (i < 0) return 0;
+    return Math.exp(-(t - BEATS[i].t) * 7) * (0.35 + 0.65 * BEATS[i].s);
   }
 
-  function ensureAudio() {
-    if (ac) return;
-    ac = new (window.AudioContext || window.webkitAudioContext)();
-    const sr = ac.sampleRate;
-    noiseBuf = ac.createBuffer(1, sr * 3, sr);
-    const nd = noiseBuf.getChannelData(0);
-    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
-    const len = Math.floor(sr * 2.6);
-    irBuf = ac.createBuffer(2, len, sr);
-    for (let c = 0; c < 2; c++) {
-      const d = irBuf.getChannelData(c);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8);
-    }
-  }
-  function makeBus() {
-    const out = ac.createGain();
-    out.gain.value = 0.85;
-    const comp = ac.createDynamicsCompressor();
-    comp.threshold.value = -16; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.2;
-    out.connect(comp); comp.connect(ac.destination);
-    const conv = ac.createConvolver(); conv.buffer = irBuf;
-    const wet = ac.createGain(); wet.gain.value = 0.32;
-    conv.connect(wet); wet.connect(out);
-    return { out, send: conv };
-  }
-  function route(node, send) {
-    node.connect(bus.out);
-    if (send > 0) { const s = ac.createGain(); s.gain.value = send; node.connect(s); s.connect(bus.send); }
-  }
-  function adsr(g, t, dur, vol, a, r) {
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + a);
-    g.gain.setValueAtTime(vol, Math.max(t + a, t + dur - r));
-    g.gain.linearRampToValueAtTime(0.0001, t + dur);
-  }
-  function osc(type, f, t, end, det = 0) {
-    const o = ac.createOscillator();
-    o.type = type; o.frequency.value = f; o.detune.value = det;
-    o.start(t); o.stop(end + 0.05);
-    return o;
-  }
-  function lowpass(f, q = 0.7) {
-    const b = ac.createBiquadFilter(); b.type = 'lowpass'; b.frequency.value = f; b.Q.value = q; return b;
-  }
-  function filt(type, f) { const b = ac.createBiquadFilter(); b.type = type; b.frequency.value = f; return b; }
-  function noise(t, dur) {
-    const s = ac.createBufferSource(); s.buffer = noiseBuf;
-    s.start(t, Math.random() * 0.5); s.stop(t + dur);
-    return s;
-  }
-
-  function pad(m, t, dur, vol, cut) {
-    const g = ac.createGain(); adsr(g, t, dur, vol, 0.35, 0.6);
-    const lp = lowpass(cut); lp.connect(g);
-    for (const d of [-8, 8]) osc('sawtooth', mtof(m), t, t + dur, d).connect(lp);
-    route(g, 0.5);
-  }
-  function brass(m, t, dur, vol) {
-    const g = ac.createGain(); adsr(g, t, dur, vol, 0.03, 0.12);
-    const lp = lowpass(600, 2);
-    lp.frequency.setValueAtTime(600, t);
-    lp.frequency.linearRampToValueAtTime(2800, t + 0.07);
-    lp.frequency.setTargetAtTime(1500, t + 0.08, 0.2);
-    lp.connect(g);
-    const lfo = osc('sine', 5.2, t, t + dur), lg = ac.createGain(); lg.gain.value = 9; lfo.connect(lg);
-    for (const d of [-6, 6]) { const o = osc('sawtooth', mtof(m), t, t + dur, d); lg.connect(o.detune); o.connect(lp); }
-    route(g, 0.35);
-  }
-  function flute(m, t, dur, vol) {
-    const g = ac.createGain(); adsr(g, t, dur, vol, 0.05, 0.15);
-    osc('triangle', mtof(m), t, t + dur).connect(g);
-    const g2 = ac.createGain(); g2.gain.value = 0.25; osc('sine', mtof(m + 12), t, t + dur).connect(g2); g2.connect(g);
-    route(g, 0.45);
-  }
-  function bell(m, t, vol) {
-    const dur = 1.6, g = ac.createGain();
-    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    osc('sine', mtof(m), t, t + dur).connect(g);
-    const g2 = ac.createGain(); g2.gain.value = 0.3; osc('sine', mtof(m) * 2.76, t, t + dur).connect(g2); g2.connect(g);
-    route(g, 0.5);
-  }
-  function bass(m, t, dur, vol) {
-    const g = ac.createGain(); adsr(g, t, dur, vol, 0.01, 0.08);
-    const lp = lowpass(600);
-    osc('triangle', mtof(m), t, t + dur).connect(lp);
-    osc('sine', mtof(m), t, t + dur).connect(lp);
-    lp.connect(g); route(g, 0.08);
-  }
-  function kick(t, v) {
-    const o = ac.createOscillator();
-    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14);
-    const g = ac.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-    o.connect(g); o.start(t); o.stop(t + 0.45); route(g, 0.05);
-  }
-  function snare(t, v) {
-    const n = noise(t, 0.2), hp = filt('highpass', 1400), g = ac.createGain();
-    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.17);
-    n.connect(hp); hp.connect(g); route(g, 0.25);
-    const o = osc('triangle', 190, t, t + 0.1), g2 = ac.createGain();
-    g2.gain.setValueAtTime(v * 0.6, t); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-    o.connect(g2); route(g2, 0.1);
-  }
-  function hat(t, v) {
-    const n = noise(t, 0.07), hp = filt('highpass', 7500), g = ac.createGain();
-    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-    n.connect(hp); hp.connect(g); route(g, 0.05);
-  }
-  function crash(t, v) {
-    const n = noise(t, 2.3), hp = filt('highpass', 4500), g = ac.createGain();
-    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 2.2);
-    n.connect(hp); hp.connect(g); route(g, 0.4);
-  }
-  function timp(t, v, m) {
-    const f = mtof(m), o = ac.createOscillator();
-    o.frequency.setValueAtTime(f * 1.05, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.08);
-    const g = ac.createGain(); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
-    o.connect(g); o.start(t); o.stop(t + 1.5); route(g, 0.4);
-    const n = noise(t, 0.15), lp = lowpass(300), g2 = ac.createGain();
-    g2.gain.setValueAtTime(v * 0.8, t); g2.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-    n.connect(lp); lp.connect(g2); route(g2, 0.2);
-  }
-
-  // Transport state
-  let playing = false, offset = 0, playOffset = 0, startCtx = 0, nextBar = 0, timer = null;
-  const songToCtx = s => startCtx + (s - playOffset);
+  // ───────────────────────── Playback ─────────────────────────
+  // The supplied recording is the whole soundtrack, played unchanged from track.js.
+  let ac = null, trackBuf = null, trackLoading = null, src = null, out = null;
+  let playing = false, starting = false, offset = 0, startCtx = 0;
   const songPos = () => playing ? Math.max(offset, offset + (ac.currentTime - startCtx)) : offset;
-
-  function scheduleBar(bar) {
-    const { sec, b } = BARMAP[bar];
-    const style = sec.style, t0 = bar * BAR;
-    const chord = CH[sec.ch[b]];
-    // Sustained notes that began before a seek point start at the seek point instead.
-    const sus = (s, dur, fn) => {
-      let a = t0 + s, d = dur;
-      if (a + d <= playOffset + 0.05) return;
-      if (a < playOffset) { d -= playOffset - a; a = playOffset; }
-      fn(songToCtx(a), d);
-    };
-    const hit = (s, fn) => { if (t0 + s >= playOffset - 0.01) fn(songToCtx(t0 + s)); };
-    const loud = { intro: 0.6, verse: 0.7, chorus: 1, bridge: 0.85, final: 1.1, outro: 1 }[style];
-
-    // Strings / pad
-    const cut = (style === 'verse' || style === 'intro') ? 900 : 1500;
-    if (!(style === 'outro' && b === 3)) {
-      const pdur = (style === 'outro' && b === 2) ? BAR * 2 : BAR + 0.15;
-      for (const d of chord) sus(0, pdur, (t, du) => pad(KEY + semi(d), t, du, 0.028 * loud, cut));
-      if (style === 'chorus' || style === 'final' || style === 'outro')
-        sus(0, pdur, (t, du) => pad(KEY + 12 + semi(chord[0]), t, du, 0.018, cut));
-    }
-
-    // Bass
-    const root = KEY - 12 + semi(chord[0]), fifth = KEY - 12 + semi(chord[2]);
-    if (style === 'intro' || (style === 'outro' && b < 2)) sus(0, BAR, (t, d) => bass(root, t, d, 0.16));
-    else if (style === 'outro' && b === 2) sus(0, BAR * 2, (t, d) => bass(root, t, d, 0.2));
-    else if (style === 'verse' || (style === 'bridge' && b < 4)) {
-      sus(0, BEAT * 2, (t, d) => bass(root, t, d * 0.95, 0.2));
-      sus(BEAT * 2, BEAT * 2, (t, d) => bass(fifth, t, d * 0.95, 0.18));
-    } else if (style === 'bridge') {
-      for (let i = 0; i < 8; i++) sus(i * BEAT / 2, BEAT / 2, (t, d) => bass(root, t, d * 0.8, 0.18));
-    } else if (style === 'chorus' || style === 'final') {
-      [root, fifth, root + 12, fifth].forEach((m, i) => sus(i * BEAT, BEAT, (t, d) => bass(m, t, d * 0.85, 0.2)));
-    }
-
-    // Instrumental line doubling the singer an octave up; quieter when the voice is present.
-    const lead = VOCALS_B64 ? 0.45 : 1;
-    for (const n of NOTES) {
-      if (n.t < t0 || n.t >= t0 + BAR) continue;
-      const s = n.t - t0, dur = n.dur * 0.94, m = KEY + 12 + semi(n.d);
-      sus(s, dur, (t, du) => {
-        if (style === 'verse') flute(m, t, du, 0.13 * lead);
-        else if (style === 'bridge') flute(m, t, du, 0.11 * lead);
-        else brass(m, t, du, 0.095 * lead);
-      });
-      if (style === 'chorus' || style === 'final') hit(s, t => bell(m + 12, t, 0.035));
-    }
-
-    // Bell arpeggios
-    if (style === 'intro') {
-      const pat = [chord[0], chord[1], chord[2], chord[0] + 7, chord[1] + 7, chord[2], chord[1], chord[0] + 7];
-      pat.forEach((d, i) => hit(i * BEAT / 2, t => bell(KEY + 24 + semi(d), t, 0.05)));
-    } else if (style === 'verse') {
-      [chord[0], chord[1], chord[2], chord[1]].forEach((d, i) => hit(i * BEAT, t => bell(KEY + 24 + semi(d), t, 0.022)));
-    }
-
-    // Drums
-    if (style === 'intro') {
-      hit(0, t => timp(t, 0.35 + b * 0.08, KEY - 12));
-      if (b === 3) for (let i = 8; i < 16; i++) hit(i * BEAT / 4, t => timp(t, 0.08 + (i - 8) * 0.04, KEY - 5));
-    } else if (style === 'verse') {
-      hit(0, t => kick(t, 0.45)); hit(BEAT * 2, t => kick(t, 0.4));
-      for (let i = 0; i < 8; i++) hit(i * BEAT / 2, t => hat(t, 0.035));
-      if (b === 7) [3, 3.5, 3.75].forEach(x => hit(x * BEAT, t => snare(t, 0.3)));
-    } else if (style === 'chorus' || style === 'final') {
-      if (b === 0) hit(0, t => crash(t, 0.35));
-      const kicks = style === 'final' ? [0, 1, 2, 3] : [0, 2];
-      kicks.forEach(x => hit(x * BEAT, t => kick(t, 0.8)));
-      [1, 3].forEach(x => hit(x * BEAT, t => snare(t, 0.4)));
-      [1.75, 3.75].forEach(x => hit(x * BEAT, t => snare(t, 0.09)));
-      for (let i = 0; i < 8; i++) hit(i * BEAT / 2, t => hat(t, 0.055));
-      if (b === 7) for (let i = 8; i < 16; i++) hit(i * BEAT / 4, t => snare(t, 0.12 + (i - 8) * 0.035));
-    } else if (style === 'bridge') {
-      if (b < 4) {
-        [0, 2.5].forEach(x => hit(x * BEAT, t => kick(t, 0.5)));
-        for (let i = 0; i < 8; i++) hit(i * BEAT / 2, t => hat(t, 0.04));
-      } else {
-        for (let x = 0; x < 4; x++) hit(x * BEAT, t => kick(t, 0.6));
-        [1, 3].forEach(x => hit(x * BEAT, t => snare(t, 0.3)));
-        if (b === 7) for (let i = 0; i < 16; i++) hit(i * BEAT / 4, t => snare(t, 0.08 + i * 0.027));
-      }
-    } else if (style === 'outro') {
-      if (b === 0 || b === 2) { hit(0, t => crash(t, 0.38)); hit(0, t => kick(t, 0.85)); }
-      if (b < 3) hit(0, t => timp(t, b === 2 ? 0.7 : 0.45, KEY - 12 + semi(chord[0])));
-    }
+  function ensureAudio() {
+    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
   }
-
-  function tick() {
-    const pos = songPos();
-    while (nextBar < TOTAL_BARS && nextBar * BAR < pos + 0.6) scheduleBar(nextBar++);
+  function loadTrack() {
+    if (!trackLoading) {
+      ensureAudio();
+      trackLoading = new Promise(res => {
+        if (!window.WH_TRACK) return res(null);
+        const bin = atob(window.WH_TRACK), bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        ac.decodeAudioData(bytes.buffer, res, () => res(null));
+      });
+    }
+    return trackLoading;
   }
   async function play() {
     if (playing || starting) return;
     ensureAudio();
     if (ac.state === 'suspended') ac.resume();
-    if (VOCALS_B64 && !vocalBuf) {
+    if (!trackBuf) {
       starting = true;
-      document.getElementById('bigLabel').textContent = 'Loading the voice…';
-      vocalBuf = await loadVocals();
+      document.getElementById('bigLabel').textContent = 'Loading the song…';
+      trackBuf = await loadTrack();
       starting = false;
+      if (!trackBuf) { document.getElementById('bigLabel').textContent = 'The song could not be loaded'; return; }
     }
     if (offset >= TOTAL - 0.05) { offset = 0; clearParticles(); }
-    bus = makeBus();
-    playOffset = offset;
-    startCtx = ac.currentTime + 0.06;
-    nextBar = Math.floor(offset / BAR);
+    out = ac.createGain(); out.connect(ac.destination);
+    src = ac.createBufferSource(); src.buffer = trackBuf; src.connect(out);
+    startCtx = ac.currentTime + 0.05;
+    src.start(startCtx, offset);
     playing = true;
-    if (vocalBuf && offset < vocalBuf.duration) {
-      vocalSrc = ac.createBufferSource(); vocalSrc.buffer = vocalBuf;
-      const vg = ac.createGain(); vg.gain.value = 1.1;
-      vocalSrc.connect(vg); route(vg, 0.22);
-      vocalSrc.start(startCtx, offset);
-    }
-    tick();
-    timer = setInterval(tick, 80);
     syncButtons();
   }
   function pause() {
     if (!playing) return;
     offset = Math.min(songPos(), TOTAL);
     playing = false;
-    clearInterval(timer);
-    if (vocalSrc) { try { vocalSrc.stop(ac.currentTime + 0.05); } catch (e) {} vocalSrc = null; }
-    const b = bus; bus = null;
-    b.out.gain.setTargetAtTime(0, ac.currentTime, 0.03);
-    setTimeout(() => b.out.disconnect(), 300);
+    const s = src, o = out; src = out = null;
+    o.gain.setTargetAtTime(0, ac.currentTime, 0.02);
+    try { s.stop(ac.currentTime + 0.12); } catch (e) {}
     syncButtons();
   }
   function toggle() { playing ? pause() : play(); }
@@ -543,6 +284,8 @@
   const buf = document.createElement('canvas'); buf.width = W; buf.height = H;
   const bufCtx = buf.getContext('2d');
   let g = main;
+  // Set per frame by render(): the current scene's length, the song's loudness and the beat pulse.
+  let D = 10, musicE = 0, musicP = 0;
 
   function rng(seed) {
     return () => {
@@ -606,37 +349,53 @@
   }
 
   // Particles: fireworks and rocket smoke
-  let shells = [], sparks = [], smoke = [], fwTimer = 0;
+  let shells = [], sparks = [], smoke = [], lastBeat = -1;
   const FW_COLORS = ['#ff4d5e', '#ffffff', '#6fa8ff', '#ffd36a', '#ff4d5e', '#9cc4ff'];
-  function clearParticles() { shells = []; sparks = []; smoke = []; fwTimer = 0; }
-  function fireworkRate(t) {
-    if (t >= 30 && t < 50) return 0.75;
-    if (t >= 70 && t < 90) return 0.6;
-    if (t >= 116 && t < 130) return 0.32;
-    if (t >= 130 && t < 139) return 0.28;
+  function clearParticles() { shells = []; sparks = []; smoke = []; lastBeat = -1; }
+  // Shells a beat launches in each scene (above 1 means two); louder passages launch more.
+  function fireworkChance(sc, lt, e, s) {
+    const len = sc.b - sc.a;
+    if (sc.k === 'flag' || sc.k === 'capitol') return 0.2 + 0.6 * e;
+    if (sc.k === 'finale') return 0.6 + 0.6 * e + 0.5 * s;
+    if (sc.k === 'pacific') return lt > 4 ? 0.3 + 0.7 * e : 0;
+    if (sc.k === 'outro') return lt < len - 5 ? 0.4 + 0.6 * e : 0;
     return 0;
   }
-  function burst(x, y, color) {
-    const n = 60 + Math.floor(Math.random() * 30);
+  function burst(x, y, color, power) {
+    const n = Math.floor((50 + Math.random() * 30) * (0.7 + 0.6 * power));
     for (let i = 0; i < n; i++) {
-      const a = i / n * TAU + Math.random() * 0.1, sp = 90 + Math.random() * 120, life = 1.2 + Math.random() * 0.8;
+      const a = i / n * TAU + Math.random() * 0.1, sp = (80 + Math.random() * 110) * (0.8 + 0.5 * power), life = 1.2 + Math.random() * 0.8;
       sparks.push({ x, y, px: x, py: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life, max: life, color });
     }
   }
-  function rocketBottom(lt) { const l = Math.max(0, lt - 2.5); return GROUND - 20 - 35 * l * l; }
   const GROUND = H - 110;
+  // Rocket cue points (seconds into the scene): ignition on "Engines", liftoff on "rockets take flight".
+  const IGNITE = 0.4, LIFT = 2.8;
+  function rocketBottom(lt, len) {
+    const l = Math.max(0, lt - LIFT), fly = Math.max(3, len * 0.8 - LIFT);
+    return GROUND - 20 - 900 / (fly * fly) * l * l;
+  }
+  function sceneAt(t) {
+    let i = SCENES.findIndex(s => t >= s.a && t < s.b);
+    return i < 0 ? SCENES.length - 1 : i;
+  }
 
   function updateParticles(t, dt) {
     if (dt <= 0) return;
-    const rate = fireworkRate(t);
-    if (rate) {
-      fwTimer -= dt;
-      if (fwTimer <= 0) {
-        fwTimer = rate * (0.6 + Math.random() * 0.8);
-        shells.push({ x: 90 + Math.random() * (W - 180), y: H, vy: -520 - Math.random() * 120, ty: 70 + Math.random() * H * 0.33, color: FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)] });
+    const sc = SCENES[sceneAt(t)], lt = t - sc.a;
+    const bi = beatIndex(t);
+    if (bi !== lastBeat) {
+      if (bi >= 0 && lastBeat >= 0) {
+        const b = BEATS[bi], travel = bi + 1 < BEATS.length ? BEATS[bi + 1].t - b.t : 0.55;
+        for (let c = fireworkChance(sc, lt, energyAt(t), b.s); c > 0; c -= 1) {
+          if (Math.random() >= c) continue;
+          const ty = 70 + Math.random() * H * 0.34;
+          shells.push({ x: 90 + Math.random() * (W - 180), y: H, vy: (ty - H) / travel, ty, power: b.s, color: FW_COLORS[Math.floor(Math.random() * FW_COLORS.length)] });
+        }
       }
+      lastBeat = bi;
     }
-    shells = shells.filter(s => { s.y += s.vy * dt; if (s.y <= s.ty) { burst(s.x, s.y, s.color); return false; } return true; });
+    shells = shells.filter(s => { s.y += s.vy * dt; if (s.y <= s.ty) { burst(s.x, s.y, s.color, s.power); return false; } return true; });
     for (const p of sparks) {
       p.px = p.x; p.py = p.y;
       p.vx *= 1 - 1.2 * dt; p.vy = p.vy * (1 - 1.2 * dt) + 70 * dt;
@@ -644,19 +403,19 @@
     }
     sparks = sparks.filter(p => p.life > 0);
 
-    if (t >= 100 && t < 110) {
-      const lt = t - 100;
-      if (lt < 2.5) {
-        for (let i = 0; i < 2; i++) smoke.push({ x: 660 + (Math.random() - 0.5) * 30, y: GROUND - 10, vx: (Math.random() < 0.5 ? -1 : 1) * (40 + Math.random() * 90) * (lt / 2.5), vy: -10 - Math.random() * 20, r: 10, life: 3, max: 3 });
-      } else {
-        const by = rocketBottom(lt);
+    if (sc.k === 'rocket') {
+      if (lt > IGNITE && lt < LIFT) {
+        const k = (lt - IGNITE) / (LIFT - IGNITE);
+        for (let i = 0; i < 2; i++) smoke.push({ x: 660 + (Math.random() - 0.5) * 30, y: GROUND - 10, vx: (Math.random() < 0.5 ? -1 : 1) * (40 + Math.random() * 90) * k, vy: -10 - Math.random() * 20, r: 10, life: 3, max: 3 });
+      } else if (lt >= LIFT) {
+        const by = rocketBottom(lt, sc.b - sc.a);
         if (by > -200) for (let i = 0; i < 4; i++) smoke.push({ x: 660 + (Math.random() - 0.5) * 14, y: by + 30, vx: (Math.random() - 0.5) * 60 + (by > GROUND - 120 ? (Math.random() < 0.5 ? -1 : 1) * 160 : 0), vy: 30 + Math.random() * 40, r: 8, life: 3.5, max: 3.5 });
       }
     }
     for (const s of smoke) { s.x += s.vx * dt; s.y += s.vy * dt; s.vx *= 1 - 0.8 * dt; s.vy *= 1 - 0.8 * dt; s.r += 22 * dt; s.life -= dt; }
     smoke = smoke.filter(s => s.life > 0);
     if (smoke.length > 700) smoke.splice(0, smoke.length - 700);
-    if (t < 99 || t > 112) smoke = [];
+    if (sc.k !== 'rocket' && lt >= 1) smoke = []; // keep the plume through the cross-fade only
   }
   function drawFireworks() {
     g.save(); g.globalCompositeOperation = 'lighter';
@@ -672,7 +431,7 @@
 
   // Scene: before dawn, title card
   function sIntro(lt) {
-    const p = clamp01(lt / 10);
+    const p = clamp01(lt / D);
     sky([[0, '#02040f'], [0.7, '#0a1433'], [1, mix('#16204a', '#7a4263', p)]]);
     stars(lt, 1 - p * 0.3);
     glow(W / 2, H + 60, 700, '255,150,90', 0.4 * p);
@@ -680,12 +439,12 @@
     g.beginPath(); g.moveTo(0, H);
     for (let x = 0; x <= W; x += 20) g.lineTo(x, H - 70 - 26 * Math.sin(x * 0.005 + 1) - 12 * Math.sin(x * 0.013));
     g.lineTo(W, H); g.fill();
-    const a = lt < 7.5 ? 1 : clamp01(1 - (lt - 7.5) / 2);
+    const a = lt < D - 3 ? 1 : clamp01((D - 1 - lt) / 2);
     if (a > 0) {
       g.globalAlpha = a;
       text('AN ORIGINAL ANTHEM', W / 2, 238, '500 20px "IBM Plex Mono", monospace', '#f0bf4c', 6);
       text('LAND OF THE', W / 2, 318, '400 56px "Alfa Slab One", Georgia, serif', '#ffffff', 4);
-      text('WIDE HORIZON', W / 2, 428, '400 112px "Alfa Slab One", Georgia, serif', '#ffffff', 2);
+      text('FREE', W / 2, 438, '400 132px "Alfa Slab One", Georgia, serif', '#ffffff', 8);
       text('★   ★   ★   ★   ★', W / 2, 482, '28px Georgia, serif', '#d8283f', 0);
       g.globalAlpha = 1;
     }
@@ -710,7 +469,7 @@
     g.save(); g.translate(bx - 26, by - 222); g.rotate(-0.25); g.fillRect(-8, -18, 16, 34); g.restore();
   }
   function sHarbor(lt) {
-    const p = clamp01(lt / 20), hy = H * 0.66;
+    const p = clamp01(lt / D), hy = H * 0.66;
     sky([[0, '#1c1d4f'], [0.45, '#7a3f7e'], [0.8, '#f07a5e'], [1, '#ffc27a']], hy);
     stars(lt, 0.5 - p);
     const sx = W * 0.36, sy = hy + 30 - p * 170;
@@ -747,7 +506,8 @@
   function drawFlag(fx, fy, fw, fh, lt) {
     const sh = fh / 13, cw = fw * 0.4, ch = sh * 7, step = 4;
     const phase = x => x / fw * 7.5 - lt * 3.2;
-    const off = x => Math.sin(phase(x)) * 20 * (0.12 + x / fw);
+    const amp = 13 + 16 * musicE;
+    const off = x => Math.sin(phase(x)) * amp * (0.12 + x / fw);
     for (let x = 0; x < fw; x += step) {
       const dy = off(x);
       for (let i = 0; i < 13; i++) {
@@ -797,9 +557,9 @@
     g.fillStyle = '#f0bf4c'; circle(px, 110, 11);
     drawFlag(px + 5, 132, 610, 322, lt);
     if (variant === 3 && lt > 1) {
-      g.globalAlpha = clamp01((lt - 1) / 1.5) * (lt > 8.6 ? clamp01((10 - lt) / 1.4) : 1);
-      text('LAND OF THE WIDE HORIZON', W - 60, 70, '400 30px "Alfa Slab One", Georgia, serif', '#f0bf4c', 2, 'right');
-      text('WORDS & MUSIC · AN ORIGINAL SONG', W - 60, 100, '500 14px "IBM Plex Mono", monospace', '#c9d2ea', 3, 'right');
+      g.globalAlpha = clamp01((lt - 1) / 1.5);
+      text('LAND OF THE FREE', W - 60, 70, '400 30px "Alfa Slab One", Georgia, serif', '#f0bf4c', 2, 'right');
+      text('PERFORMED BY BREEZYGRUNGE5444 · MADE WITH SUNO', W - 60, 100, '500 14px "IBM Plex Mono", monospace', '#c9d2ea', 3, 'right');
       g.globalAlpha = 1;
     }
   }
@@ -901,7 +661,7 @@
     g.bezierCurveTo(880, H * 0.84, 760, H * 0.92, 760, H);
     g.fill();
     for (const p of PINES) pine(((p.x - pan * 1.4 * p.s) % (W + 200) + W + 200) % (W + 200) - 100, H - 10 + 30 * (1 - p.s), p.s);
-    const ex = -160 + clamp01(lt / 10) * (W + 320), ey = H * 0.28 + Math.sin(lt * 0.8) * 40;
+    const ex = -160 + clamp01(lt / D) * (W + 320), ey = H * 0.28 + Math.sin(lt * 0.8) * 40;
     const f = Math.sin(lt * 5) * (0.35 + 0.25 * Math.sin(lt * 0.9));
     eagle(ex, ey, f, Math.sin(lt * 0.8 + 1) * 0.12);
   }
@@ -951,9 +711,9 @@
 
   // Scene: rocket launch
   function sRocket(lt) {
-    const shake = lt > 2 && lt < 6 ? Math.sin(lt * 70) * 2.5 * (1 - (lt - 2) / 4) : 0;
+    const shake = lt > IGNITE && lt < LIFT + 3 ? Math.sin(lt * 70) * 3 * (1 - (lt - IGNITE) / (LIFT + 3 - IGNITE)) : 0;
     g.save(); g.translate(shake, shake * 0.6);
-    const p = clamp01(lt / 10);
+    const p = clamp01(lt / D);
     sky([[0, mix('#0b1236', '#03061a', p)], [0.6, '#3a2d6a'], [1, '#ff9a5a']], GROUND);
     stars(lt, 0.3 + p * 0.5);
     g.fillStyle = '#1d2a44'; g.fillRect(-10, GROUND - 4, W + 20, 10);
@@ -967,9 +727,9 @@
     g.stroke();
     g.fillStyle = '#ff4a4a'; circle(tx + 20, top - 6, 3 + Math.sin(lt * 5));
     // Rocket
-    const by = rocketBottom(lt), rx = 660;
-    if (lt > 2) {
-      const fl = 70 + Math.sin(lt * 40) * 12 + Math.min(80, Math.max(0, lt - 2.5) * 30);
+    const by = rocketBottom(lt, D), rx = 660;
+    if (lt > IGNITE) {
+      const fl = (lt < LIFT ? 35 + 35 * (lt - IGNITE) / (LIFT - IGNITE) : 70) + Math.sin(lt * 40) * 12 + Math.min(80, Math.max(0, lt - LIFT) * 30);
       glow(rx, by + 30, 160, '255,170,80', 0.55);
       const fg = g.createLinearGradient(0, by, 0, by + fl);
       fg.addColorStop(0, '#ffffff'); fg.addColorStop(0.3, '#ffe38a'); fg.addColorStop(1, 'rgba(255,110,40,0)');
@@ -996,7 +756,7 @@
 
   // Scene: Golden Gate at sunset
   function sPacific(lt) {
-    const hy = H * 0.64, p = clamp01(lt / 20);
+    const hy = H * 0.64, p = clamp01(lt / D);
     sky([[0, '#1d1440'], [0.5, '#8e3b6e'], [0.85, '#f2665a'], [1, '#ffb35c']], hy);
     stars(lt, p * 0.6);
     const sx = W * 0.62, sy = hy - 70 + p * 120;
@@ -1042,19 +802,52 @@
     for (let i = 0; i < 6; i++) { const x = ((lt * 90 + i * 230) % (W + 40)) - 20; g.fillRect(x, deck + 3, 5, 3); }
   }
 
-  const SCENES = [
-    { a: 0,   b: 10,  draw: sIntro,                label: null },
-    { a: 10,  b: 30,  draw: sHarbor,               label: 'New York Harbor',       sub: 'Verse 1' },
-    { a: 30,  b: 50,  draw: lt => sFlag(lt, 1),    label: 'Old Glory',              sub: 'Chorus' },
-    { a: 50,  b: 60,  draw: sPrairie,              label: 'Kansas Wheat Country',   sub: 'Verse 2' },
-    { a: 60,  b: 70,  draw: sMountains,            label: 'The Rocky Mountains',    sub: 'Verse 2' },
-    { a: 70,  b: 90,  draw: lt => sFlag(lt, 2),    label: 'Washington, D.C.',       sub: 'Chorus' },
-    { a: 90,  b: 100, draw: sCity,                 label: 'New York City',          sub: 'Bridge' },
-    { a: 100, b: 110, draw: sRocket,               label: 'Cape Canaveral, Florida', sub: 'Bridge' },
-    { a: 110, b: 130, draw: sPacific,              label: 'Golden Gate, San Francisco', sub: 'Final Chorus' },
-    { a: 130, b: 140.5, draw: lt => sFlag(lt, 3),  label: null },
+  // Scene: Monument Valley at golden hour, the highway running west
+  const BUTTES = [
+    { x: 230, w: 130, h: 210 }, { x: 390, w: 34, h: 250 }, { x: 900, w: 190, h: 185 }, { x: 1150, w: 110, h: 240 }, { x: 1235, w: 30, h: 200 },
   ];
-  const FADE = 0.8;
+  function sValley(lt) {
+    const p = clamp01(lt / D), hz = H * 0.66;
+    sky([[0, '#29579e'], [0.55, '#f09a62'], [1, '#ffd49a']], hz);
+    glow(W * 0.16, hz - 70 + p * 40, 260, '255,200,120', 0.6);
+    g.fillStyle = '#fff0c8'; circle(W * 0.16, hz - 70 + p * 40, 40);
+    g.fillStyle = '#b86a4c';
+    poly([0, hz, 0, hz - 40, 120, hz - 44, 150, hz - 20, 600, hz - 18, 640, hz - 50, 760, hz - 52, 790, hz - 22, W, hz - 16, W, hz]);
+    for (const b of BUTTES) {
+      const x = b.x - lt * 4;
+      g.fillStyle = '#8c3a1e';
+      poly([x - b.w * 0.95, hz + 4, x - b.w * 0.55, hz - b.h * 0.3, x - b.w * 0.5, hz - b.h, x + b.w * 0.5, hz - b.h, x + b.w * 0.55, hz - b.h * 0.3, x + b.w * 0.95, hz + 4]);
+      g.fillStyle = '#c95f31';
+      poly([x - b.w * 0.95, hz + 4, x - b.w * 0.55, hz - b.h * 0.3, x - b.w * 0.5, hz - b.h, x - b.w * 0.2, hz - b.h, x - b.w * 0.25, hz - b.h * 0.3, x - b.w * 0.5, hz + 4]);
+    }
+    const fg = g.createLinearGradient(0, hz, 0, H);
+    fg.addColorStop(0, '#d9834b'); fg.addColorStop(1, '#7c3419');
+    g.fillStyle = fg; g.fillRect(0, hz, W, H - hz);
+    g.fillStyle = 'rgba(70,40,20,.55)';
+    for (let i = 0; i < 70; i++) {
+      const s = hash(i, 3, 7), y = hz + 6 + s * s * (H - hz), x = hash(i, 9, 1) * W;
+      if (Math.abs(x - W / 2) < 40 + (y - hz) * 1.2) continue;
+      g.beginPath(); g.ellipse(x, y, 3 + s * 12, 2 + s * 5, 0, 0, TAU); g.fill();
+    }
+    g.fillStyle = '#3a3538';
+    poly([W / 2 - 5, hz, W / 2 + 5, hz, W / 2 + 330, H, W / 2 - 330, H]);
+    g.fillStyle = '#f2c14e';
+    for (let i = 0; i < 14; i++) {
+      const s = (i / 14 + lt * 0.22) % 1, s2 = Math.min(1, s + 0.03);
+      const y1 = hz + (H - hz) * s * s, y2 = hz + (H - hz) * s2 * s2, w = 1 + s * 7;
+      g.fillRect(W / 2 - w / 2, y1, w, Math.max(1, y2 - y1));
+    }
+  }
+
+  const DRAW = {
+    intro: sIntro, harbor: sHarbor, flag: lt => sFlag(lt, 1), valley: sValley, prairie: sPrairie,
+    mountains: sMountains, capitol: lt => sFlag(lt, 2), city: sCity, rocket: sRocket,
+    finale: lt => sFlag(lt, 1), pacific: sPacific, outro: lt => sFlag(lt, 3),
+  };
+  const SCENES = TIMING.scenes.map(s => ({ ...s, draw: DRAW[s.k] }));
+  // How hard each scene answers the beat: choruses pulse, verses breathe.
+  const BEAT_FEEL = { intro: 0.3, harbor: 0.35, flag: 1, valley: 0.8, prairie: 0.35, mountains: 0.35, capitol: 1, city: 0.7, rocket: 0.6, finale: 1.2, pacific: 1, outro: 0.8 };
+  const FADE = 0.5;
 
   function lowerThird(sc, lt) {
     if (!sc.label || lt < 0.5 || lt > 5.5) return;
@@ -1075,21 +868,26 @@
   }
 
   function render(t) {
-    let i = SCENES.findIndex(s => t >= s.a && t < s.b);
-    if (i < 0) i = SCENES.length - 1;
-    const sc = SCENES[i], lt = t - sc.a;
+    const i = sceneAt(t), sc = SCENES[i], lt = t - sc.a;
+    musicE = energyAt(t);
+    musicP = pulseAt(t) * (BEAT_FEEL[sc.k] || 0.5);
+    // A slight push-in on each beat, stronger in the choruses.
+    const z = 1 + 0.012 * musicP;
+    main.setTransform(z, 0, 0, z, W / 2 * (1 - z), H / 2 * (1 - z));
     if (i > 0 && lt < FADE) {
       const prev = SCENES[i - 1];
-      g = main; prev.draw(t - prev.a);
-      g = bufCtx; g.setTransform(1, 0, 0, 1, 0, 0); sc.draw(lt);
+      g = main; D = prev.b - prev.a; prev.draw(t - prev.a);
+      g = bufCtx; g.setTransform(1, 0, 0, 1, 0, 0); D = sc.b - sc.a; sc.draw(lt);
       main.globalAlpha = lt / FADE; main.drawImage(buf, 0, 0); main.globalAlpha = 1;
     } else {
-      g = main; sc.draw(lt);
+      g = main; D = sc.b - sc.a; sc.draw(lt);
     }
+    main.setTransform(1, 0, 0, 1, 0, 0);
     g = main;
+    if (musicP > 0.02) { main.fillStyle = `rgba(255,236,200,${0.07 * musicP})`; main.fillRect(0, 0, W, H); }
     lowerThird(sc, lt);
-    // Final fade to black
-    if (t > TOTAL - 1.5) { main.fillStyle = `rgba(0,0,0,${clamp01((t - (TOTAL - 1.5)) / 1.5)})`; main.fillRect(0, 0, W, H); }
+    // Fade to black as the last note rings out
+    if (t > TOTAL - 2.5) { main.fillStyle = `rgba(0,0,0,${clamp01((t - (TOTAL - 2.5)) / 2.5)})`; main.fillRect(0, 0, W, H); }
   }
 
   // ───────────────────────── UI ─────────────────────────
@@ -1125,7 +923,7 @@
     $('ppIcon').setAttribute('d', playing ? PAUSE : PLAY);
     $('pp').setAttribute('aria-label', playing ? 'Pause' : 'Play');
     $('bigPlay').hidden = playing;
-    $('bigLabel').textContent = offset >= TOTAL - 0.05 ? 'Watch again' : offset > 0 ? 'Resume' : 'Play with sound on';
+    if (!starting) $('bigLabel').textContent = offset >= TOTAL - 0.05 ? 'Watch again' : offset > 0 ? 'Resume' : 'Play with sound on';
   }
   $('bigPlay').addEventListener('click', play);
   $('pp').addEventListener('click', toggle);
@@ -1161,25 +959,26 @@
     track.setAttribute('aria-valuenow', Math.round(t));
     track.setAttribute('aria-valuetext', fmt(t));
 
-    const ci = SECTIONS.findIndex(s => t >= s.start && t < s.start + s.bars * BAR);
+    const ci = SECTIONS.findIndex(s => t >= s.start && t < s.end);
     if (ci !== curChap) { chapBtns.forEach((b, i) => b.classList.toggle('on', i === ci)); curChap = ci; }
-    const n = LINES.findIndex(L => t >= L.t && t < L.t + L.dur);
+    const n = LINES.findIndex(L => t >= L.t - 0.4 && t < L.end);
     if (n !== curLine) {
       lineBtns.forEach((b, i) => b.classList.toggle('on', i === n));
       lyricEl.textContent = n >= 0 ? LINES[n].text : '';
       curLine = n;
     }
     if (n >= 0) {
-      // Fill the words syllable by syllable, as they are sung.
-      const L = LINES[n], last = L.syl[L.syl.length - 1];
+      // Fill the words as they are sung in the recording.
+      const L = LINES[n], last = L.words[L.words.length - 1];
       let p = 0;
-      for (const s of L.syl) { if (t < s.t) break; p = (s.at + s.len * clamp01((t - s.t) / Math.min(s.dur, 0.45))) / L.text.length; }
-      if (t >= last.t + Math.min(last.dur, 0.45)) p = 1;
+      for (const w of L.words) { if (t < w.t) break; p = (w.at + w.len * clamp01((t - w.t) / w.dur)) / L.text.length; }
+      if (t >= last.t + last.dur) p = 1;
       lyricEl.style.setProperty('--p', (p * 100).toFixed(1) + '%');
     }
     requestAnimationFrame(frame);
   }
   syncButtons();
+  loadTrack(); // decode ahead so Play starts at once
   requestAnimationFrame(frame);
 })();
 </script>

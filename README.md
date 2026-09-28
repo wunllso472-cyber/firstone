@@ -8,11 +8,11 @@ Open `index.html` in a browser. There's no build step and it needs no network ac
 - **Speed:** slow, medium, fast. Arrow keys `↑` / `↓`. The ride eases between speeds.
 - **Pause:** button or `Space`.
 
-# Land of the Wide Horizon
+# Land of the Free
 
-An original anthem for the United States with a music video, in `wide-horizon/index.html`.
+A music video for the song "Land of the Free" (performed by breezygrunge5444, made with Suno), in `wide-horizon/index.html`. It needs no build step. The recording is embedded in `track.js` and plays unchanged.
 
-- **Song:** F major, 96 BPM, 2:20. Intro, two verses, two choruses, a bridge, a final chorus and an outro. The band is synthesized live with the Web Audio API.
-- **Vocals:** a synthetic singing voice sings every lyric. `make_vocals.py` renders it into `vocals.js`: the Kokoro neural TTS voice speaks each word, then the WORLD vocoder stretches the vowels to the note lengths and retunes them to the melody. Choruses get a doubled take, and the final chorus adds a harmony a third above. The melody lives once, in the `<script id="song">` block of `index.html`, which drives the voice, the band's lead line and the karaoke timing. To change a lyric or a note, edit that block and rerun the script (setup is in its docstring).
-- **Video:** canvas scenes cut to the song: New York Harbor at sunrise, the flag with fireworks, Kansas wheat, the Rockies, Washington, New York City at night, a Cape Canaveral launch and the Golden Gate at sunset. Karaoke-style lyrics fill in syllable by syllable as they're sung.
+- **Cut to the recording:** each scene changes on the last beat before its lyric begins. The scenes are New York Harbor, the flag, Monument Valley, Kansas wheat, the Rockies, Washington, New York City, a Cape Canaveral launch, the flag again and the Golden Gate. The rocket ignites on "Engines" and lifts off on "rockets take flight". Fireworks launch on one beat and burst on the next, more of them when the song is louder. The picture pushes in slightly on each beat, most in the choruses.
+- **Lyrics:** they fill in word by word at the times the words are sung, including the repeats in the final chorus.
 - **Controls:** play button, seek bar, section buttons and clickable lyrics. `Space` plays and pauses, `←` / `→` skip five seconds.
+- **Re-cutting to a new recording:** `analyze_track.py song.mp3 <model dir>` measures the beats and loudness, transcribes the vocal with word timestamps, aligns it to the lyrics, and rewrites both the timing block in `index.html` and `track.js`. Setup is in its docstring.
