@@ -27,12 +27,10 @@ test('four bots play complete games to the end', async () => {
     room.seats[0].hosted = true;
     room.armTurn();
     let rounds = 0;
-    const seen = new Set();
     const deadline = Date.now() + 60000;
     while (room.phase !== 'gameEnd' && Date.now() < deadline) {
       await new Promise((r) => setTimeout(r, 5));
       checkCards(room);
-      if (room.phase === 'playing' || room.phase === 'tribute') seen.add(room.phase);
       if (room.result && room.result.round !== rounds) {
         rounds = room.result.round;
         const r = room.result;
@@ -44,7 +42,8 @@ test('four bots play complete games to the end', async () => {
     assert.equal(room.phase, 'gameEnd', 'game finishes');
     assert.ok(room.result.gameWon === 0 || room.result.gameWon === 1);
     assert.equal(room.levels[room.result.gameWon], 14);
-    assert.ok(seen.has('tribute'));
+    // tribute can finish within a millisecond with these timers, so check the event rather than polling the phase
+    assert.ok(host.msgs.some((m) => m.type === 'ev' && m.name === 'tribute'), 'a tribute happens after round 1');
     room.destroy();
   }
 });
