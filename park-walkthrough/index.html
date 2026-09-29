@@ -2076,18 +2076,19 @@ const DRIVE = (() => {
   const Ti = 16;
   const start = curve.getPointAt(0); start.y = 2.1;
   const startDir = curve.getTangentAt(0);
+  // the approach stays south of the A3 tower so it never blocks the view on the way down
+  const south = new THREE.Vector3(-startDir.z, 0, startDir.x);
   const introPath = new THREE.CatmullRomCurve3([
-    V(420, 1480, 260), V(880, 1470, 235), V(1200, 1330, 160),
-    start.clone().addScaledVector(startDir, -70).add(new THREE.Vector3(0, 38, 0)),
+    V(420, 1480, 260), V(880, 1470, 235), V(1180, 1260, 110),
+    start.clone().addScaledVector(startDir, -70).addScaledVector(south, 20).add(new THREE.Vector3(0, 32, 0)),
     start.clone().addScaledVector(startDir, -18).add(new THREE.Vector3(0, 6, 0)),
     start.clone(),
   ], false, 'centripetal');
+  const smooth = (t, a, b) => { const k = Math.max(0, Math.min(1, (t - a) / (b - a))); return k * k * (3 - 2 * k); };
   const introLook = t => {
-    // look at the park centre, then hand over to the road ahead
-    const k = Math.max(0, Math.min(1, (t - 8) / (Ti - 8)));
-    const kk = k * k * (3 - 2 * k);
+    // the park centre, then the sports courts (a clear line of sight past A3), then the road ahead
     const ahead = start.clone().addScaledVector(startDir, 15.3); ahead.y = 1.75;
-    return V(1000, 600, 0).lerp(ahead, kk);
+    return V(1000, 600, 0).lerp(V(1460, 960, 0), smooth(t, 5, 10)).lerp(ahead, smooth(t, 10, Ti));
   };
   const route = curve.getSpacedPoints(600);
   const T = Ti + Td + Tc + hold;
