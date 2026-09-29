@@ -129,9 +129,20 @@
   }
   #caption strong { display: block; font: 700 24px/1.2 var(--cn); letter-spacing: 0.02em; }
   #caption span { font: 500 15px/1.4 var(--sans); opacity: 0.92; }
-  body.capture .topbar, body.capture #mapWrap, body.capture #hud, body.capture #driveCard,
+  body.capture .topbar, body.capture #hud, body.capture #driveCard,
   body.capture #tourCard, body.capture #joystick { display: none !important; }
   body.capture #caption { display: block; }
+  /* picture-in-picture bird's-eye map in recorded video */
+  body.capture #mapWrap {
+    right: 22px; bottom: 22px; padding: 6px;
+    background: rgba(10, 18, 22, 0.58); border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+  body.capture #minimap { width: 432px; height: 297px; }
+  body.capture #mapWrap .cap { color: #fff; font-size: 12px; padding: 7px 3px 1px; }
+  #mapWrap .cap .pip { display: none; }
+  body.capture #mapWrap .cap .live { display: none; }
+  body.capture #mapWrap .cap .pip { display: inline; }
   body.capture .blabel .en { display: none; }
   #stopTitle { margin: 6px 0 0; font: 700 20px/1.25 var(--cn); text-wrap: balance; }
   #stopSub { margin: 1px 0 0; font-size: 14px; color: var(--muted); font-weight: 500; }
@@ -290,8 +301,8 @@
   </div>
 
   <div id="mapWrap" class="panel">
-    <canvas id="minimap" width="480" height="330" aria-label="Site map. Click to move there."></canvas>
-    <div class="cap"><span>N ↑ · 0 — 100 m</span><span>click to go</span></div>
+    <canvas id="minimap" width="720" height="495" aria-label="Bird's-eye site map. Click to move there."></canvas>
+    <div class="cap"><span class="live">N ↑ · bar = 100 m</span><span class="live">click to go</span><span class="pip">鸟瞰小地图 · Bird's-eye map</span><span class="pip">● 当前位置 · You are here</span></div>
   </div>
 
   <div id="joystick" class="panel"><i></i></div>
@@ -742,6 +753,16 @@ function paint(ctx, ppm, mask) {
   rect(480, 640, 620, 780, col('#5f8a45', true));
   rect(180, 820, 320, 905, col('#5f8a45', true));
 
+  // External roads (first, so the internal roads beside them stay intact)
+  for (const r of EXT_ROADS) {
+    line(r.pts, r.w + 6, col('#8d8f86'));   // verge / sidewalk
+    line(r.pts, r.w, col('#3a3d41'));
+    if (!mask) {
+      line(r.pts, 0.2, '#f1f1ec', [4, 6]);
+      line(r.pts, r.w - 1, 'rgba(240,240,236,0.8)');
+      line(r.pts, r.w - 1.3, '#3a3d41');
+    }
+  }
   // Internal roads
   for (const r of ROADS) {
     line(r.pts, r.w, col('#43464a'));
@@ -751,16 +772,6 @@ function paint(ctx, ppm, mask) {
         const off = r.w / 2 - 0.9;
         line(r.pts.map(([a, b]) => [a + off / S, b]), 1.4, '#2d6aa8');
       }
-    }
-  }
-  // External roads
-  for (const r of EXT_ROADS) {
-    line(r.pts, r.w + 6, col('#8d8f86'));   // verge / sidewalk
-    line(r.pts, r.w, col('#3a3d41'));
-    if (!mask) {
-      line(r.pts, 0.2, '#f1f1ec', [4, 6]);
-      line(r.pts, r.w - 1, 'rgba(240,240,236,0.8)');
-      line(r.pts, r.w - 1.3, '#3a3d41');
     }
   }
   // Building footprints (dark, never lawn)
@@ -966,7 +977,7 @@ for (const b of BUILDINGS) {
   if (b.label) {
     const top = Math.max(0, ...b.parts.map(p => p[4]));
     const h = b.id === 'A1' ? 26 : b.id === 'A2' ? 29 : top + 3;
-    labelDefs.push({ id: b.id.split('-')[0] === 'SW' ? '' : b.id, name: b.name, en: b.en, pos: V(b.label[0], b.label[1], h) });
+    labelDefs.push({ id: b.id.split('-')[0] === 'SW' ? '' : b.id, fam: b.id.split('-')[0], name: b.name, en: b.en, pos: V(b.label[0], b.label[1], h) });
   }
 }
 
@@ -1031,7 +1042,7 @@ for (const [px, py] of [[1500, 330], [1580, 330]]) {
     wall.position.set(x, 3.7, -A4.r - 1.2); wall.castShadow = true; group.add(wall);
   }
   scene.add(group);
-  labelDefs.push({ id: 'A4', name: '信息体验中心', en: 'Experience center', pos: V(A4.c[0], A4.c[1], 22) });
+  labelDefs.push({ id: 'A4', fam: 'A4', name: '信息体验中心', en: 'Experience center', pos: V(A4.c[0], A4.c[1], 22) });
 }
 
 /* --------------------------- Rain canopies --------------------------- */
@@ -1777,8 +1788,32 @@ const labels = labelDefs.map(d => {
   el.className = 'blabel';
   el.innerHTML = (d.id ? `<b>${d.id}</b>` : '') + d.name + (d.minor ? '' : ` <span class="en" style="color:var(--muted)">${d.en}</span>`);
   labelLayer.appendChild(el);
-  return { el, pos: d.pos, minor: d.minor };
+  return { el, pos: d.pos, minor: d.minor, fam: d.fam || 'misc' };
 });
+// Building volumes that can hide a label (a label is never hidden by its own building group)
+const OCCLUDERS = [];
+for (const b of BUILDINGS) for (const p of b.parts) {
+  OCCLUDERS.push([wx(p[0]), 0, wz(p[1]), wx(p[2]), p[4], wz(p[3]), b.id.split('-')[0]]);
+}
+OCCLUDERS.push([wx(A4.c[0]) - A4.r * 0.75, 0, wz(A4.c[1]) - A4.r * 0.75, wx(A4.c[0]) + A4.r * 0.75, 17.5, wz(A4.c[1]) + A4.r * 0.75, 'A4']);
+// does the segment camera → p pass through any other building's box? (slab test)
+function hidden(p, fam) {
+  const o = camera.position, d = [p.x - o.x, p.y - o.y, p.z - o.z], O = [o.x, o.y, o.z];
+  for (const B of OCCLUDERS) {
+    if (B[6] === fam) continue;
+    let t0 = 0, t1 = 1, hit = true;
+    for (let a = 0; a < 3; a++) {
+      const lo = B[a], hi = B[a + 3];
+      if (Math.abs(d[a]) < 1e-9) { if (O[a] < lo || O[a] > hi) { hit = false; break; } continue; }
+      let ta = (lo - O[a]) / d[a], tb = (hi - O[a]) / d[a];
+      if (ta > tb) [ta, tb] = [tb, ta];
+      t0 = Math.max(t0, ta); t1 = Math.min(t1, tb);
+      if (t0 > t1) { hit = false; break; }
+    }
+    if (hit) return true;
+  }
+  return false;
+}
 const tmpV = new THREE.Vector3();
 function updateLabels() {
   const w = view.clientWidth, h = view.clientHeight;
@@ -1789,7 +1824,7 @@ function updateLabels() {
     tmpV.copy(L.pos).project(camera);
     const dist = camera.position.distanceTo(L.pos);
     const maxD = L.minor ? 110 : 700;
-    if (tmpV.z > 1 || tmpV.z < -1 || dist > maxD || Math.abs(tmpV.x) > 1.1 || Math.abs(tmpV.y) > 1.1) { L.el.style.opacity = 0; continue; }
+    if (tmpV.z > 1 || tmpV.z < -1 || dist > maxD || Math.abs(tmpV.x) > 1.1 || Math.abs(tmpV.y) > 1.1 || hidden(L.pos, L.fam)) { L.el.style.opacity = 0; continue; }
     const sx = (tmpV.x + 1) / 2 * w, sy = (1 - tmpV.y) / 2 * h;
     // nearer labels win; skip any that would overlap one already shown
     L.bw = L.bw || L.el.offsetWidth || 120;
@@ -1802,35 +1837,85 @@ function updateLabels() {
   }
 }
 
-/* ------------------------------ Minimap ------------------------------ */
+/* ------------------------------ Minimap ------------------------------ *
+ * The map is a top-down orthographic render of the 3D model itself, made once
+ * after the scene is built. Live layers (pedestrians, the drive route, the
+ * viewer's position and view cone) are drawn over it every frame.
+ */
 const mini = document.getElementById('minimap'), mctx = mini.getContext('2d');
 const miniBase = canvas(mini.width, mini.height);
-{
+const MK = mini.width / 640, MU = mini.width / 480;         // px per metre, marker scale
+const mX = x => (x - GROUND.x0) * MK, mY = z => (z - GROUND.z0) * MK;
+function renderBirdsEye() {
+  const W = 1440, H = Math.round(1440 * 440 / 640);
+  const cam = new THREE.OrthographicCamera(GROUND.x0, GROUND.x1, -GROUND.z0, -GROUND.z1, 10, 1400);
+  cam.position.set(0, 900, 0); cam.up.set(0, 0, -1); cam.lookAt(0, 0, 0);   // north up
+  const size = new THREE.Vector2(); renderer.getSize(size);
+  const pr = renderer.getPixelRatio(), fog = scene.fog;
+  scene.fog = null; sky.visible = false;
+  renderer.setPixelRatio(1); renderer.setSize(W, H, false);
+  renderer.render(scene, cam);
   const b = miniBase.getContext('2d');
-  b.drawImage(gcan, 0, 0, mini.width, mini.height);
-  const k = mini.width / 640;
-  const X = px => (wx(px) - GROUND.x0) * k, Y = py => (wz(py) - GROUND.z0) * k;
-  b.fillStyle = '#1f2a30';
-  for (const bb of BUILDINGS) for (const p of bb.parts) b.fillRect(X(p[0]), Y(p[1]), X(p[2]) - X(p[0]), Y(p[3]) - Y(p[1]));
-  b.beginPath(); b.arc(X(A4.c[0]), Y(A4.c[1]), A4.r * k, 0, 7); b.fill();
-  b.fillStyle = 'rgba(255,255,255,0.9)'; b.font = '600 15px "Barlow", sans-serif';
-  for (const [t, px, py] of [['A1', 400, 360], ['A2', 1050, 330], ['A3', 1000, 920], ['A4', 780, 628], ['B1', 1545, 380], ['P', 1470, 700]]) {
-    b.fillText(t, X(px) - 8, Y(py) + 5);
+  b.drawImage(view, 0, 0, W, H, 0, 0, mini.width, mini.height);
+  scene.fog = fog; sky.visible = true;
+  renderer.setPixelRatio(pr); renderer.setSize(size.x, size.y, false);
+  // light cartographic layer: building codes, scale bar, north arrow
+  b.fillStyle = 'rgba(8,14,18,0.12)'; b.fillRect(0, 0, mini.width, mini.height);
+  b.font = `700 ${Math.round(15 * MU)}px "Barlow", sans-serif`; b.textAlign = 'center'; b.textBaseline = 'middle';
+  for (const [t, px, py] of [['A1', 430, 410], ['A2', 1060, 330], ['A3', 1000, 920], ['A4', 780, 625], ['A5', 1248, 600], ['B1', 1545, 370], ['B2', 1530, 232], ['P', 1470, 700]]) {
+    const x = mX(wx(px)), y = mY(wz(py));
+    b.lineWidth = 3 * MU; b.strokeStyle = 'rgba(0,0,0,0.65)'; b.strokeText(t, x, y);
+    b.fillStyle = '#fff'; b.fillText(t, x, y);
   }
-  // scale bar 100 m
-  b.fillStyle = '#fff'; b.fillRect(12, mini.height - 14, 100 * k, 3);
+  const sx = 14 * MU, sy = mini.height - 14 * MU;
+  b.fillStyle = 'rgba(0,0,0,0.55)'; b.fillRect(sx - 3, sy - 5 * MU, 100 * MK + 6, 10 * MU);
+  b.fillStyle = '#fff'; b.fillRect(sx, sy - 1.5 * MU, 100 * MK, 3 * MU);
+  b.font = `600 ${Math.round(11 * MU)}px "JetBrains Mono", monospace`; b.textAlign = 'left';
+  b.fillText('100 m', sx + 100 * MK + 8, sy);
+  const nx = mini.width - 18 * MU, ny = 22 * MU;
+  b.fillStyle = 'rgba(0,0,0,0.55)'; b.beginPath(); b.arc(nx, ny, 13 * MU, 0, 7); b.fill();
+  b.fillStyle = '#fff'; b.beginPath(); b.moveTo(nx, ny - 9 * MU); b.lineTo(nx + 5 * MU, ny + 5 * MU); b.lineTo(nx, ny + 2 * MU); b.lineTo(nx - 5 * MU, ny + 5 * MU); b.fill();
+  b.font = `700 ${Math.round(9 * MU)}px "Barlow", sans-serif`; b.textAlign = 'center';
+  b.fillText('N', nx, ny + 22 * MU);
 }
 function drawMinimap() {
   mctx.drawImage(miniBase, 0, 0);
-  const k = mini.width / 640;
-  const x = (camera.position.x - GROUND.x0) * k, y = (camera.position.z - GROUND.z0) * k;
+  // pedestrians, live
+  mctx.fillStyle = '#ffd84d'; mctx.strokeStyle = 'rgba(0,0,0,0.6)'; mctx.lineWidth = 1;
+  for (const w of walkers) {
+    mctx.beginPath(); mctx.arc(mX(w.root.position.x), mY(w.root.position.z), 1.7 * MU, 0, 7); mctx.fill(); mctx.stroke();
+  }
+  // drive route: dashed ahead, solid where already driven
+  if (mode === 'drive') {
+    const R = DRIVE.route, done = drive.s == null ? -1 : Math.floor(drive.s / DRIVE.L * (R.length - 1));
+    mctx.lineCap = 'round'; mctx.lineJoin = 'round';
+    mctx.setLineDash([6 * MU, 5 * MU]); mctx.lineWidth = 2.2 * MU; mctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    mctx.beginPath(); R.forEach((p, i) => i ? mctx.lineTo(mX(p.x), mY(p.z)) : mctx.moveTo(mX(p.x), mY(p.z))); mctx.stroke();
+    mctx.setLineDash([]);
+    if (done > 0) {
+      mctx.lineWidth = 4 * MU; mctx.strokeStyle = '#ff5a36';
+      mctx.beginPath(); for (let i = 0; i <= Math.min(done, R.length - 1); i++) i ? mctx.lineTo(mX(R[i].x), mY(R[i].z)) : mctx.moveTo(mX(R[i].x), mY(R[i].z));
+      mctx.stroke();
+    }
+    // start pin at canopy 6
+    const s0 = R[0];
+    mctx.fillStyle = '#2fbf71'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 2 * MU;
+    mctx.beginPath(); mctx.arc(mX(s0.x), mY(s0.z), 5 * MU, 0, 7); mctx.fill(); mctx.stroke();
+    mctx.font = `700 ${Math.round(12 * MU)}px "Noto Sans SC", sans-serif`; mctx.textAlign = 'left'; mctx.textBaseline = 'middle';
+    mctx.lineWidth = 3 * MU; mctx.strokeStyle = 'rgba(0,0,0,0.7)'; mctx.strokeText('起点 · 6号雨棚', mX(s0.x) + 8 * MU, mY(s0.z) + 12 * MU);
+    mctx.fillStyle = '#fff'; mctx.fillText('起点 · 6号雨棚', mX(s0.x) + 8 * MU, mY(s0.z) + 12 * MU);
+  }
+  // the viewer: view cone and heading arrow
+  const x = mX(camera.position.x), y = mY(camera.position.z);
   const dir = new THREE.Vector3(); camera.getWorldDirection(dir);
-  const a = Math.atan2(dir.z, dir.x);
+  const a = Math.atan2(dir.z, dir.x), half = THREE.MathUtils.degToRad(camera.fov * camera.aspect / 2);
   mctx.save(); mctx.translate(x, y); mctx.rotate(a);
-  mctx.fillStyle = 'rgba(79,184,207,0.3)';
-  mctx.beginPath(); mctx.moveTo(0, 0); mctx.arc(0, 0, 42, -0.5, 0.5); mctx.closePath(); mctx.fill();
-  mctx.fillStyle = '#ff5a36'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 2;
-  mctx.beginPath(); mctx.moveTo(10, 0); mctx.lineTo(-6, 6); mctx.lineTo(-3, 0); mctx.lineTo(-6, -6); mctx.closePath(); mctx.fill(); mctx.stroke();
+  const g = mctx.createRadialGradient(0, 0, 0, 0, 0, 60 * MU);
+  g.addColorStop(0, 'rgba(79,184,207,0.55)'); g.addColorStop(1, 'rgba(79,184,207,0)');
+  mctx.fillStyle = g;
+  mctx.beginPath(); mctx.moveTo(0, 0); mctx.arc(0, 0, 60 * MU, -Math.min(half, 1.1), Math.min(half, 1.1)); mctx.closePath(); mctx.fill();
+  mctx.fillStyle = '#ff5a36'; mctx.strokeStyle = '#fff'; mctx.lineWidth = 2 * MU;
+  mctx.beginPath(); mctx.moveTo(11 * MU, 0); mctx.lineTo(-7 * MU, 7 * MU); mctx.lineTo(-3 * MU, 0); mctx.lineTo(-7 * MU, -7 * MU); mctx.closePath(); mctx.fill(); mctx.stroke();
   mctx.restore();
 }
 
@@ -1933,19 +2018,24 @@ const walk = { yaw: 0, pitch: 0, pos: V(750, 240, 1.7), joy: new THREE.Vector2()
 const orbit = { target: V(1000, 600, 0), r: 420, theta: -2.3, phi: 0.95 };
 
 /* ------------------------------ Auto-drive ------------------------------ *
- * A hands-free drive along the main roads at vehicle eye height, keeping to
- * the right-hand lane: the north road, the N–S service road, the south road,
- * then up the central axis to the lake, ending with a crane shot over the park.
+ * A hands-free drive along the internal roads at vehicle eye height, keeping to
+ * the right-hand lane. It starts beside rain canopy 6 on the south road and
+ * loops east road → north road → service road → south road, then goes up the
+ * central axis to the lake, ending with a crane shot over the park.
  * driveAt(t) is a pure function of time so the drive can also be rendered
  * frame by frame for video.
  */
 const DRIVE = (() => {
-  const centre = [[160, 227], [1335, 133], [1335, 1034], [750, 1015.6], [750, 832]];
-  const lanes = [1.9, 1.9, 1.9, 0];
+  // starts beside rain canopy 6 on the south road (its west end), heading east
+  const southY = x => 1012 + (x - 640) / (1498 - 640) * (1040 - 1012);
+  const centre = [[1305, southY(1305)], [1498, 1040], [1850, 92], [1335, 132.8], [1335, 1034], [750, southY(750)], [750, 832]];
+  const lanes = [1.9, 1.9, 1.9, 1.9, 1.9, 0];
   const legs = [
-    { t: '北侧园区道路', s: 'North road · rain canopies 1–5, the A1 and A2 R&D clusters on the right' },
-    { t: '南北向服务路', s: 'Service road · A2, B2/B1 and the car park, then A5 on the lake and the sports courts' },
-    { t: '南侧园区道路', s: 'South road · bike canopy 6, the 11-floor A3 tower and the A3 cluster' },
+    { t: '南侧园区道路 · 6号雨棚', s: 'South road · starting beside rain canopy 6, with the sports courts on the left' },
+    { t: '东侧园区道路', s: 'East road · along 红旗路, past the car park, B1 and the 110 kV substation' },
+    { t: '北侧园区道路', s: 'North road · heading west past canopies 5, 4 and 3, with B2 and A2 on the left' },
+    { t: '南北向服务路', s: 'Service road · south past A2, B2/B1, the car park, A5 on the lake and the courts' },
+    { t: '南侧园区道路', s: 'South road · west past canopy 6, the 11-floor A3 tower and the A3 cluster' },
     { t: '中央景观轴', s: 'Central axis · north to the lake, with A4 across the water' },
   ];
   const P = centre.map(([x, y]) => new THREE.Vector3(wx(x), 0, wz(y)));
@@ -1987,7 +2077,7 @@ const DRIVE = (() => {
   const start = curve.getPointAt(0); start.y = 2.1;
   const startDir = curve.getTangentAt(0);
   const introPath = new THREE.CatmullRomCurve3([
-    V(420, 1480, 260), V(-80, 1000, 250), V(-150, 380, 200),
+    V(420, 1480, 260), V(880, 1470, 235), V(1200, 1330, 160),
     start.clone().addScaledVector(startDir, -70).add(new THREE.Vector3(0, 38, 0)),
     start.clone().addScaledVector(startDir, -18).add(new THREE.Vector3(0, 6, 0)),
     start.clone(),
@@ -1999,6 +2089,7 @@ const DRIVE = (() => {
     const ahead = start.clone().addScaledVector(startDir, 15.3); ahead.y = 1.75;
     return V(1000, 600, 0).lerp(ahead, kk);
   };
+  const route = curve.getSpacedPoints(600);
   const T = Ti + Td + Tc + hold;
   const endTan = curve.getTangentAt(1);
   const pointAt = s => s <= L ? curve.getPointAt(Math.max(0, s) / L) : curve.getPointAt(1).addScaledVector(endTan, s - L);
@@ -2008,7 +2099,7 @@ const DRIVE = (() => {
   function frameAt(t) {
     if (t < Ti) {
       const k = t / Ti, u = 1 - Math.pow(1 - k, 2.2);   // slows to a stop where the drive begins
-      return { pos: introPath.getPointAt(Math.min(1, u)), look: introLook(t), leg: -1, progress: t / T };
+      return { pos: introPath.getPointAt(Math.min(1, u)), look: introLook(t), leg: -1, progress: t / T, s: null };
     }
     t -= Ti;
     const s = dist(Math.min(t, Td));
@@ -2024,15 +2115,16 @@ const DRIVE = (() => {
       pos.lerp(V(760, 1010, 105), k);
       look.lerp(V(930, 650, 0), k);
     }
-    return { pos, look, leg, progress: Math.min(1, (t + Ti) / T) };
+    return { pos, look, leg, progress: Math.min(1, (t + Ti) / T), s };
   }
-  return { frameAt, T, legs, L };
+  return { frameAt, T, legs, L, route };
 })();
-const drive = { t: 0, playing: true };
+const drive = { t: 0, playing: true, s: null };
 const fmt = x => `${Math.floor(x / 60)}:${String(Math.floor(x % 60)).padStart(2, '0')}`;
 function driveAt(t) {
   const f = DRIVE.frameAt(t);
   camera.position.copy(f.pos); camera.lookAt(f.look); lookNow.copy(f.look);
+  drive.s = f.s;
   const leg = f.leg < 0 ? { t: '园区鸟瞰', s: 'Campus overview · the whole park from above before the drive' } : DRIVE.legs[f.leg];
   if (driveAt.leg !== f.leg) {
     driveAt.leg = f.leg;
@@ -2396,10 +2488,12 @@ const capture = {
     if (!draw) return;              // advance the scene only (used to seek)
     renderer.render(scene, camera);
     updateLabels();
+    drawMinimap();
   },
   end() { captureMode = false; document.body.classList.remove('capture'); },
 };
 
+renderBirdsEye();
 setMode('tour');
 goStop(0, true);
 window.park = { goStop, setMode, get camera() { return camera; }, capture };
