@@ -7,3 +7,9 @@ Open `index.html` in a browser. There's no build step and it needs no network ac
 - **Views:** first-person (from the cat's eyes), behind, side. Keys `1` / `2` / `3`.
 - **Speed:** slow, medium, fast. Arrow keys `↑` / `↓`. The ride eases between speeds.
 - **Pause:** button or `Space`.
+
+---
+
+# 欢乐掼蛋 · Guandan Online
+
+A four-player online Guandan card game lives in [`guandan/`](guandan/README.md): `cd guandan && npm install && npm start`, then open http://localhost:3000.
